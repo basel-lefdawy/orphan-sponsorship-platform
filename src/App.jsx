@@ -1,10 +1,9 @@
-import './App.css'
-
+import ActivityPage from './pages/ActivityPage/ActivityPage'
 function App() {
 
   return (
     <>
-    <h1>Hello World</h1>
+      <ActivityPage />
     </>
   )
 }
