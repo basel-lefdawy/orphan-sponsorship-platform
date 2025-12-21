@@ -1,11 +1,8 @@
-import ActivityPage from './pages/ActivityPage/ActivityPage'
-function App() {
+// src/App.jsx
+import AppRoutes from './routes/AppRoutes';
 
-  return (
-    <>
-      <ActivityPage />
-    </>
-  )
+function App() {
+  return <AppRoutes />;
 }
 
-export default App
+export default App;
