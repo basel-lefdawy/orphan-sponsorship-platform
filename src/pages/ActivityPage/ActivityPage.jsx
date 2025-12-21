@@ -2,8 +2,10 @@ import { useState } from "react";
 import Hero from "./ActivityPageComponents/ActivityHero/ActivityHero";
 import ActivityCard from "./ActivityPageComponents/ActivityCards/ActivityCard";
 import styles from "./ActivitiesPage.module.css";
+import Button from "@mui/material/Button";
+import SearchForActivity from "./ActivityPageComponents/SearchForActivity/SearchForActivity";
+
 function Activities() {
-    const [visibleCount, setVisibleCount] = useState(4);
     const activities = [
         {
             id: 1,
@@ -127,23 +129,50 @@ function Activities() {
             category: "فن"
         }
     ];
+
+    const [visibleCount, setVisibleCount] = useState(4);
+    const [searchInput, setSearchInput] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const handleSearch = () => {
+        setSearchTerm(searchInput);
+        setVisibleCount(4); 
+    };
+
+
+    const filteredActivities =
+        searchTerm.trim() === ""
+            ? activities
+            : activities.filter(
+                (a) =>
+                    a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    a.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+
     const handleLoadMore = () => {
         setVisibleCount((prev) => prev + 2);
     };
+
     return (
         <>
             <Hero />
+            <SearchForActivity
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+                onSearch={handleSearch}
+            />
+
             <div className={styles.cardsWrapper}>
-                {activities.slice(0, visibleCount).map((activity) => (
+                {filteredActivities.slice(0, visibleCount).map((activity) => (
                     <ActivityCard key={activity.id} activity={activity} />
                 ))}
             </div>
 
-            {visibleCount < activities.length && (
+            {visibleCount < filteredActivities.length && (
                 <div style={{ textAlign: "center", margin: "2rem 0" }}>
-                    <button onClick={handleLoadMore} className={styles.loadMoreButton}>
+                    <Button variant="contained" onClick={handleLoadMore}>
                         عرض المزيد
-                    </button>
+                    </Button>
                 </div>
             )}
         </>
