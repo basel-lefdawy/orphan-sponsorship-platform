@@ -1,6 +1,7 @@
 .cardsWrapper {
     display: flex;
-    gap: 1rem;
     flex-wrap: wrap;
-    justify-content: center;
+    gap: 20px;
+    justify-content: flex-start;
+    padding: 0 20px;
 }

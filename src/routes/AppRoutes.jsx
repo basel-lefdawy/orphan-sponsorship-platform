@@ -6,7 +6,7 @@ const AppRoutes = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/ActivityPage/:id" element={<ActivityPage />} />
+                <Route path="/ActivityPage" element={<ActivityPage />} />
             </Routes>
         </Router>
     );

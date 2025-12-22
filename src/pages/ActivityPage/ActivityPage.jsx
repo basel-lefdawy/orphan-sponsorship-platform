@@ -6,15 +6,13 @@ import styles from "./ActivitiesPage.module.css";
 import Button from "@mui/material/Button";
 import SearchForActivity from "./ActivityPageComponents/SearchForActivity/SearchForActivity";
 import BecomeVolunteer from "./ActivityPageComponents/BecomeVolunteer/BecomeVolunteer";
-import { useParams } from "react-router-dom";
 
 function Activities() {
-    const { id } = useParams();
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`https://mocki.io/v1/${id}`)
+        fetch("https://mocki.io/v1/0f346fc4-1c35-49b2-97c8-551d28034522")
             .then(res => res.json())
             .then(data => {
                 setActivities(data);
@@ -46,7 +44,7 @@ function Activities() {
 
 
     const handleLoadMore = () => {
-        setVisibleCount((prev) => prev + 2);
+        setVisibleCount((prev) => prev + 4);
     };
 
     return (

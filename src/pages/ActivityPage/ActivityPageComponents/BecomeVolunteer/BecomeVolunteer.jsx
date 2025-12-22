@@ -14,11 +14,15 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Box,
+    IconButton
 } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styles from "./BecomeVolunteer.module.css";
-import Activities from "../../ActivityPage";
-
 const BecomeVolunteer = ({ activities }) => {
     const [showForm, setShowForm] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
@@ -26,7 +30,7 @@ const BecomeVolunteer = ({ activities }) => {
     const [upcomingEvent, setUpcomingEvent] = useState(null);
     const [openFutureModal, setOpenFutureModal] = useState(false);
     const [openPastModal, setOpenPastModal] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
+
 
     const [formData, setFormData] = useState({
         name: "",
@@ -102,25 +106,44 @@ const BecomeVolunteer = ({ activities }) => {
                 </form>
             )}
 
-            {/* مودال الأحداث المستقبلية */}
-            <Dialog open={openFutureModal} onClose={() => setOpenFutureModal(false)} fullWidth maxWidth="sm">
+            <Dialog open={openFutureModal} onClose={() => setOpenFutureModal(false)} fullWidth maxWidth="md">
                 <DialogTitle>الأحداث المستقبلية</DialogTitle>
                 <DialogContent>
-                    {activities.length === 0 ? <Typography>لا توجد أحداث مستقبلية أخرى</Typography> :
-                        activities.map(event => (
-                            <Card key={event.id} className={styles.infoCard} style={{ marginBottom: "12px" }}>
-                                <CardContent>
-                                    <Typography>
-                                        📅 {event.date} - {" "}
-                                        <span
-                                            style={{ cursor: "pointer", textDecoration: "underline", color: "#1976d2", fontWeight: "bold" }}
-                                            onClick={() => setSelectedEvent(event)}
-                                        >
-                                            {event.title}
-                                        </span>
+                    {getFutureEvents(activities).length === 0 ? <Typography>لا توجد أحداث مستقبلية أخرى</Typography> :
+                        getFutureEvents(activities).map(event => (
+                            <Accordion key={event.id} sx={{ mb: 1, borderRadius: "8px !important", boxShadow: 1 }}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography sx={{ fontWeight: "bold", width: "33%", flexShrink: 0 }}>
+                                        📅 {event.date}
                                     </Typography>
-                                </CardContent>
-                            </Card>
+                                    <Typography sx={{ color: "text.secondary" }}>
+                                        {event.title}
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                        <Typography>⏰ <span style={{ fontWeight: "bold" }}>الساعة:</span> {event.time}</Typography>
+                                        <Typography>📍 <span style={{ fontWeight: "bold" }}>المكان:</span> {event.location}</Typography>
+                                        <Typography>💵 <span style={{ fontWeight: "bold" }}>السعر:</span> {event.price ? `$${event.price}` : "مجاني"}</Typography>
+                                        {event.note && (
+                                            <Typography variant="body2" sx={{ mt: 1, p: 1, bgcolor: "#f5f5f5", borderRadius: "4px" }}>
+                                                💡 {event.note}
+                                            </Typography>
+                                        )}
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            sx={{ mt: 2, alignSelf: "flex-end" }}
+                                            onClick={() => {
+                                                setOpenFutureModal(false);
+                                                setShowForm(true);
+                                            }}
+                                        >
+                                            انضم لهذا النشاط
+                                        </Button>
+                                    </Box>
+                                </AccordionDetails>
+                            </Accordion>
                         ))
                     }
                 </DialogContent>
@@ -129,52 +152,38 @@ const BecomeVolunteer = ({ activities }) => {
                 </DialogActions>
             </Dialog>
 
-            {/* مودال الأحداث الماضية */}
-            <Dialog open={openPastModal} onClose={() => setOpenPastModal(false)} fullWidth maxWidth="sm">
+            <Dialog open={openPastModal} onClose={() => setOpenPastModal(false)} fullWidth maxWidth="md">
                 <DialogTitle>الأحداث الماضية</DialogTitle>
                 <DialogContent>
-                    {activities.length === 0 ? <Typography>لا توجد أحداث سابقة</Typography> :
-                        activities.map(event => (
-                            <Card key={event.id} className={styles.infoCard} style={{ marginBottom: "12px" }}>
-                                <CardContent>
-                                    <Typography>
-                                        📅 {event.date} - {" "}
-                                        <span
-                                            style={{ cursor: "pointer", textDecoration: "underline", color: "#1976d2", fontWeight: "bold" }}
-                                            onClick={() => setSelectedEvent(event)}
-                                        >
-                                            {event.title}
-                                        </span>
+                    {getPastEvents(activities).length === 0 ? <Typography>لا توجد أحداث سابقة</Typography> :
+                        getPastEvents(activities).map(event => (
+                            <Accordion key={event.id} sx={{ mb: 1, borderRadius: "8px !important", boxShadow: 1 }}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography sx={{ fontWeight: "bold", width: "33%", flexShrink: 0 }}>
+                                        📅 {event.date}
                                     </Typography>
-                                </CardContent>
-                            </Card>
+                                    <Typography sx={{ color: "text.secondary" }}>
+                                        {event.title}
+                                    </Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                                        <Typography>⏰ <span style={{ fontWeight: "bold" }}>الساعة:</span> {event.time}</Typography>
+                                        <Typography>📍 <span style={{ fontWeight: "bold" }}>المكان:</span> {event.location}</Typography>
+                                        <Typography>💵 <span style={{ fontWeight: "bold" }}>السعر:</span> {event.price ? `$${event.price}` : "مجاني"}</Typography>
+                                        {event.note && (
+                                            <Typography variant="body2" sx={{ mt: 1, p: 1, bgcolor: "#f5f5f5", borderRadius: "4px" }}>
+                                                💡 {event.note}
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </AccordionDetails>
+                            </Accordion>
                         ))
                     }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenPastModal(false)} color="secondary">إغلاق</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* مودال تفاصيل الحدث */}
-            <Dialog open={!!selectedEvent} onClose={() => setSelectedEvent(null)} fullWidth maxWidth="sm">
-                <DialogTitle>تفاصيل الحدث</DialogTitle>
-                <DialogContent>
-                    {selectedEvent && (
-                        <Card className={styles.infoCard} style={{ border: "none", boxShadow: "none" }}>
-                            <CardContent>
-                                <Typography>📌 النشاط: {selectedEvent.title}</Typography>
-                                <Typography>📅 التاريخ: {selectedEvent.date}</Typography>
-                                <Typography>⏰ الساعة: {selectedEvent.time}</Typography>
-                                <Typography>📍 المكان: {selectedEvent.location}</Typography>
-                                <Typography>💵 السعر: ${selectedEvent.price}</Typography>
-                                <Typography variant="body2" color="textSecondary">{selectedEvent.note}</Typography>
-                            </CardContent>
-                        </Card>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setSelectedEvent(null)} color="primary">إغلاق</Button>
                 </DialogActions>
             </Dialog>
         </div>
