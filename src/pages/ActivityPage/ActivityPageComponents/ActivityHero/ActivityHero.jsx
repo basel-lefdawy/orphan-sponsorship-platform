@@ -1,4 +1,4 @@
-// src/pages/Activities/components/ActivitiesHero.jsx
+// src/pages/ActivityPage/ActivityPageComponents/ActivityHero/ActivityHero.jsx
 import styles from "./ActivitiesHero.module.css";
 const ActivitiesHero = () => {
     return (
