@@ -1,0 +1,46 @@
+export const defaultValues = {
+  OrphanID: "",
+  OrphanName: "",
+  OrphanFatherName: "",
+  OrphanGrandfatherName: "",
+  OrphanFamilyName: "",
+  OrphanBirthDate: null,
+  gender: "",
+  GuaranteeType: "",
+
+  GuardianID: "",
+  GuardianName: "",
+  GuardianFatherName: "",
+  GuardianGrandfatherName: "",
+  GuardianFamilyName: "",
+  Relation: "",
+  country: "",
+  city: "",
+  street: "",
+  phoneNumber: "",
+  homePhone: "",
+  email: "",
+
+  paymentMethod: "",
+
+  BankName: "",
+  BranchNumber: "",
+  bankAccount: "",
+  AccountHolderName: "",
+  IBAN: "",
+
+  FamilyMember: "",
+  Breadwinner: "",
+  MonthlyIncome: "",
+  HouseCondition: "",
+  HousingType: "",
+  DeceasedPerson: "",
+
+  FatherDeathDate: null,
+  MotherJobType: "",
+  MotherSalary: "",
+
+  MotherDeathDate: null,
+  FatherJobType: "",
+  FatherSalary: "",
+};

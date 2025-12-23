@@ -5,6 +5,8 @@ import About from "./pages/About";
 import Activities from "./pages/ActivityPage/ActivityPage";
 import Orphan from './pages/orphans/orphan';
 import Details from './components/Details';  
+import HelpRequest from "./pages/HelpRequest/HelpRequest";
+import DonationForm from "./pages/Donation/Donation";
 
 function App() {
   return (
@@ -15,6 +17,9 @@ function App() {
         <Route path='/activities' element={<Activities />} />
         <Route path="/orphans" element={<Orphan/>} />
         <Route path="/orphans/details/:id" element={<Details />} />
+        <Route path="/help" element={<HelpRequest/>} />
+        <Route path="/donate" element={<DonationForm/>} />
+
       </Route>     
     </Routes>
   );
