@@ -3,6 +3,7 @@ import { Card, CardContent, CardMedia,  Button, Typography, Box } from "@mui/mat
 
 function OrphanCard({id, name, gender, age, place, image, type}) {
     const navigate = useNavigate();
+  
     return (
     
      <Card
@@ -12,7 +13,7 @@ function OrphanCard({id, name, gender, age, place, image, type}) {
          pt:1,
          pb:.5,
          m:1,
-         boxShadow: "0 8px 20px rgba(88, 136, 88, 0.76)",
+         boxShadow: "0 8px 20px rgba(85, 95, 85, 0.45)",
          borderRadius: "30px",
          display: 'flex',
          flexDirection: 'column',
@@ -28,7 +29,7 @@ function OrphanCard({id, name, gender, age, place, image, type}) {
       }}>
       {/* صورة اليتيم */}
        <CardMedia
-    
+        component="img"
         image={image}
         alt={name}
          sx={{
@@ -51,16 +52,14 @@ function OrphanCard({id, name, gender, age, place, image, type}) {
     {/*زر التفاصيل   */}
 <Button
  // بس اكبس على كبسة التفاصيل يوديني على صفحة التفاصيل
-  onClick={() => {
-      navigate(`/details/${id}`)
-    }}
+   onClick={() => navigate(`/details/${id}`)}
   variant="contained"
   color="success"
   sx={{
     borderRadius: "20px",
     px: 2.1,
     fontWeight: "bold",
-    backgroundColor: "#3aa970ff",
+    backgroundColor: "#9DB25D",
     "&:hover": {
       backgroundColor: "#207a54ff",
     },
