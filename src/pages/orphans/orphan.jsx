@@ -1,6 +1,6 @@
 import OrphanCard from '../../components/card';
 import { useEffect , useState }  from 'react';
-import { getOrphans } from "../../services/apis";
+import { fetchOrphans } from "../../services/apis";
 import {  Box,Typography} from '@mui/material';
 
 
@@ -8,7 +8,7 @@ function Orphan() {
     const [orphans, setOrphans] = useState([]);
 
  useEffect(() => {
-    getOrphans()
+    fetchOrphans()
       .then((data) => {
         setOrphans(data);
       })

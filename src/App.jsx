@@ -1,21 +1,23 @@
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import MainLayouts from "./layouts/MainLayouts";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Activities from "./pages/ActivityPage/ActivityPage";
 import Orphan from './pages/orphans/orphan';
 import Details from './components/Details';  
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-function App() {
 
+function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Orphan/>} />
-          <Route path="/details/:id" element={<Details />} />
-        </Routes>
-        
-      </BrowserRouter>
- 
-    </>
-  )
+    <Routes>
+      <Route element={<MainLayouts />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path='/activities' element={<Activities />} />
+        <Route path="/orphans" element={<Orphan/>} />
+        <Route path="/orphans/details/:id" element={<Details />} />
+      </Route>     
+    </Routes>
+  );
 }
 
-export default App
+export default App;

@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import {Box ,Typography ,Button} from '@mui/material';
-import { getOrphans } from "../services/apis";
+import { fetchOrphans } from "../services/apis";
 import { useEffect, useState } from "react";
 
 
@@ -14,7 +14,7 @@ function Details (){
  useEffect(() => {
     setLoading(true);
 
-    getOrphans()
+    fetchOrphans()
       .then((data) => {
     
         // تحويل id إلى رقم لأن useParams يرجع string

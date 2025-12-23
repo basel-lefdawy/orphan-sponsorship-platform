@@ -52,7 +52,7 @@ function OrphanCard({id, name, gender, age, place, image, type}) {
     {/*زر التفاصيل   */}
 <Button
  // بس اكبس على كبسة التفاصيل يوديني على صفحة التفاصيل
-   onClick={() => navigate(`/details/${id}`)}
+   onClick={() => navigate(`/orphans/details/${id}`)}
   variant="contained"
   color="success"
   sx={{
