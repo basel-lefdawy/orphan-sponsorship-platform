@@ -37,6 +37,9 @@ export default function Header() {
             <Button sx={navStyle} color="inherit" component={NavLink} to="/">
               الرئيسية
             </Button>
+            <Button sx={navStyle} color="inherit" component={NavLink} to="/activities">
+              الانشطة
+            </Button>
             <Button sx={navStyle} color="inherit" component={NavLink} to="/about">
               من نحن
             </Button>
