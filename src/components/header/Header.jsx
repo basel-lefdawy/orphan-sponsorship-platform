@@ -49,7 +49,7 @@ export default function Header() {
             <Button sx={navStyle} color="inherit" component={NavLink} to="/help">
               طلب مساعدة
             </Button>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/sponsor">
+            <Button sx={navStyle} color="inherit" component={NavLink} to="/sponsoring">
               كفالة يتيم
             </Button>
             <Button
