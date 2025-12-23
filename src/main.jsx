@@ -1,12 +1,38 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter } from "react-router-dom";
 
-createRoot(document.getElementById('root')).render(
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+import rtlPlugin from "stylis-plugin-rtl";
+
+const rtlCache = createCache({
+  key: "mui-rtl",
+  stylisPlugins: [rtlPlugin],
+});
+
+const theme = createTheme({
+  direction: "rtl",
+  typography: {
+    fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+  },
+});
+
+document.dir = "rtl";
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <CacheProvider value={rtlCache}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </CacheProvider>
   </StrictMode>
-)
+);

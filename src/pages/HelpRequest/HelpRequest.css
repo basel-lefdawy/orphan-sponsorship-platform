@@ -1,0 +1,81 @@
+.form {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  direction: rtl;
+}
+
+.main-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.section-title {
+  text-align: right;
+  margin: 40px 0 20px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.field {
+  flex: 1 1 100%;
+}
+
+.small-field {
+  flex: 1 1 23% !important; /* same as 1 of 4 */
+}
+
+
+/* تابلت */
+@media (min-width: 768px) {
+  .field {
+    flex: 1 1 calc(50% - 16px);
+  }
+}
+
+/* لابتوب */
+@media (min-width: 1024px) {
+  .field {
+    flex: 1 1 calc(25% - 16px);
+  }
+}
+
+
+.submit {
+  display: flex;
+  justify-content: center;
+  margin: 48px 0 32px;
+}
+
+.submit-btn {
+  background-color: #2e7d32 !important;
+  padding: 14px 64px !important;
+  font-size: 17px !important;
+  font-weight: bold !important;
+  border-radius: 12px !important;
+}
+
+.submit-btn:hover {
+  background-color: #1b5e20 !important;
+}
+
+
+.MuiTextField-root {
+  background-color: #fff;
+}
+
+.MuiInputBase-root {
+  border-radius: 8px;
+}
