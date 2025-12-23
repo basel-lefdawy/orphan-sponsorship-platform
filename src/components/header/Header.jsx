@@ -52,9 +52,6 @@ export default function Header() {
             <Button sx={navStyle} color="inherit" component={NavLink} to="/sponsor">
               كفالة يتيم
             </Button>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/contact">
-              تواصل معنا
-            </Button>
             <Button
               variant="contained"
               onClick={() => navigate("/donate")}
