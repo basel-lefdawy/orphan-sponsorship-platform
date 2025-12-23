@@ -1,20 +1,72 @@
-import orphanData from '../pages/orphans/data';
 import { useParams } from "react-router-dom";
 import {Box ,Typography ,Button} from '@mui/material';
+import { getOrphans } from "../services/apis";
+import { useEffect, useState } from "react";
+
 
 function Details (){
  
     const { id } = useParams();
-    const orphan = orphanData.find((orphan) => orphan.id === Number(id));
-if(!orphan)
-    {    // اذا ما لقيت اليتيم
-        return <Typography variant="h4">اليتيم غير موجود</Typography>
+   const [orphan, setOrphan] = useState(null);
+     const [loading, setLoading] = useState(true);
 
-    }
+
+ useEffect(() => {
+    setLoading(true);
+
+    getOrphans()
+      .then((data) => {
+    
+        // تحويل id إلى رقم لأن useParams يرجع string
+        // حطيت -1 لانو زدت واحد عند الاي دي في الكارد
+        const orphanIndex = Number(id)-1;
+        
+        // استخدام index مباشرة للوصول للبيانات
+        if (orphanIndex >= 0 && orphanIndex < data.length) {
+          const found = data[orphanIndex];
+          setOrphan(found);
+        } else {
+          setOrphan(null);
+        }
+      })
+      .catch((error) => {
+        console.error( "Error fetching data:",error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: "center", mt: 10 }}>
+        <Typography>جاري تحميل البيانات...</Typography>
+      </Box>
+    );
+  }
+
+ if (!orphan) {
+  return (
+    <Box sx={{ textAlign: 'center', mt: 10, p: 3 }}>
+      <Typography variant="h6" color="error" gutterBottom>
+         غير موجود
+      </Typography>
+
+      <Typography sx={{ mb: 2 }}
+      >الرقم {id} غير مسجل
+      </Typography>
+
+      <Button variant="contained" onClick={() => navigate('/')}>
+        ← الصفحة الرئيسية
+      </Button>
+    </Box>
+  );
+}
+
 return(
     // صندوق تفاصيل اليتيم
     <Box sx={{
-     width:"30%",
+     width:"25%",
      mx:"auto",
       my:4,
        p:3,
@@ -76,7 +128,7 @@ return(
     fontWeight: "bold",
     display: "flex",
     mx: "auto",
-    backgroundColor: "#3aa970ff",
+    backgroundColor: "#9DB25D",
     "&:hover": {
       backgroundColor: "#2d8f66ff",
     },
