@@ -33,41 +33,41 @@ function Footer() {
 
   return (
     <footer>
-      <Box sx={{ bgcolor: "#f0f0f0", py: 3 }}>
-        <Grid container justifyContent="space-around" alignItems="flex-start">
-          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: 200 }}>
-            <Typography sx={{ fontSize: 30 }}>
+      <Box sx={{ bgcolor: "#f0f0f0", py: 3, px: { xs: 1, md: 2 } }}>
+        <Grid container justifyContent="space-around" spacing={3} alignItems="flex-start">
+          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" }, width: { xs: "100%", md: 200 } }}>
+            <Typography sx={{ fontSize: { xs: 20, md: 30 } }}>
               معلومات.
             </Typography>
-            <Box sx={{ fontSize: 12, pt: 3 }}>
+            <Box sx={{ fontSize: 12, pt: 3, textAlign: { xs: "center", md: "left" } }}>
               شركة دار يتيم  هي شركة أمريكية متخصصة في تقديم خدمات استشارات إدارة الأعمال، تأسست بهدف تمكين الأفراد والمؤسسات من تحقيق أعلى مستويات الكفاءة والنمو، من خلال حلول استراتيجية مبتكرة وخطط تطوير فعّالة تلبي متطلبات السوق وتواكب التحديات الحديثة.
             </Box>
-            <Box>
+            <Box sx={{ mt: 1 }}>
               <Box display="flex" alignItems="center" gap={1} sx={{ pb: 1, pt: 2 }}>
                 <LocationOnIcon sx={iconStyle} />
-                <Typography>
+                <Typography sx={{ fontSize: { xs: 12, md: "inherit" } }}>
                   Nablus
                 </Typography>
               </Box>
 
               <Box display="flex" alignItems="center" gap={1} sx={{ pb: 1 }}>
                 <EmailIcon sx={iconStyle} />
-                <Typography>
+                <Typography sx={{ fontSize: { xs: 12, md: "inherit" } }}>
                   info@darelyateem.org
                 </Typography>
               </Box>
 
               <Box display="flex" alignItems="center" gap={1} sx={{ pb: 1 }}>
                 <PhoneIcon sx={iconStyle} />
-                <Typography>
+                <Typography sx={{ fontSize: { xs: 12, md: "inherit" } }}>
                   +1 917 563 6537
                 </Typography>
               </Box>
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: 200, height: 100 }}>
-            <Typography sx={{ fontSize: 20 }}>
+          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" }, width: { xs: "100%", md: 200 } }}>
+            <Typography sx={{ fontSize: { xs: 16, md: 20 } }}>
               ألبوم الصور.
             </Typography>
             <Box
@@ -84,8 +84,8 @@ function Footer() {
                   component="img"
                   src={img}
                   sx={{
-                    width: 80,
-                    height: 80,
+                    width: { xs: 60, md: 80 },
+                    height: { xs: 60, md: 80 },
                     objectFit: "cover",
                     borderRadius: 1,
                   }}
@@ -94,35 +94,35 @@ function Footer() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: 200, height: 100 }}>
-            <Typography sx={{ fontSize: 20 }}>
+          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" }, width: { xs: "100%", md: 200 } }}>
+            <Typography sx={{ fontSize: { xs: 16, md: 20 } }}>
               أهم الروابط.
             </Typography>
-            <Box sx={{ pt: 3 }}>
-              <Box sx={{ mb: 3 }}>
-                <HomeIcon />
-                <Button sx={{ mt: -2 }} onClick={() => navigate("/")} color="success">الرئيسية</Button>
+            <Box sx={{ pt: 3, display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" } }}>
+              <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+                <HomeIcon sx={{ fontSize: { xs: 18, md: "inherit" } }} />
+                <Button sx={{ mt: 0, fontSize: { xs: 12, md: "inherit" } }} onClick={() => navigate("/")} color="success">الرئيسية</Button>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
-                <CelebrationIcon />
-                <Button sx={{ mt: -2 }} onClick={() => navigate("/activities")} color="success">الأنشطة</Button>
+              <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+                <CelebrationIcon sx={{ fontSize: { xs: 18, md: "inherit" } }} />
+                <Button sx={{ mt: 0, fontSize: { xs: 12, md: "inherit" } }} onClick={() => navigate("/activities")} color="success">الأنشطة</Button>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
-                <VolunteerActivismIcon />
-                <Button sx={{ mt: -2 }} onClick={() => navigate("/donate")} color="success">التبرع</Button>
+              <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+                <VolunteerActivismIcon sx={{ fontSize: { xs: 18, md: "inherit" } }} />
+                <Button sx={{ mt: 0, fontSize: { xs: 12, md: "inherit" } }} onClick={() => navigate("/donate")} color="success">التبرع</Button>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
-                <FaceIcon />
-                <Button sx={{ mt: -2 }} onClick={() => navigate("/orphans")} color="success">الأيتام</Button>
+              <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: 1 }}>
+                <FaceIcon sx={{ fontSize: { xs: 18, md: "inherit" } }} />
+                <Button sx={{ mt: 0, fontSize: { xs: 12, md: "inherit" } }} onClick={() => navigate("/orphans")} color="success">الأيتام</Button>
               </Box>
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: 230, height: 100 }}>
-            <Typography sx={{ fontSize: 20 }}>
+          <Grid item xs={12} md={3} sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" }, width: { xs: "100%", md: "230px" } }}>
+            <Typography sx={{ fontSize: { xs: 16, md: 20 }, textAlign: { xs: "center", md: "left" } }}>
               تابعنا على مواقع التواصل الإجتماعي.
             </Typography>
             <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
@@ -153,7 +153,7 @@ function Footer() {
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ bgcolor: "#f0f0f0", display: "flex", justifyContent: "center" }}>
+      <Box sx={{ bgcolor: "#f0f0f0", display: "flex", justifyContent: "center", padding: { xs: "12px 8px", md: "16px" } }}>
         2025 © جميع الحقوق محفوظة
       </Box>
     </footer>
@@ -161,4 +161,3 @@ function Footer() {
 }
 
 export default Footer;
-

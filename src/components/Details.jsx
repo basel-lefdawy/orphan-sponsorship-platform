@@ -68,10 +68,10 @@ function Details() {
   return (
     // صندوق تفاصيل اليتيم
     <Box sx={{
-      width: "25%",
+      width: { xs: "90%", sm: "80%", md: "60%", lg: "25%" },
       mx: "auto",
       my: 4,
-      p: 3,
+      p: { xs: 2, md: 3 },
       boxShadow: "0 1px 3px rgba(143, 144, 144, 0.76)",
       borderRadius: "20px",
       backgroundColor: "#e4eed8ff",
@@ -125,6 +125,7 @@ function Details() {
       {/* زر الكفالة */}
       <Button
         variant="contained"
+
         color="success"
         sx={{
           borderRadius: "20px",
@@ -145,12 +146,12 @@ function Details() {
               sponsoringType: orphan.sponsoringType,
             })
           );
-          navigate("/SponsorFormPage");
+          navigate("/sponsor-form");
         }}
       >
         اكفل اليتيم
       </Button>
-    </Box>
+    </Box >
 
 
   );

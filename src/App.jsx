@@ -31,7 +31,7 @@ function App() {
           path="/sponsoring/details/:id"
           element={<Details />}
         />
-        <Route path="/SponsorFormPage" element={<SponsorFormPage />} />
+        <Route path="/sponsor-form" element={<SponsorFormPage />} />
 
       </Route>
     </Routes>

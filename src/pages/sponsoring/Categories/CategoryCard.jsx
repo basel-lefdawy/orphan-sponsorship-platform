@@ -7,8 +7,8 @@ const CategoryCard = ({ title, image, type }) => {
     return (
         <Card
             sx={{
-                width: 360,
-                height: 335,
+                width: { xs: "100%", sm: "300px", md: "360px" },
+                height: { xs: "auto", md: "335px" },
                 borderRadius: 5,
                 transition: '0.3s ease',
                 '&:hover': {

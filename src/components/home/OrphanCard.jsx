@@ -44,7 +44,7 @@ function OrphanCard({ orphan }) {
 
           <Button
             variant="contained"
-            onClick={() => navigate("/sponsor")}
+            onClick={() => navigate("/sponsor-form")}
             sx={{
               mt: 3,
               bgcolor: "#9DB25D",
@@ -66,4 +66,3 @@ function OrphanCard({ orphan }) {
 }
 
 export default OrphanCard;
-

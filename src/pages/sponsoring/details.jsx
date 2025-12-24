@@ -118,7 +118,7 @@ function Details() {
                             })
                         );
 
-                        navigate("/SponsorFormPage");
+                        navigate("/sponsor-form");
                     }}
                 >
                     اكفل اليتيم

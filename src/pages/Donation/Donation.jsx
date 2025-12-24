@@ -5,17 +5,25 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import StatusDialog from "../../components/StatusDialog";
 import FieldRenderer from "./FieldRenderer";
 import { createDonation } from "../Donation/DonationApi";
+import { useNavigate } from "react-router-dom";
 
 import {
   basicFields,
   paymentMethodField,
   cardFields,
-} from "./donationFields"; 
+} from "./donationFields";
 
 const DonationForm = () => {
+  const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(true);
   const {
     register,
     handleSubmit,
@@ -23,7 +31,8 @@ const DonationForm = () => {
     watch,
     reset,
     formState: { errors },
-  } = useForm({mode: "all", defaultValues: {
+  } = useForm({
+    mode: "all", defaultValues: {
       amount: 100,
       method: "",
       firstName: "",
@@ -44,45 +53,46 @@ const DonationForm = () => {
     title: "",
     message: "",
   });
-  
+
   useEffect(() => {
-  if (method !== "card") {
-    reset({
-      cardNumber: "",
-      cvc: "",
-      expiry: "",
-      cardName: "",
-    });
-  }
-}, [method, reset]);
+    if (method !== "card") {
+      reset({
+        cardNumber: "",
+        cvc: "",
+        expiry: "",
+        cardName: "",
+      });
+    }
+  }, [method, reset]);
 
   const onSubmit = async (data) => {
-  try {
-    const donationData = {
-      ...data,
-      date: new Date().toISOString(),
-    };
+    try {
+      const donationData = {
+        ...data,
+        date: new Date().toISOString(),
+      };
 
-    await createDonation(donationData);
+      await createDonation(donationData);
 
-    setDialog({
-      open: true,
-      type: "success",
-      title: "شكرًا لتبرعك 💚",
-      message: "تم إرسال التبرع بنجاح.",
-    });
+      setDialog({
+        open: true,
+        type: "success",
+        title: "شكرًا لتبرعك 💚",
+        message: "تم إرسال التبرع بنجاح.",
+      });
 
-    reset();
-  } catch (error) {
-    setDialog({
-      open: true,
-      type: "error",
-      title: "خطأ",
-      message: "تعذر إرسال التبرع، حاول مرة أخرى.",
-    });
-  }
-};
- const onError = (errors) => {
+      reset();
+    } catch (error) {
+      setDialog({
+        open: true,
+        type: "error",
+        title: "خطأ",
+        message: "تعذر إرسال التبرع، حاول مرة أخرى.",
+      });
+    }
+  };
+
+  const onError = () => {
     setDialog({
       open: true,
       type: "error",
@@ -91,15 +101,37 @@ const DonationForm = () => {
     });
   };
 
+  const handleClose = () => {
+    setOpenDialog(false);
+    navigate(-1);
+  };
+
   return (
     <>
-      <Box dir="rtl" sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-        <Paper elevation={6} sx={{p: 4, width: "100%",maxWidth: 600,borderRadius: 3,bgcolor: "#f9f9f9",}}>
-          <Typography variant="h4" gutterBottom textAlign="center"fontWeight="bold">
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }
+        }}
+      >
+        <DialogTitle dir="rtl" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 2 }}>
+          <Typography variant="h5" fontWeight="bold">
             نموذج التبرع
           </Typography>
+          <IconButton onClick={handleClose} sx={{ color: '#2e7d32' }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
 
-          <Box component="form" onSubmit={handleSubmit(onSubmit, onError)}sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        <DialogContent dir="rtl">
+          <Box component="form" onSubmit={handleSubmit(onSubmit, onError)} sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 2 }}>
             {basicFields.map((field) => (
               <FieldRenderer
                 key={field.name}
@@ -202,8 +234,8 @@ const DonationForm = () => {
               التبرع الآن
             </Button>
           </Box>
-        </Paper>
-      </Box>
+        </DialogContent>
+      </Dialog>
       <StatusDialog
         open={dialog.open}
         type={dialog.type}

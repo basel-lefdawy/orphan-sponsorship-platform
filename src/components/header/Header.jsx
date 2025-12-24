@@ -1,5 +1,7 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import { useState } from "react";
 
 const navStyle = {
   color: "white",
@@ -25,6 +27,16 @@ const navStyle = {
 
 export default function Header() {
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -66,6 +78,37 @@ export default function Header() {
             >
               تبرع
             </Button>
+          </Box>
+
+          {/* Mobile Menu */}
+          <Box sx={{ display: { xs: "flex", md: "none" }, ml: "auto" }}>
+            <IconButton
+              color="inherit"
+              onClick={handleMenuOpen}
+              sx={{ fontSize: 28 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              sx={{
+                "& .MuiPaper-root": {
+                  backgroundColor: "#2e7d32",
+                  color: "white",
+                  minWidth: 200,
+                }
+              }}
+            >
+              <MenuItem component={NavLink} to="/" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>الرئيسية</MenuItem>
+              <MenuItem component={NavLink} to="/activities" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>الانشطة</MenuItem>
+              <MenuItem component={NavLink} to="/about" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>من نحن</MenuItem>
+              <MenuItem component={NavLink} to="/orphans" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>الأيتام</MenuItem>
+              <MenuItem component={NavLink} to="/help" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>طلب مساعدة</MenuItem>
+              <MenuItem component={NavLink} to="/sponsoring" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>كفالة يتيم</MenuItem>
+              <MenuItem component={NavLink} to="/donate" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>تبرع</MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </AppBar>
