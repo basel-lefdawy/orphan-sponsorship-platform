@@ -2,7 +2,6 @@ export const getPastEvents = (activities) => {
     const today = new Date();
     return activities.filter(a => new Date(a.date) < today).sort((a, b) => new Date(b.date) - new Date(a.date));
 };
-
 export const getFutureEvents = (activities) => {
     const today = new Date();
     return activities.filter(a => new Date(a.date) >= today).sort((a, b) => new Date(a.date) - new Date(b.date));
