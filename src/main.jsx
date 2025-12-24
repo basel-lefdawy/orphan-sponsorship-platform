@@ -29,7 +29,7 @@ createRoot(document.getElementById("root")).render(
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <BrowserRouter basename="/orphanage-center">
           <App />
         </BrowserRouter>
       </ThemeProvider>
