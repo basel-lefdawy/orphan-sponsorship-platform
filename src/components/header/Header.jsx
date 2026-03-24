@@ -49,9 +49,7 @@ export default function Header() {
             <Button sx={navStyle} color="inherit" component={NavLink} to="/">
               الرئيسية
             </Button>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/activities">
-              الانشطة
-            </Button>
+
             <Button sx={navStyle} color="inherit" component={NavLink} to="/about">
               من نحن
             </Button>
@@ -60,9 +58,6 @@ export default function Header() {
             </Button>
             <Button sx={navStyle} color="inherit" component={NavLink} to="/help">
               طلب مساعدة
-            </Button>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/sponsoring">
-              كفالة يتيم
             </Button>
             <Button
               variant="contained"

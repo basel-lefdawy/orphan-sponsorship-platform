@@ -8,7 +8,6 @@ import {
     Select,
     MenuItem
 } from "@mui/material";
-import SectionHeader from "../SectionHeader";
 
 const Authorized = ({ data, setData, errors = {} }) => {
 
