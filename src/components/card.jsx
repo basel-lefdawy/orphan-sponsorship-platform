@@ -1,77 +1,141 @@
+import React from 'react';
+import { Card, CardContent, Typography, Button, Avatar, Box, Chip } from "@mui/material";
+import { LocationOn, Cake, Person } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardMedia, Button, Typography, Box } from "@mui/material";
 
-function OrphanCard({ id, name, gender, age, place, image, type }) {
+
+function OrphanCard({ id, name, gender, age, place, image,description }) {
   const navigate = useNavigate();
 
-  return (
+  // القيم الافتراضية للتجربة (يمكنك استبدالها ببيانات الـ props)
 
-    <Card
-      // خصائص الكارد بشكل عام 
-      sx={{
-        width: { xs: "100%", sm: "280px", md: "260px" },
-        pt: 1,
-        pb: .5,
-        m: 1,
-        boxShadow: "0 8px 20px rgba(85, 95, 85, 0.45)",
-        borderRadius: "30px",
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-
-        "&:hover": {
-          transform: "scale(1.05)",
-
+  return (  
+    <Box sx={{ 
+      position: "relative", 
+      mt: 10, 
+      display: "flex", 
+      flexDirection: "column", 
+      alignItems: "center",
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+       "&:hover": {
+           transform: "translateY(-20px)", cursor: "pointer" 
         },
-
-
+      
+    }}>
+      {/* الصورة الشخصية مع إطار دائري */}
+      <Box sx={{
+        position: "absolute",
+        top: -70,
+        zIndex: 2,
+        p: 1,
+        bgcolor: "white",
+        borderRadius: "50%",
+        boxShadow: "0 8px 24px rgba(157, 178, 93, 0.2)"
       }}>
-      {/* صورة اليتيم */}
-      <CardMedia
-        component="img"
-        image={image}
-        alt={name}
+        <Avatar
+          src={image}
+          sx={{
+            width: 130,
+            height: 130,
+            border: "4px solid #9DB25D"
+          }}
+        />
+        {/* شارة "جديد" أو حالة اليتيم */}
+       
+      </Box>
+
+      <Card
         sx={{
-          width: 100,
-          height: 100,
-
-        }}
-      />
-
-      {/* معلومات اليتيم */}
-      <CardContent>
-        <Typography variant="h6" sx={{ fontFamily: "Cairo" }}><b>{name}</b></Typography>
-        <Typography variant="body2" sx={{ fontFamily: "Cairo" }}>  {gender} - {age} سنوات </Typography>
-        <Typography variant="body2" sx={{ fontFamily: "Cairo" }}>المكان: {place}</Typography>
-        <Typography variant="body2" sx={{ fontFamily: "Cairo", fontWeight: "bold", color: "#2c714dff" }}>نوع الكفالة: {type}</Typography>
-      </CardContent>
-
-
-
-      {/*زر التفاصيل   */}
-      <Button
-        // بس اكبس على كبسة التفاصيل يوديني على صفحة التفاصيل
-        onClick={() => navigate(`/orphans/details/${id}`)}
-        variant="contained"
-        color="success"
-        sx={{
-          borderRadius: "20px",
-          px: 2.1,
-          fontWeight: "bold",
-          backgroundColor: "#9DB25D",
-          "&:hover": {
-            backgroundColor: "#207a54ff",
-          },
+          width: 340,
+          borderRadius: "32px",
+          textAlign: "center",
+          pt: 9,
+          pb: 4,
+          px: 2,
+          boxShadow: "0 20px 40px rgba(0,0,0,0.05)",
+          border: "1px solid rgba(0,0,0,0.02)",
+          background: "linear-gradient(180deg, #FFFFFF 0%, #FAFAF2 100%)"
         }}
       >
-        تفاصيل اليتيم
-      </Button>
-    </Card>
-  )
+        <CardContent>
+          {/* الاسم */}
+          <Typography 
+            variant="h5" 
+            fontWeight="800" 
+            sx={{ color: "#1A1C18", mb: 2 }}
+          >
+            {name}
+          </Typography>
+
+          {/* معلومات سريعة (العمر والجنس) */}
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 3 }}>
+            <Chip 
+              icon={<Cake sx={{ fontSize: "1rem !important" }} />} 
+              label={age} 
+              variant="outlined"
+              sx={{ borderRadius: "12px", border: "none", bgcolor: "#F4F4EC" }}
+            />
+            <Chip 
+              icon={<Person sx={{ fontSize: "1rem !important" }} />} 
+              label={gender} 
+              variant="outlined"
+              sx={{ borderRadius: "12px", border: "none", bgcolor: "#F4F4EC" }}
+            />
+          </Box>
+
+          {/* المكان */}
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5, color: "#45483A", mb: 2 }}>
+            <LocationOn sx={{ fontSize: "1.2rem", color: "#9DB25D" }} />
+            <Typography variant="body2" fontWeight="500">
+              {place}
+            </Typography>
+          </Box>
+
+          {/* الوصف القصير */}
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: "#6D7160", 
+              fontStyle: "italic", 
+              lineHeight: 1.6,
+              mb: 4,
+              px: 1,
+               display: "-webkit-box",
+               WebkitLineClamp: 4,     
+               WebkitBoxOrient: "vertical",
+               overflow: "hidden",
+                minHeight: "90px" 
+            }}
+          >
+            "{description}"
+          </Typography>
+
+          {/* زر الكفالة المحدث */}
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => navigate("/sponsor-form")}
+            sx={{
+              py: 1.8,
+              bgcolor: "#9DB25D",
+              borderRadius: "20px",
+              fontSize: "1.1rem",
+              fontWeight: "bold",
+              textTransform: "none",
+              boxShadow: "0 8px 16px rgba(157, 178, 93, 0.3)",
+              "&:hover": {
+                bgcolor: "#8aa84f",
+                boxShadow: "0 12px 20px rgba(157, 178, 93, 0.4)"
+              },
+              transition: "all 0.3s ease"
+            }}
+          >
+            اكفل يتيم
+          </Button>
+        </CardContent>
+      </Card>
+    </Box>
+  );
 }
 
-export default OrphanCard
-
-
-
+export default OrphanCard;
