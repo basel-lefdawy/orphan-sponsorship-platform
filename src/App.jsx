@@ -7,6 +7,7 @@ import Details from './components/Details';
 import HelpRequest from "./pages/HelpRequest/HelpRequest";
 import DonationForm from "./pages/Donation/Donation";
 import SponsorFormPage from "./components/sponsoringForm/SponsorFormPage";
+import Login from "./pages/login/login";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/sponsor-form" element={<SponsorFormPage />} />
 
       </Route>
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }
