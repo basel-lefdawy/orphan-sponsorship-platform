@@ -10,6 +10,8 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import rtlPlugin from "stylis-plugin-rtl";
 
+import { DonationProvider } from "./context/DonationContext.jsx";
+
 const rtlCache = createCache({
   key: "mui-rtl",
   stylisPlugins: [rtlPlugin],
@@ -26,6 +28,7 @@ document.dir = "rtl";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <DonationProvider>
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -34,5 +37,6 @@ createRoot(document.getElementById("root")).render(
         </BrowserRouter>
       </ThemeProvider>
     </CacheProvider>
+    </DonationProvider>
   </StrictMode>
 );
