@@ -1,0 +1,182 @@
+.page {
+  font-family: 'DM Sans', 'Cairo', sans-serif;
+}
+
+.greeting {
+  margin-bottom: 28px;
+}
+
+.greetTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1f2e;
+  margin: 0 0 4px;
+}
+
+.greetSub {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1f2e;
+  margin: 0 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.recentCard {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #eef0f4;
+  overflow: hidden;
+}
+
+.recentHeader {
+  padding: 18px 22px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1f2e;
+  margin: 0;
+}
+
+.viewAll {
+  font-size: 0.8rem;
+  color: #4f8ef7;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.viewAll:hover {
+  opacity: 0.7;
+}
+
+.recentList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background 0.15s;
+}
+
+.recentItem:last-child {
+  border-bottom: none;
+}
+
+.recentItem:hover {
+  background: #f8fafc;
+}
+
+.recentIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.recentItemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.recentItemName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1a1f2e;
+  margin: 0 0 2px;
+}
+
+.recentItemDetail {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.recentItemBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.badgeGreen {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.badgeYellow {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.badgeBlue {
+  background: #eef4ff;
+  color: #4f8ef7;
+}
+
+.quickActions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.quickBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: #fff;
+  border: 1px solid #eef0f4;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quickBtn:hover {
+  border-color: #4f8ef7;
+  color: #4f8ef7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 142, 247, 0.1);
+}
