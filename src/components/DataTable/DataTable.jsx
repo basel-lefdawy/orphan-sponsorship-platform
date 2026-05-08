@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import styles from "./DataTable.module.css";
 
 const ROWS_PER_PAGE = 6;
@@ -32,16 +32,11 @@ export default function DataTable({
 
   // Paginate
   const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
   const paginated = filtered.slice(
-    (page - 1) * ROWS_PER_PAGE,
-    page * ROWS_PER_PAGE
+    (currentPage - 1) * ROWS_PER_PAGE,
+    currentPage * ROWS_PER_PAGE
   );
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
-    }
-  }, [page, totalPages]);
 
   // Reset page when search changes
   const handleSearch = (e) => {
@@ -158,8 +153,8 @@ export default function DataTable({
         <div className={styles.pagination}>
           <button
             className={styles.pageBtn}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
+            onClick={() => setPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
           >
             ›
           </button>
@@ -167,7 +162,7 @@ export default function DataTable({
             <button
               key={p}
               className={`${styles.pageBtn} ${
-                p === page ? styles.pageBtnActive : ""
+                p === currentPage ? styles.pageBtnActive : ""
               }`}
               onClick={() => setPage(p)}
             >
@@ -176,8 +171,8 @@ export default function DataTable({
           ))}
           <button
             className={styles.pageBtn}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
+            onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
           >
             ‹
           </button>
