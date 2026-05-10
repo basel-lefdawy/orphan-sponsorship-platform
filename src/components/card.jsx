@@ -17,10 +17,9 @@ function OrphanCard({ id, name, gender, age, place, image,description }) {
       flexDirection: "column", 
       alignItems: "center",
       fontFamily: "'Plus Jakarta Sans', sans-serif",
-       "&:hover": {
-           transform: "translateY(-20px)", cursor: "pointer" 
-        },
-      
+      transition: "0.3s",
+     "&:hover": { transform: "translateY(-20px)", cursor: "pointer" }
+          
     }}>
       {/* الصورة الشخصية مع إطار دائري */}
       <Box sx={{

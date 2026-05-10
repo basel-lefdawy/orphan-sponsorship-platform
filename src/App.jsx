@@ -8,6 +8,7 @@ import Details from './components/Details';
 import HelpRequest from "./pages/HelpRequest/HelpRequest";
 import DonationForm from "./pages/Donation/Donation";
 import SponsorFormPage from "./components/sponsoringForm/SponsorFormPage";
+import OrphanSponsorshipForm from "./pages/OrphanSponsorshipForm";
 // Admin imports
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
@@ -37,6 +38,7 @@ function App() {
         <Route path="/help" element={<HelpRequest />} />
         <Route path="/donate" element={<DonationForm />} />
         <Route path="/sponsor-form" element={<SponsorFormPage />} />
+        <Route path="/orphan-sponsorship-form" element={<OrphanSponsorshipForm />} />
       </Route>
       {/* Admin routes */}
       <Route path="/admin" element={<AdminLayout />}>

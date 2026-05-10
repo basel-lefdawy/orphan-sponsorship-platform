@@ -64,6 +64,7 @@ function Orphan() {
       mx: "auto",
       mt: 2,
       borderRadius: "10px"
+      
     }}
   />
   </Box>
@@ -77,6 +78,10 @@ function Orphan() {
           gap: { xs: 1, sm: 2, md: 4 },
           px: { xs: 1, sm: 2, md: 4 },
           py: { xs: 3, md: 6 },
+          
+             
+            
+          
         }}
 
       >
