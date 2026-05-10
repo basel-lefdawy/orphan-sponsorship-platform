@@ -6,59 +6,79 @@ import {
   Box,
   IconButton,
   Menu,
-  Avatar,
   MenuItem,
+  Avatar,
 } from "@mui/material";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
+
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+
 import UserDropdown from "./UserDropdown";
+
+import { useDonation } from "../../context/DonationContext";
+import DonationForm from "../../pages/Donation/Donation";
 
 const navStyle = {
   color: "white",
   position: "relative",
-  fontSize: 16,
+  fontSize: 18,
+
   "&::after": {
     content: '""',
     position: "absolute",
-    bottom: 4,
+    bottom: 6,
     left: "50%",
     width: 0,
     height: "2px",
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF33",
     transition: "0.3s",
     transform: "translateX(-50%)",
   },
+
   "&.active::after": {
     width: "60%",
+  },
+
+  "&:hover": {
+    backgroundColor: "rgba(255,255,255,0.15)",
   },
 };
 
 export default function Header() {
   const navigate = useNavigate();
+
   const authToken = localStorage.getItem("token");
+
   const [user, setUser] = useState({
     name: "",
     email: "",
   });
+
   const [isUserLoading, setIsUserLoading] = useState(false);
 
-  // mobile menu
+  // Mobile Menu
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // user menu (important feature)
+  // User Menu
   const [userMenu, setUserMenu] = useState(null);
 
   const openMobile = Boolean(anchorEl);
   const openUserMenu = Boolean(userMenu);
+
   const isAuthenticated = Boolean(authToken);
 
+  // Donation Modal
+  const { openDonation, setOpenDonation } = useDonation();
+
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleUserOpen = (event) => setUserMenu(event.currentTarget);
+
   const handleUserClose = () => setUserMenu(null);
 
   const userInitials = useMemo(() => {
@@ -67,9 +87,14 @@ export default function Header() {
     if (!safeName) return "U";
 
     const nameParts = safeName.split(/\s+/).filter(Boolean);
-    if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
 
-    return `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase();
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0).toUpperCase();
+    }
+
+    return `${nameParts[0].charAt(0)}${nameParts[1]
+      .charAt(0)
+      .toUpperCase()}`;
   }, [user.name]);
 
   useEffect(() => {
@@ -78,7 +103,10 @@ export default function Header() {
 
       try {
         setIsUserLoading(true);
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+        const apiBaseUrl =
+          import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
         const { data } = await axios.get(`${apiBaseUrl}/auth/me`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -86,6 +114,7 @@ export default function Header() {
         });
 
         const payload = data?.user || data || {};
+
         setUser({
           name: payload.name || payload.fullName || "",
           email: payload.email || "",
@@ -98,16 +127,19 @@ export default function Header() {
     };
 
     fetchCurrentUser();
-  }, []);
+  }, [authToken]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+
     handleUserClose();
+
     navigate("/login");
   };
 
   const handleLogin = () => {
     handleUserClose();
+
     navigate("/login");
   };
 
@@ -115,37 +147,69 @@ export default function Header() {
     <>
       <AppBar sx={{ backgroundColor: "#2e7d32" }} dir="rtl">
         <Toolbar>
-
-          {/* Logo / Title */}
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          {/* Logo */}
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              flexGrow: { xs: 1, md: 0.3 },
+            }}
+          >
             دار الأيتام
           </Typography>
 
-          {/* Center Navigation */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3, mx: "auto" }}>
-            <Button sx={navStyle} component={NavLink} to="/">الرئيسية</Button>
-            <Button sx={navStyle} component={NavLink} to="/about">من نحن</Button>
-            <Button sx={navStyle} component={NavLink} to="/orphans">الأيتام</Button>
-            <Button sx={navStyle} component={NavLink} to="/help">طلب مساعدة</Button>
+          {/* Desktop Navigation */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              gap: 3,
+              mx: "auto",
+            }}
+          >
+            <Button sx={navStyle} component={NavLink} to="/">
+              الرئيسية
+            </Button>
+
+            <Button sx={navStyle} component={NavLink} to="/about">
+              من نحن
+            </Button>
+
+            <Button sx={navStyle} component={NavLink} to="/orphans">
+              الأيتام
+            </Button>
+
+            <Button sx={navStyle} component={NavLink} to="/help">
+              طلب مساعدة
+            </Button>
 
             <Button
               variant="contained"
-              onClick={() => navigate("/donate")}
+              onClick={() => setOpenDonation(true)}
               sx={{
                 bgcolor: "#9DB25D",
                 borderRadius: "20px",
                 px: 3,
+                textTransform: "none",
                 fontWeight: "bold",
-                "&:hover": { bgcolor: "#8aa84f" },
+
+                "&:hover": {
+                  bgcolor: "#8aa84f",
+                },
               }}
             >
               تبرع
             </Button>
           </Box>
 
-          {/* USER ICON (IMPORTANT - BACKEND READY) */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-
+          {/* Right Side */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            {/* User Avatar */}
             <IconButton onClick={handleUserOpen}>
               <Avatar
                 sx={{
@@ -160,6 +224,7 @@ export default function Header() {
               </Avatar>
             </IconButton>
 
+            {/* User Dropdown */}
             <UserDropdown
               anchorEl={userMenu}
               open={openUserMenu}
@@ -173,16 +238,19 @@ export default function Header() {
               onLogout={handleLogout}
             />
 
-            {/* MOBILE MENU */}
+            {/* Mobile Menu Button */}
             <IconButton
               color="inherit"
               onClick={handleMenuOpen}
-              sx={{ display: { xs: "flex", md: "none" } }}
+              sx={{
+                display: { xs: "flex", md: "none" },
+              }}
             >
               <MenuIcon />
             </IconButton>
           </Box>
 
+          {/* Mobile Menu */}
           <Menu
             anchorEl={anchorEl}
             open={openMobile}
@@ -191,22 +259,68 @@ export default function Header() {
               "& .MuiPaper-root": {
                 backgroundColor: "#2e7d32",
                 color: "white",
+                minWidth: 200,
               },
             }}
           >
-            <MenuItem component={NavLink} to="/" onClick={handleMenuClose}>
+            <MenuItem
+              component={NavLink}
+              to="/"
+              onClick={handleMenuClose}
+              sx={{
+                justifyContent: "flex-end",
+                color: "white",
+              }}
+            >
               الرئيسية
             </MenuItem>
-            <MenuItem component={NavLink} to="/about" onClick={handleMenuClose}>
+
+            <MenuItem
+              component={NavLink}
+              to="/about"
+              onClick={handleMenuClose}
+              sx={{
+                justifyContent: "flex-end",
+                color: "white",
+              }}
+            >
               من نحن
             </MenuItem>
-            <MenuItem component={NavLink} to="/orphans" onClick={handleMenuClose}>
+
+            <MenuItem
+              component={NavLink}
+              to="/orphans"
+              onClick={handleMenuClose}
+              sx={{
+                justifyContent: "flex-end",
+                color: "white",
+              }}
+            >
               الأيتام
             </MenuItem>
-            <MenuItem component={NavLink} to="/help" onClick={handleMenuClose}>
+
+            <MenuItem
+              component={NavLink}
+              to="/help"
+              onClick={handleMenuClose}
+              sx={{
+                justifyContent: "flex-end",
+                color: "white",
+              }}
+            >
               طلب مساعدة
             </MenuItem>
-            <MenuItem component={NavLink} to="/donate" onClick={handleMenuClose}>
+
+            <MenuItem
+              onClick={() => {
+                setOpenDonation(true);
+                handleMenuClose();
+              }}
+              sx={{
+                justifyContent: "flex-end",
+                color: "white",
+              }}
+            >
               تبرع
             </MenuItem>
           </Menu>
@@ -214,6 +328,11 @@ export default function Header() {
       </AppBar>
 
       <Toolbar />
+
+      {/* Donation Modal */}
+      {openDonation && (
+        <DonationForm onClose={() => setOpenDonation(false)} />
+      )}
     </>
   );
 }

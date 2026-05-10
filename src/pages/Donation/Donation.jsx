@@ -13,7 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import StatusDialog from "../../components/StatusDialog";
 import FieldRenderer from "./FieldRenderer";
 import { createDonation } from "../Donation/DonationApi";
-import { useNavigate } from "react-router-dom";
+
 
 import {
   basicFields,
@@ -21,8 +21,7 @@ import {
   cardFields,
 } from "./donationFields";
 
-const DonationForm = () => {
-  const navigate = useNavigate();
+const DonationForm = ({ onClose }) => {
   const [openDialog, setOpenDialog] = useState(true);
   const {
     register,
@@ -32,7 +31,8 @@ const DonationForm = () => {
     reset,
     formState: { errors },
   } = useForm({
-    mode: "all", defaultValues: {
+    mode: "all", 
+    defaultValues: {
       amount: 100,
       method: "",
       firstName: "",
@@ -101,9 +101,10 @@ const DonationForm = () => {
     });
   };
 
+  // تعديل: استخدم onClose بدل navigate
   const handleClose = () => {
     setOpenDialog(false);
-    navigate(-1);
+    if (onClose) onClose();
   };
 
   return (
@@ -190,7 +191,7 @@ const DonationForm = () => {
                 </Box>
 
                 <Stack direction="row" spacing={2} flexWrap="wrap">
-                  {cardFields.slice(0, 2).map((field) => (  // عشان نجزء ال array وناخد اول 2
+                  {cardFields.slice(0, 2).map((field) => (
                     <FieldRenderer
                       key={field.name}
                       field={{

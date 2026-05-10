@@ -22,17 +22,52 @@ function Orphan() {
     // لعنوان والبطاقات
     <Box sx={{ px: 2, py: 4 }}>
       {/* العنوان */}
-      <Box sx={{ textAlign: "center", mb: 5 }}>
+      <Box
+  sx={{
+    textAlign: "center",
+    mb: 6,
+    mt: 4,
+    px: 2
+  }}
+>
+  <Typography variant="h4"
+    sx={{
+      fontFamily: "Cairo",
+      fontWeight: "800",
+      color: "#2e7d32", 
+      mb: 1,
+      letterSpacing: "0.5px"
+    }}
+  >
+    اكفل يتيم
+  </Typography>
 
-        <Typography variant="h4" color="success" fontWeight="bold" sx={{ fontFamily: "Cairo" }} >
-          تكفل يتيم
-        </Typography>
+  <Typography
+    sx={{
+      fontFamily: "Cairo",
+      fontSize: "1.1rem",
+      color: "#45483A", 
+      maxWidth: "600px",
+      mx: "auto",
+      lineHeight: 1.8
+    }}
+  >
+    اختر اليتيم الذي ترغب في كفالته من بين الأطفال المحتاجين للدعم والرعاية.
+  </Typography>
 
-        <Typography fontWeight="bold" sx={{ fontSize: 18, fontFamily: "Cairo" }}>
-          اختر اليتيم الذي ترغب في كفالته من بين الأطفال المحتاجين للدعم والرعاية.
-        </Typography>
-
-      </Box>
+  {/* خط تحت العنوان */}
+  <Box
+    sx={{
+      width: "60px",
+      height: "4px",
+      bgcolor: "#9DB25D",
+      mx: "auto",
+      mt: 2,
+      borderRadius: "10px"
+      
+    }}
+  />
+  </Box>
 
       {/* بطاقات الايتام */}
       <Box
@@ -43,6 +78,10 @@ function Orphan() {
           gap: { xs: 1, sm: 2, md: 4 },
           px: { xs: 1, sm: 2, md: 4 },
           py: { xs: 3, md: 6 },
+          
+             
+            
+          
         }}
 
       >
@@ -55,7 +94,8 @@ function Orphan() {
             age={orphan.age}
             gender={orphan.gender}
             place={orphan.place}
-            type={orphan.type}
+            description={orphan.description}
+         
           />
         ))}
 

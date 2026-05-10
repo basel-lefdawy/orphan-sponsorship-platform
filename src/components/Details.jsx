@@ -118,7 +118,6 @@ function Details() {
         fontFamily: "Cairo",
         lineHeight: 2,
         fontSize: "16px",
-        textAlign: "center",
       }}>
         "اكفلني الآن لتكون جزءًا من قصتي كيتيم، ولترى كيف يمكن لدعمك أن يغيّر حياتي."
       </Typography>
