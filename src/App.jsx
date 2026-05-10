@@ -8,7 +8,7 @@ import HelpRequest from "./pages/HelpRequest/HelpRequest";
 import DonationForm from "./pages/Donation/Donation";
 import SponsorFormPage from "./components/sponsoringForm/SponsorFormPage";
 import Login from "./pages/login/login";
-
+import SignUp from "./pages/login/signUp";
 function App() {
   return (
     <Routes>
@@ -23,6 +23,7 @@ function App() {
 
       </Route>
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
     </Routes>
   );
 }

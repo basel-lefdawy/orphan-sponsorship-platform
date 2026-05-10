@@ -1,16 +1,32 @@
 import { useState } from "react";
-import { Checkbox, FormControlLabel, Button, Link } from "@mui/material";
+
 import {
+    Checkbox,
+    FormControlLabel,
+    Button,
+    Link,
     Box,
     Paper,
     Typography,
     TextField,
     InputAdornment,
     IconButton,
+    Divider,
+    Stack,
+    CircularProgress,
 } from "@mui/material";
+
+import { Link as RouterLink } from "react-router-dom";
+
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import axios from "axios";
+
 import Background from "./backgrond";
-import Divider from "@mui/material/Divider";
-import Stack from "@mui/material/Stack";
+
+import { loginSchema } from "../../schemas/loginSchema";
+
 import GoogleIcon from "@mui/icons-material/Google";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -19,7 +35,56 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState("");
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors, isValid },
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+        mode: "onChange",
+        defaultValues: {
+            email: "",
+            password: "",
+            rememberMe: false,
+        },
+    });
+
+    const onSubmit = async (data) => {
+        try {
+            setLoading(true);
+            setServerError("");
+
+            const response = await axios.post(
+                "http://localhost:3000/auth/login",
+                {
+                    email: data.email,
+                    password: data.password,
+                }
+            );
+
+            console.log("Login success:", response.data);
+
+            // Example:
+            // localStorage.setItem("token", response.data.token);
+
+            // Later:
+            // navigate("/dashboard");
+
+        } catch (error) {
+            console.error(error);
+
+            setServerError(
+                error.response?.data?.message ||
+                "حدث خطأ ما، يرجى المحاولة مرة أخرى."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <Background>
             <Box
@@ -29,10 +94,13 @@ export default function Login() {
                     justifyContent: "center",
                     alignItems: "center",
                     px: 2,
+                    direction: "rtl",
                 }}
             >
                 <Paper
                     elevation={6}
+                    component="form"
+                    onSubmit={handleSubmit(onSubmit)}
                     sx={{
                         width: "100%",
                         maxWidth: "420px",
@@ -50,7 +118,7 @@ export default function Login() {
                             mb: 1,
                         }}
                     >
-                        Welcome Back
+                        أهلاً بعودتك
                     </Typography>
 
                     <Typography
@@ -59,11 +127,26 @@ export default function Login() {
                             color: "#667085",
                             fontSize: "1rem",
                             mb: 4,
+                            lineHeight: 1.8,
                         }}
                     >
-                        Login to support and manage the orphanage community
+                        سجّل الدخول لإدارة ودعم مجتمع دار الأيتام
                     </Typography>
 
+                    {serverError && (
+                        <Typography
+                            sx={{
+                                color: "#dc2626",
+                                mb: 2,
+                                textAlign: "center",
+                                fontWeight: 500,
+                            }}
+                        >
+                            {serverError}
+                        </Typography>
+                    )}
+
+                    {/* Email */}
                     <Typography
                         sx={{
                             mb: 1,
@@ -72,30 +155,41 @@ export default function Login() {
                             textAlign: "right",
                         }}
                     >
-                        Email
+                        البريد الإلكتروني
                     </Typography>
 
-                    <TextField
-                        fullWidth
-                        placeholder="Enter your email"
-                        variant="outlined"
-                        sx={{
-                            mb: 3,
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "12px",
-                                backgroundColor: "#f3f4f6",
-                                direction: "rtl",
-                            },
-                        }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <EmailOutlinedIcon sx={{ color: "#98A2B3" }} />
-                                </InputAdornment>
-                            ),
-                        }}
+                    <Controller
+                        name="email"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                fullWidth
+                                placeholder="أدخل بريدك الإلكتروني"
+                                variant="outlined"
+                                error={!!errors.email}
+                                helperText={errors.email?.message || " "}
+                                sx={{
+                                    mb: 3,
+                                    "& .MuiOutlinedInput-root": {
+                                        borderRadius: "12px",
+                                        backgroundColor: "#f3f4f6",
+                                    },
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <EmailOutlinedIcon
+                                                sx={{ color: "#98A2B3" }}
+                                            />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
                     />
 
+                    {/* Password */}
                     <Typography
                         sx={{
                             mb: 1,
@@ -104,43 +198,65 @@ export default function Login() {
                             textAlign: "right",
                         }}
                     >
-                        Password
+                        كلمة المرور
                     </Typography>
 
-                    <TextField
-                        fullWidth
-                        placeholder="Enter your password"
-                        type={showPassword ? "text" : "password"}
-                        variant="outlined"
-                        sx={{
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "12px",
-                                backgroundColor: "#f3f4f6",
-                                direction: "rtl",
-                            },
-                        }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <LockOutlinedIcon sx={{ color: "#98A2B3" }} />
-                                </InputAdornment>
-                            ),
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                        {showPassword ? (
-                                            <VisibilityOffOutlinedIcon sx={{ color: "#98A2B3" }} />
-                                        ) : (
-                                            <VisibilityOutlinedIcon sx={{ color: "#98A2B3" }} />
-                                        )}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
+                    <Controller
+                        name="password"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                fullWidth
+                                placeholder="أدخل كلمة المرور"
+                                type={showPassword ? "text" : "password"}
+                                variant="outlined"
+                                error={!!errors.password}
+                                helperText={errors.password?.message || " "}
+                                sx={{
+                                    mb: 2,
+                                    "& .MuiOutlinedInput-root": {
+                                        borderRadius: "12px",
+                                        backgroundColor: "#f3f4f6",
+                                    },
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <LockOutlinedIcon
+                                                sx={{ color: "#98A2B3" }}
+                                            />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowPassword(!showPassword)
+                                                }
+                                                edge="end"
+                                            >
+                                                {showPassword ? (
+                                                    <VisibilityOffOutlinedIcon
+                                                        sx={{ color: "#98A2B3" }}
+                                                    />
+                                                ) : (
+                                                    <VisibilityOutlinedIcon
+                                                        sx={{ color: "#98A2B3" }}
+                                                    />
+                                                )}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
                     />
+
+                    {/* Remember Me + Forgot Password */}
                     <Box
                         sx={{
-                            mt: 2,
+                            mt: 1,
                             mb: 3,
                             display: "flex",
                             justifyContent: "space-between",
@@ -156,41 +272,50 @@ export default function Login() {
                                 color: "#16a34a",
                                 fontWeight: 600,
                                 fontSize: "0.95rem",
-                                direction: "rtl",
                             }}
                         >
-                            Forgot password ?
+                            نسيت كلمة المرور؟
                         </Link>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
+
+                        <Controller
+                            name="rememberMe"
+                            control={control}
+                            render={({ field }) => (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={field.value}
+                                            onChange={(e) =>
+                                                field.onChange(e.target.checked)
+                                            }
+                                            sx={{
+                                                color: "#D0D5DD",
+                                                "&.Mui-checked": {
+                                                    color: "#22c55e",
+                                                },
+                                            }}
+                                        />
+                                    }
+                                    label="تذكرني"
                                     sx={{
-                                        color: "#D0D5DD",
-                                        "&.Mui-checked": {
-                                            color: "#22c55e",
+                                        m: 0,
+                                        "& .MuiFormControlLabel-label": {
+                                            color: "#344054",
+                                            fontWeight: 500,
+                                            fontSize: "0.95rem",
                                         },
                                     }}
                                 />
-                            }
-                            label="Remember me"
-                            sx={{
-                                m: 0,
-                                "& .MuiFormControlLabel-label": {
-                                    color: "#344054",
-                                    fontWeight: 500,
-                                    fontSize: "0.95rem",
-                                },
-                            }}
+                            )}
                         />
-
-
                     </Box>
 
+                    {/* Login Button */}
                     <Button
                         fullWidth
                         variant="contained"
+                        type="submit"
+                        disabled={!isValid || loading}
                         sx={{
                             py: 1.6,
                             borderRadius: "12px",
@@ -204,8 +329,14 @@ export default function Login() {
                             },
                         }}
                     >
-                        Login
+                        {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            "تسجيل الدخول"
+                        )}
                     </Button>
+
+                    {/* Divider */}
                     <Box
                         sx={{
                             my: 4,
@@ -215,6 +346,7 @@ export default function Login() {
                         }}
                     >
                         <Divider sx={{ flex: 1, borderColor: "#D0D5DD" }} />
+
                         <Typography
                             sx={{
                                 color: "#667085",
@@ -222,10 +354,13 @@ export default function Login() {
                                 whiteSpace: "nowrap",
                             }}
                         >
-                            or continue with
+                            أو المتابعة باستخدام
                         </Typography>
+
                         <Divider sx={{ flex: 1, borderColor: "#D0D5DD" }} />
                     </Box>
+
+                    {/* Guest Button */}
                     <Button
                         fullWidth
                         variant="outlined"
@@ -244,18 +379,18 @@ export default function Login() {
                                 backgroundColor: "#f9fafb",
                             },
                         }}
-                        onClick={() => {
-                            console.log("Continue as Guest");
-                            // لاحقًا: redirect لصفحة معينة
-                        }}
                     >
-                        Continue as Guest
+                        المتابعة كزائر
                     </Button>
+
+                    {/* Google Button */}
                     <Stack spacing={2}>
                         <Button
                             fullWidth
                             variant="outlined"
-                            startIcon={<GoogleIcon />}
+                            startIcon={
+                                <GoogleIcon sx={{ ml: 1 }} />
+                            }
                             sx={{
                                 py: 1.4,
                                 borderRadius: "12px",
@@ -265,16 +400,19 @@ export default function Login() {
                                 borderColor: "#D0D5DD",
                                 color: "#344054",
                                 backgroundColor: "#fff",
-                                "&:hover": {
-                                    borderColor: "#bfc5ce",
-                                    backgroundColor: "#f9fafb",
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "8px",
+                                "& .MuiButton-startIcon": {
+                                    margin: 0,
                                 },
                             }}
                         >
-                            Continue with Google
+                            المتابعة عبر Google
                         </Button>
                     </Stack>
 
+                    {/* Footer */}
                     <Typography
                         sx={{
                             mt: 4,
@@ -283,16 +421,18 @@ export default function Login() {
                             fontSize: "1rem",
                         }}
                     >
-                        Don't have an account?{" "}
+                        لا تملك حساباً؟{" "}
+
                         <Link
-                            href="/signup"
+                            component={RouterLink}
+                            to="/signup"
                             underline="none"
                             sx={{
                                 color: "#16a34a",
                                 fontWeight: 700,
                             }}
                         >
-                            Sign Up
+                            إنشاء حساب
                         </Link>
                     </Typography>
                 </Paper>

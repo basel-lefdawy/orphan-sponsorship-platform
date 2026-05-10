@@ -1,64 +1,133 @@
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+  Menu,
+  Avatar,
+  MenuItem,
+} from "@mui/material";
+
 import { NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import UserDropdown from "./UserDropdown";
 
 const navStyle = {
   color: "white",
+  position: "relative",
+  fontSize: 16,
   "&::after": {
     content: '""',
     position: "absolute",
-    bottom: 6,
+    bottom: 4,
     left: "50%",
     width: 0,
     height: "2px",
-    backgroundColor: "#FFFFFF33",
+    backgroundColor: "#fff",
     transition: "0.3s",
     transform: "translateX(-50%)",
   },
   "&.active::after": {
     width: "60%",
   },
-  "&:hover": {
-    backgroundColor: "rgba(255,255,255,0.15)",
-  },
-  fontSize: 18
 };
 
 export default function Header() {
   const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const authToken = localStorage.getItem("token");
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+  });
+  const [isUserLoading, setIsUserLoading] = useState(false);
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
+  // mobile menu
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  // user menu (important feature)
+  const [userMenu, setUserMenu] = useState(null);
+
+  const openMobile = Boolean(anchorEl);
+  const openUserMenu = Boolean(userMenu);
+  const isAuthenticated = Boolean(authToken);
+
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleUserOpen = (event) => setUserMenu(event.currentTarget);
+  const handleUserClose = () => setUserMenu(null);
+
+  const userInitials = useMemo(() => {
+    const safeName = user.name?.trim();
+
+    if (!safeName) return "U";
+
+    const nameParts = safeName.split(/\s+/).filter(Boolean);
+    if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+
+    return `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase();
+  }, [user.name]);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!authToken) return;
+
+      try {
+        setIsUserLoading(true);
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+        const { data } = await axios.get(`${apiBaseUrl}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+
+        const payload = data?.user || data || {};
+        setUser({
+          name: payload.name || payload.fullName || "",
+          email: payload.email || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      } finally {
+        setIsUserLoading(false);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    handleUserClose();
+    navigate("/login");
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleLogin = () => {
+    handleUserClose();
+    navigate("/login");
   };
 
   return (
     <>
-      <AppBar sx={{ backgroundColor: "#2e7d32" }}>
+      <AppBar sx={{ backgroundColor: "#2e7d32" }} dir="rtl">
         <Toolbar>
-          <Typography variant="h5" sx={{ flexGrow: 0.3 }}>
+
+          {/* Logo / Title */}
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             دار الأيتام
           </Typography>
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/">
-              الرئيسية
-            </Button>
 
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/about">
-              من نحن
-            </Button>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/orphans">
-              الأيتام
-            </Button>
-            <Button sx={navStyle} color="inherit" component={NavLink} to="/help">
-              طلب مساعدة
-            </Button>
+          {/* Center Navigation */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3, mx: "auto" }}>
+            <Button sx={navStyle} component={NavLink} to="/">الرئيسية</Button>
+            <Button sx={navStyle} component={NavLink} to="/about">من نحن</Button>
+            <Button sx={navStyle} component={NavLink} to="/orphans">الأيتام</Button>
+            <Button sx={navStyle} component={NavLink} to="/help">طلب مساعدة</Button>
+
             <Button
               variant="contained"
               onClick={() => navigate("/donate")}
@@ -66,47 +135,84 @@ export default function Header() {
                 bgcolor: "#9DB25D",
                 borderRadius: "20px",
                 px: 3,
-                textTransform: "none",
                 fontWeight: "bold",
-                "&:hover": { bgcolor: "#8aa84f" }
+                "&:hover": { bgcolor: "#8aa84f" },
               }}
             >
               تبرع
             </Button>
           </Box>
 
-          {/* Mobile Menu */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, ml: "auto" }}>
+          {/* USER ICON (IMPORTANT - BACKEND READY) */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+
+            <IconButton onClick={handleUserOpen}>
+              <Avatar
+                sx={{
+                  bgcolor: "#9DB25D",
+                  width: 36,
+                  height: 36,
+                  fontSize: 14,
+                  fontWeight: 700,
+                }}
+              >
+                {userInitials}
+              </Avatar>
+            </IconButton>
+
+            <UserDropdown
+              anchorEl={userMenu}
+              open={openUserMenu}
+              onClose={handleUserClose}
+              user={user}
+              userInitials={userInitials}
+              isUserLoading={isUserLoading}
+              isAuthenticated={isAuthenticated}
+              authToken={authToken}
+              onLogin={handleLogin}
+              onLogout={handleLogout}
+            />
+
+            {/* MOBILE MENU */}
             <IconButton
               color="inherit"
               onClick={handleMenuOpen}
-              sx={{ fontSize: 28 }}
+              sx={{ display: { xs: "flex", md: "none" } }}
             >
               <MenuIcon />
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleMenuClose}
-              sx={{
-                "& .MuiPaper-root": {
-                  backgroundColor: "#2e7d32",
-                  color: "white",
-                  minWidth: 200,
-                }
-              }}
-            >
-              <MenuItem component={NavLink} to="/" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>الرئيسية</MenuItem>
-              <MenuItem component={NavLink} to="/activities" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>الانشطة</MenuItem>
-              <MenuItem component={NavLink} to="/about" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>من نحن</MenuItem>
-              <MenuItem component={NavLink} to="/orphans" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>الأيتام</MenuItem>
-              <MenuItem component={NavLink} to="/help" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>طلب مساعدة</MenuItem>
-              <MenuItem component={NavLink} to="/sponsoring" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>كفالة يتيم</MenuItem>
-              <MenuItem component={NavLink} to="/donate" onClick={handleMenuClose} sx={{ justifyContent: "flex-end", color: "white" }}>تبرع</MenuItem>
-            </Menu>
           </Box>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={openMobile}
+            onClose={handleMenuClose}
+            sx={{
+              "& .MuiPaper-root": {
+                backgroundColor: "#2e7d32",
+                color: "white",
+              },
+            }}
+          >
+            <MenuItem component={NavLink} to="/" onClick={handleMenuClose}>
+              الرئيسية
+            </MenuItem>
+            <MenuItem component={NavLink} to="/about" onClick={handleMenuClose}>
+              من نحن
+            </MenuItem>
+            <MenuItem component={NavLink} to="/orphans" onClick={handleMenuClose}>
+              الأيتام
+            </MenuItem>
+            <MenuItem component={NavLink} to="/help" onClick={handleMenuClose}>
+              طلب مساعدة
+            </MenuItem>
+            <MenuItem component={NavLink} to="/donate" onClick={handleMenuClose}>
+              تبرع
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
+
       <Toolbar />
     </>
   );
