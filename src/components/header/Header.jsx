@@ -70,15 +70,12 @@ export default function Header() {
 
   const isAuthenticated = Boolean(authToken);
 
-  // Donation Modal
   const { openDonation, setOpenDonation } = useDonation();
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleUserOpen = (event) => setUserMenu(event.currentTarget);
-
   const handleUserClose = () => setUserMenu(null);
 
   const userInitials = useMemo(() => {
@@ -86,15 +83,11 @@ export default function Header() {
 
     if (!safeName) return "U";
 
-    const nameParts = safeName.split(/\s+/).filter(Boolean);
+    const parts = safeName.split(/\s+/).filter(Boolean);
 
-    if (nameParts.length === 1) {
-      return nameParts[0].charAt(0).toUpperCase();
-    }
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
 
-    return `${nameParts[0].charAt(0)}${nameParts[1]
-      .charAt(0)
-      .toUpperCase()}`;
+    return `${parts[0].charAt(0)}${parts[1].charAt(0).toUpperCase()}`;
   }, [user.name]);
 
   useEffect(() => {
@@ -119,8 +112,8 @@ export default function Header() {
           name: payload.name || payload.fullName || "",
           email: payload.email || "",
         });
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
       } finally {
         setIsUserLoading(false);
       }
@@ -131,39 +124,45 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-
     handleUserClose();
-
     navigate("/login");
   };
 
   const handleLogin = () => {
     handleUserClose();
-
     navigate("/login");
   };
 
   return (
     <>
       <AppBar sx={{ backgroundColor: "#2e7d32" }} dir="rtl">
-        <Toolbar>
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            position: "relative",
+          }}
+        >
           {/* Logo */}
           <Typography
             variant="h5"
             sx={{
               fontWeight: "bold",
-              flexGrow: { xs: 1, md: 0.3 },
+              minWidth: 120,
             }}
           >
             دار الأيتام
           </Typography>
 
-          {/* Desktop Navigation */}
+          {/* Center Navigation */}
           <Box
             sx={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
               display: { xs: "none", md: "flex" },
               gap: 3,
-              mx: "auto",
+              alignItems: "center",
             }}
           >
             <Button sx={navStyle} component={NavLink} to="/">
@@ -191,7 +190,6 @@ export default function Header() {
                 px: 3,
                 textTransform: "none",
                 fontWeight: "bold",
-
                 "&:hover": {
                   bgcolor: "#8aa84f",
                 },
@@ -207,9 +205,10 @@ export default function Header() {
               display: "flex",
               alignItems: "center",
               gap: 1,
+              minWidth: 120,
+              justifyContent: "flex-end",
             }}
           >
-            {/* User Avatar */}
             <IconButton onClick={handleUserOpen}>
               <Avatar
                 sx={{
@@ -224,7 +223,6 @@ export default function Header() {
               </Avatar>
             </IconButton>
 
-            {/* User Dropdown */}
             <UserDropdown
               anchorEl={userMenu}
               open={openUserMenu}
@@ -238,13 +236,10 @@ export default function Header() {
               onLogout={handleLogout}
             />
 
-            {/* Mobile Menu Button */}
             <IconButton
               color="inherit"
               onClick={handleMenuOpen}
-              sx={{
-                display: { xs: "flex", md: "none" },
-              }}
+              sx={{ display: { xs: "flex", md: "none" } }}
             >
               <MenuIcon />
             </IconButton>
@@ -263,51 +258,19 @@ export default function Header() {
               },
             }}
           >
-            <MenuItem
-              component={NavLink}
-              to="/"
-              onClick={handleMenuClose}
-              sx={{
-                justifyContent: "flex-end",
-                color: "white",
-              }}
-            >
+            <MenuItem component={NavLink} to="/" onClick={handleMenuClose}>
               الرئيسية
             </MenuItem>
 
-            <MenuItem
-              component={NavLink}
-              to="/about"
-              onClick={handleMenuClose}
-              sx={{
-                justifyContent: "flex-end",
-                color: "white",
-              }}
-            >
+            <MenuItem component={NavLink} to="/about" onClick={handleMenuClose}>
               من نحن
             </MenuItem>
 
-            <MenuItem
-              component={NavLink}
-              to="/orphans"
-              onClick={handleMenuClose}
-              sx={{
-                justifyContent: "flex-end",
-                color: "white",
-              }}
-            >
+            <MenuItem component={NavLink} to="/orphans" onClick={handleMenuClose}>
               الأيتام
             </MenuItem>
 
-            <MenuItem
-              component={NavLink}
-              to="/help"
-              onClick={handleMenuClose}
-              sx={{
-                justifyContent: "flex-end",
-                color: "white",
-              }}
-            >
+            <MenuItem component={NavLink} to="/help" onClick={handleMenuClose}>
               طلب مساعدة
             </MenuItem>
 
@@ -315,10 +278,6 @@ export default function Header() {
               onClick={() => {
                 setOpenDonation(true);
                 handleMenuClose();
-              }}
-              sx={{
-                justifyContent: "flex-end",
-                color: "white",
               }}
             >
               تبرع
