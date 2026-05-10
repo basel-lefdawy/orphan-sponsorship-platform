@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useLayoutEffect, useState } from "react";
 import MainLayouts from "./layouts/MainLayouts";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -17,6 +18,15 @@ import DonationsList from "./pages/AdminDashboard/DonationsList";
 import SponsorsList from "./pages/AdminDashboard/SponsorsList";
 import HelpRequestsList from "./pages/AdminDashboard/HelpRequestsList";
 function App() {
+  const location = useLocation();
+
+  // Scroll to top عند كل تغيير صفحة
+  useLayoutEffect(() => {
+    // للتأكد من أن كل scrollable elements ترجع للأعلى
+    document.documentElement.scrollTo(0, 0); // html
+    document.body.scrollTo(0, 0); // body
+  }, [location.pathname]);
+
   return (
     <Routes>
       <Route element={<MainLayouts />}>

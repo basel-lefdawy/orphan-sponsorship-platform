@@ -110,7 +110,7 @@ const HelpRequest = () => {
   return (
     <>
       <form className="form" onSubmit={handleSubmit(onSubmit, onError)} dir="rtl">
-        <h1 className="main-title">كفالة يتيم</h1>
+        <h1 className="main-title">نموذج طلب المساعدة</h1>
 
         <FormSection title="معلومات اليتيم" fields={orphanFields} renderField={renderField} />
         <FormSection title="معلومات ولي الأمر" fields={guardianFields} renderField={renderField} />
