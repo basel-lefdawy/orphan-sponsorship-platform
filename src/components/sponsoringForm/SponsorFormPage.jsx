@@ -1,115 +1,204 @@
-import { useState, useEffect } from "react";
-import { Box, Button, Typography } from "@mui/material";
-import SponsorInfo from "./SponsorInfo";
-import SponsoringInfo from "./SponsoringInfo";
-import Authorized from "./AuthorizedPersonInfo";
-import { Container } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button, MenuItem } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+
+import StatusDialog from "../StatusDialog";
+import FormSection from "../../pages/HelpRequest/FormSection";
+import FormTextField from "../../pages/HelpRequest/FormTextField";
+import FormSelect from "../../pages/HelpRequest/FormSelect";
+import FormDatePicker from "../../pages/HelpRequest/FormDatePicker";
+import { paymentFields, bankFields } from "../../pages/HelpRequest/formFields";
+import { sponsorDefaultValues } from "./sponsorDefaultValues";
+import {
+  sponsorFields,
+  sponsorshipDetailFields,
+  authorizedFields,
+} from "./sponsorFormFields";
+import "../../pages/HelpRequest/HelpRequest.css";
 
 const SponsorFormPage = () => {
-    const [data, setData] = useState({
-        sponsor: {},
-        sponsoring: {},
-        agent: {}
+  const [dialog, setDialog] = useState({
+    open: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
+  const [showBankFields, setShowBankFields] = useState(false);
+
+  const { register, handleSubmit, watch, control, reset, formState: { errors } } = useForm({
+    mode: "all",
+    defaultValues: sponsorDefaultValues,
+  });
+
+  const paymentMethod = watch("paymentMethod");
+
+  useEffect(() => {
+    setShowBankFields(paymentMethod === "BankAccount");
+  }, [paymentMethod]);
+
+  /** اليتيم المختار من الصفحة السابقة — كما في الإصدار السابق */
+  const [orphanFromSelection, setOrphanFromSelection] = useState(null);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("selectedOrphan");
+      setOrphanFromSelection(raw ? JSON.parse(raw) : null);
+    } catch {
+      setOrphanFromSelection(null);
+    }
+  }, []);
+
+  const renderField = (field) => {
+    if (field.type === "number") {
+      return (
+        <FormTextField
+          name={field.name}
+          label={field.label}
+          register={register}
+          errors={errors}
+          rules={field.rules || {}}
+          type="number"
+        />
+      );
+    }
+    if (field.type === "text") {
+      return <FormTextField {...field} register={register} errors={errors} />;
+    }
+    if (field.type === "select") {
+      return (
+        <FormSelect {...field} register={register} errors={errors}>
+          {field.options?.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </FormSelect>
+      );
+    }
+    if (field.type === "date") {
+      return (
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <FormDatePicker {...field} control={control} errors={errors} />
+        </LocalizationProvider>
+      );
+    }
+    return null;
+  };
+
+  const genderToStored = (g) => {
+    if (g === "Male") return "male";
+    if (g === "Female") return "female";
+    return "";
+  };
+
+  const formatDateVal = (d) => (d ? dayjs(d).format("YYYY-MM-DD") : "");
+
+  const onSubmit = (data) => {
+    const payload = {
+      sponsor: {
+        id: data.sponsorId,
+        name: data.sponsorName,
+        father: data.sponsorFatherName,
+        grandfather: data.sponsorGrandfatherName,
+        family: data.sponsorFamilyName,
+        birthDate: formatDateVal(data.sponsorBirthDate),
+        gender: genderToStored(data.sponsorGender),
+        workType: data.sponsorWorkType,
+        country: data.sponsorCountry,
+        cityName: data.sponsorCity,
+        streetName: data.sponsorStreet || "",
+        MobilePhone: data.sponsorPhone,
+        LandlinePhone: data.sponsorHomePhone || "",
+        email: data.sponsorEmail,
+      },
+      sponsoring: {
+        orphanId: orphanFromSelection?.orphanId,
+        sponsoringType: orphanFromSelection?.sponsoringType,
+        monthlyAmount: data.monthlyAmount,
+        startDate: formatDateVal(data.sponsorshipStartDate),
+        endDate: formatDateVal(data.sponsorshipEndDate),
+        paymentMethod: data.paymentMethod === "BankAccount" ? "bank" : "cash",
+        bankName: data.BankName || "",
+        accountNumber: data.bankAccount || "",
+        BranchNumber: data.BranchNumber || "",
+        AccountHolderName: data.AccountHolderName || "",
+        IBAN: data.IBAN || "",
+      },
+      agent: {
+        id: data.agentId || "",
+        name: data.agentName,
+        father: data.agentFatherName,
+        grandfather: data.agentGrandfatherName,
+        family: data.agentFamilyName,
+        workType: data.agentWorkType || "",
+        gender: genderToStored(data.agentGender),
+        kinship: data.agentKinship,
+        MobilePhone: data.agentPhone,
+        country: data.agentCountry,
+        cityName: data.agentCity,
+        streetName: data.agentStreet || "",
+      },
+    };
+
+    localStorage.setItem("sponsoringFormData", JSON.stringify(payload));
+
+    setDialog({
+      open: true,
+      type: "success",
+      title: "تم المصادقة",
+      message:
+        orphanFromSelection?.orphanId != null
+          ? "تم حفظ الطلب ومطابقته؛ يمكنك متابعة العمل حسب سياسات الجمعية."
+          : "تم حفظ الطلب ومطابقته.",
     });
-    const [errors, setErrors] = useState({});
-    useEffect(() => {
-        const selectedOrphan = JSON.parse(
-            localStorage.getItem("selectedOrphan")
-        );
+    reset(sponsorDefaultValues);
+  };
 
-        if (selectedOrphan) {
-            setData((prev) => ({
-                ...prev,
-                sponsoring: {
-                    ...prev.sponsoring,
-                    orphanId: selectedOrphan.orphanId,
-                    sponsoringType: selectedOrphan.sponsoringType,
-                },
-            }));
-        }
-    }, []);
-    const validateAll = () => {
-        let temp = {};
+  const onError = () => {
+    setDialog({
+      open: true,
+      type: "error",
+      title: "لم يتم إرسال الطلب",
+      message: "يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح.",
+    });
+  };
 
-        // Sponsor
-        if (!data.sponsor?.id) temp.sponsorId = "رقم الهوية مطلوب";
-        if (!data.sponsor?.name) temp.sponsorName = "الاسم مطلوب";
-        if (!data.sponsor?.gender) temp.sponsorGender = "الجنس مطلوب";
-        if (!data.sponsor?.father) temp.sponsorFather = "اسم الاب مطلوب";
-        if (!data.sponsor?.grandfather) temp.sponsorGrandFather = "اسم الجد مطلوب";
-        if (!data.sponsor?.family) temp.sponsorFamily = "اسم العائلة مطلوب";
-        if (!data.sponsor?.workType) temp.sponsorWorkType = "نوع العمل مطلوب";
-        if (!data.sponsor?.country) temp.sponsorCountry = "اسم الدولة مطلوب";
-        if (!data.sponsor?.cityName) temp.sponsorCityName = "اسم المدينة مطلوب";
-        if (!data.sponsor?.streetName) temp.sponsorStreetName = "اسم الشارع مطلوب";
-        if (!data.sponsor?.MobilePhone) temp.sponsorMobilePhone = "رقم الجوال مطلوب";
+  return (
+    <>
+      <form className="form" onSubmit={handleSubmit(onSubmit, onError)} dir="rtl">
+        <h1 className="main-title">طلب كفالة</h1>
 
-        // Sponsoring
-        if (!data.sponsoring?.monthlyAmount)
-            temp.monthlyAmount = "قيمة الكفالة مطلوبة";
+        <FormSection title="معلومات الكفيل" fields={sponsorFields} renderField={renderField} />
 
-        if (!data.sponsoring?.startDate)
-            temp.startDate = "تاريخ البداية مطلوب";
+        <FormSection title="طريقة الصرف" fields={paymentFields} renderField={renderField} />
 
-        if (!data.sponsoring?.paymentMethod)
-            temp.paymentMethod = "طريقة الدفع مطلوبة";
+        {showBankFields && (
+          <FormSection title="تفاصيل البنك" fields={bankFields} renderField={renderField} />
+        )}
 
-        if (data.sponsoring?.paymentMethod === "bank") {
-            if (!data.sponsoring.bankName)
-                temp.bankName = "اسم البنك مطلوب";
-            if (!data.sponsoring.accountNumber)
-                temp.accountNumber = "رقم الحساب مطلوب";
-        }
+        <FormSection title="تفاصيل الكفالة" fields={sponsorshipDetailFields} renderField={renderField} />
 
-        // Authorized
-        if (!data.agent?.name) temp.agentName = "اسم المفوض مطلوب";
-        if (!data.agent?.father) temp.agentFather = "اسم الاب مطلوب";
-        if (!data.agent?.grandfather) temp.agentGrandFather = "اسم الجد مطلوب";
-        if (!data.agent?.family) temp.agentFamily = "اسم العائلة مطلوب";
-        if (!data.agent?.kinship) temp.agentKinship = "صلة القرابة مطلوبة";
-        if (!data.agent?.MobilePhone) temp.agentMobilePhone = "رقم الجوال مطلوب";
-        if (!data.agent?.country) temp.agentCountry = "اسم الدولة مطلوب";
-        if (!data.agent?.cityName) temp.agentCityName = "اسم المدينة مطلوب";
-        if (!data.agent?.streetName) temp.agentStreetName = "اسم الشارع مطلوب";
+        <FormSection title="معلومات المفوض" fields={authorizedFields} renderField={renderField} />
 
-        setErrors(temp);
-        return Object.keys(temp).length === 0;
-    };
+        <div className="submit">
+          <Button type="submit" variant="contained" className="submit-btn">
+            ✔ مصادقة وإرسال
+          </Button>
+        </div>
+      </form>
 
-    const handleSubmit = () => {
-        if (!validateAll()) return;
-
-        localStorage.setItem(
-            "sponsoringFormData",
-            JSON.stringify(data)
-        );
-    };
-
-    return (
-        <Container maxWidth={10}>
-            <Typography textAlign={"center"} variant="h4" marginTop={5}>طلب كفالة</Typography>
-            <SponsorInfo data={data} setData={setData} errors={errors} />
-            <SponsoringInfo data={data} setData={setData} errors={errors} />
-            <Authorized data={data} setData={setData} errors={errors} />
-
-            <Box sx={{ textAlign: "center", mt: 6, mb: 6 }}>
-                <Button
-                    variant="contained"
-                    color="success"
-                    sx={{
-                        px: 9,
-                        py: 1.8,
-                        fontSize: "1.1rem",
-                        borderRadius: 3
-                    }}
-                    onClick={handleSubmit}
-                >
-                    ✔️ مصادقة وارسال
-                </Button>
-            </Box>
-        </Container>
-    );
+      <StatusDialog
+        open={dialog.open}
+        type={dialog.type}
+        title={dialog.title}
+        message={dialog.message}
+        duration={10000}
+        onClose={() => setDialog({ ...dialog, open: false })}
+      />
+    </>
+  );
 };
-
 
 export default SponsorFormPage;
