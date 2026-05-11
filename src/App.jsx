@@ -17,6 +17,7 @@ import OrphanSponsorshipForm from "./pages/OrphanSponsorshipForm";
 
 import Login from "./pages/login/login";
 import SignUp from "./pages/login/signUp";
+import FacebookSuccess from "./pages/login/FacebookSuccess";
 
 // Admin imports
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
@@ -73,6 +74,7 @@ function App() {
       {/* Authentication routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/auth/facebook/success" element={<FacebookSuccess />} />
     </Routes>
   );
 }

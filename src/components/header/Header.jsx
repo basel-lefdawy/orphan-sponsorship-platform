@@ -98,9 +98,9 @@ export default function Header() {
         setIsUserLoading(true);
 
         const apiBaseUrl =
-          import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+          import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-        const { data } = await axios.get(`${apiBaseUrl}/auth/me`, {
+        const { data } = await axios.get(`${apiBaseUrl}/api/auth/me`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
