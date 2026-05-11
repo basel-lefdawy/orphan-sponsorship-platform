@@ -37,19 +37,7 @@ function OrphanCard({ orphan }) {
           }}
         />
         {/* شارة "جديد" أو حالة اليتيم */}
-        <Chip 
-          label="جديد" 
-          size="small"
-          sx={{
-            position: "absolute",
-            bottom: 5,
-            right: 0,
-            bgcolor: "#C696D1",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: "0.7rem"
-          }}
-        />
+        
       </Box>
 
       <Card
