@@ -19,6 +19,40 @@
   margin: 0;
 }
 
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.warningPanel {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+}
+
+.warningTitle {
+  color: #92400e;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.warningList {
+  color: #92400e;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  margin: 0;
+  padding-inline-start: 20px;
+}
+
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -80,6 +114,14 @@
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.emptyState {
+  color: #94a3b8;
+  font-size: 0.86rem;
+  margin: 0;
+  padding: 22px;
+  text-align: center;
 }
 
 .recentItem {
