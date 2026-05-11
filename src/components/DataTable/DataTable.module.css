@@ -1,0 +1,262 @@
+.wrapper {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #eef0f4;
+  overflow: hidden;
+  font-family: 'DM Sans', 'Cairo', sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tableTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1f2e;
+  margin: 0;
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.searchInput {
+  padding: 9px 36px 9px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  width: 220px;
+  background: #f8fafc;
+  outline: none;
+  transition: all 0.2s;
+  color: #1a1f2e;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.searchInput:focus {
+  border-color: #4f8ef7;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: #4f8ef7;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addBtn:hover {
+  background: #3b7ce5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 142, 247, 0.3);
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table thead {
+  background: #f8fafc;
+}
+
+.table th {
+  padding: 12px 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #eef0f4;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 14px 20px;
+  font-size: 0.88rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: background 0.15s;
+}
+
+.table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editBtn,
+.deleteBtn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.editBtn {
+  background: #eef4ff;
+  color: #4f8ef7;
+}
+
+.editBtn:hover {
+  background: #4f8ef7;
+  color: #fff;
+}
+
+.deleteBtn {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.deleteBtn:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  color: #94a3b8;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: 0.95rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.statusBadge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusGreen {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.statusYellow {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.statusRed {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.statusGray {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 16px 24px;
+  border-top: 1px solid #eef0f4;
+}
+
+.pageBtn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.pageBtn:hover {
+  border-color: #4f8ef7;
+  color: #4f8ef7;
+}
+
+.pageBtnActive {
+  background: #4f8ef7;
+  border-color: #4f8ef7;
+  color: #fff;
+}
+
+.pageBtnActive:hover {
+  background: #3b7ce5;
+  color: #fff;
+}
