@@ -52,20 +52,20 @@ export const guardianFields = [
 
 export const paymentFields = [
   { name: "paymentMethod", label: "طريقة الصرف *", type: "select", options: [
-      { value: "Cach", label: "نقدي" },
+      { value: "Cash", label: "نقدي" },
       { value: "BankAccount", label: "حساب بنكي" }
     ], rules: { required: "طريقة الصرف مطلوبة" }
   },
 ];
 
 export const familyFields = [
-  { name: "FamilyMember", label: "عدد أفراد الأسرة *", type: "text", rules: { required: "عدد أفراد الأسرة مطلوب", min: { value: 1, message: "يجب أن تكون أكبر من 0" } } },
+  { name: "FamilyMember", label: "عدد أفراد الأسرة *", type: "number", rules: { required: "عدد أفراد الأسرة مطلوب", min: { value: 1, message: "يجب أن تكون أكبر من 0" } } },
   { name: "Breadwinner", label: "هل يوجد معيل للأسرة", type: "select", options: [
       { value: "yes", label: "نعم" },
       { value: "No", label: "لا" }
     ]
   },
-  { name: "MonthlyIncome", label: "الدخل الشهري *", type: "text", rules: { required: "الدخل الشهري مطلوب" } },
+  { name: "MonthlyIncome", label: "الدخل الشهري *", type: "number", rules: { required: "الدخل الشهري مطلوب" } },
   { name: "HouseCondition", label: "حال المسكن", type: "select", options: [
       { value: "Good", label: "جيد" },
       { value: "Fair", label: "مقبول" },
