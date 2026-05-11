@@ -413,7 +413,7 @@ export default function Login() {
                                 },
                             }}
                         >
-                            ط§ظ„ظ…طھط§ط¨ط¹ط© ط¹ط¨ط± Facebook
+                            Continue with Facebook
                         </Button>
                         <Button
                             fullWidth
