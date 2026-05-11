@@ -53,18 +53,14 @@ const HelpRequest = () => {
     message: "",
   });
 
-  // =========================
   // PAYMENT METHOD WATCHER
-  // =========================
   const paymentMethod = watch("paymentMethod");
 
   useEffect(() => {
     setShowBankFields(paymentMethod === "BankAccount");
   }, [paymentMethod]);
 
-  // =========================
   // DECEASED PERSON WATCHER
-  // =========================
   const DeceasedPerson = watch("DeceasedPerson");
 
   useEffect(() => {
@@ -87,9 +83,7 @@ const HelpRequest = () => {
 
   }, [DeceasedPerson]);
 
-  // =========================
   // SUBMIT
-  // =========================
   const onSubmit = async (data) => {
 
     try {
@@ -177,9 +171,8 @@ const HelpRequest = () => {
     }
   };
 
-  // =========================
+  
   // FORM VALIDATION ERROR
-  // =========================
   const onError = () => {
 
     setDialog({
@@ -191,9 +184,7 @@ const HelpRequest = () => {
     });
   };
 
-  // =========================
   // FIELD RENDERER
-  // =========================
   const renderField = (field) => {
 
     // TEXT / NUMBER
@@ -253,9 +244,7 @@ const HelpRequest = () => {
     return null;
   };
 
-  // =========================
   // UI
-  // =========================
   return (
     <>
       <form
