@@ -6,23 +6,43 @@ import {
   Menu,
   Typography,
 } from "@mui/material";
+
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+
 import UserRequestsList from "./UserRequestsList";
 
 export default function UserDropdown({
   anchorEl,
   open,
   onClose,
-  user,
-  userInitials,
-  isUserLoading,
-  isAuthenticated,
-  authToken,
   onLogin,
-  onLogout,
 }) {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const storedUser = localStorage.getItem("user");
+
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  const isAuthenticated = Boolean(accessToken && user);
+
+  const userInitials = user?.name
+    ? user.name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+    : "";
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+
+    window.location.href = "/";
+  };
+
   return (
     <Menu
       anchorEl={anchorEl}
@@ -42,8 +62,20 @@ export default function UserDropdown({
       }}
     >
       {isAuthenticated ? (
-        <Box sx={{ px: 2.5, py: 2, backgroundColor: "white" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box
+          sx={{
+            px: 2.5,
+            py: 2,
+            backgroundColor: "white",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+            }}
+          >
             <Avatar
               sx={{
                 bgcolor: "#2f6b45",
@@ -54,10 +86,15 @@ export default function UserDropdown({
             >
               {userInitials}
             </Avatar>
+
             <Box sx={{ minWidth: 0 }}>
-              <Typography fontWeight="bold" sx={{ lineHeight: 1.3 }}>
+              <Typography
+                fontWeight="bold"
+                sx={{ lineHeight: 1.3 }}
+              >
                 {user.name || "مستخدم"}
               </Typography>
+
               <Typography
                 variant="body2"
                 color="#667085"
@@ -67,16 +104,23 @@ export default function UserDropdown({
                   whiteSpace: "nowrap",
                 }}
               >
-                {isUserLoading ? "..." : user.email || "no-email@example.com"}
+                {user.email || "no-email@example.com"}
               </Typography>
             </Box>
           </Box>
         </Box>
       ) : (
-        <Box sx={{ px: 2.5, py: 1.8, backgroundColor: "white" }}>
+        <Box
+          sx={{
+            px: 2.5,
+            py: 1.8,
+            backgroundColor: "white",
+          }}
+        >
           <Typography fontWeight={700} color="#1f2937">
             مرحبا بك
           </Typography>
+
           <Typography variant="body2" color="#667085">
             سجّل الدخول لإدارة حسابك وطلباتك.
           </Typography>
@@ -86,26 +130,52 @@ export default function UserDropdown({
       <Divider />
 
       <Box sx={{ px: 2.5, py: 1.5 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.2 }}>
-          <AssignmentIcon sx={{ fontSize: 20, color: "#475467" }} />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 1.2,
+          }}
+        >
+          <AssignmentIcon
+            sx={{
+              fontSize: 20,
+              color: "#475467",
+            }}
+          />
+
           <Typography fontWeight={700} color="#1f2937">
             طلباتي
           </Typography>
         </Box>
-        <UserRequestsList isAuthenticated={isAuthenticated} authToken={authToken} />
+
+        <UserRequestsList
+          isAuthenticated={isAuthenticated}
+          authToken={accessToken}
+        />
       </Box>
 
       <Divider />
 
-      <Box sx={{ p: 1.5, backgroundColor: "white" }}>
+      <Box
+        sx={{
+          p: 1.5,
+          backgroundColor: "white",
+        }}
+      >
         {isAuthenticated ? (
           <Button
             fullWidth
             color="error"
             variant="text"
             startIcon={<LogoutIcon />}
-            onClick={onLogout}
-            sx={{ justifyContent: "flex-start", borderRadius: 2, py: 1 }}
+            onClick={handleLogout}
+            sx={{
+              justifyContent: "flex-start",
+              borderRadius: 2,
+              py: 1,
+            }}
           >
             تسجيل خروج
           </Button>
@@ -120,7 +190,9 @@ export default function UserDropdown({
               borderRadius: 2,
               py: 1,
               backgroundColor: "#2f6b45",
-              "&:hover": { backgroundColor: "#255639" },
+              "&:hover": {
+                backgroundColor: "#255639",
+              },
             }}
           >
             تسجيل دخول

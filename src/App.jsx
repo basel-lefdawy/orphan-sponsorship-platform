@@ -18,6 +18,8 @@ import OrphanSponsorshipForm from "./pages/OrphanSponsorshipForm";
 import Login from "./pages/login/login";
 import SignUp from "./pages/login/signUp";
 import FacebookSuccess from "./pages/login/FacebookSuccess";
+import VerifyEmailPage from "./pages/login/VerifyEmail";
+import ResetPasswordPage from "./pages/login/ResetPassword";
 
 // Admin imports
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
@@ -28,7 +30,8 @@ import EditOrphan from "./pages/AdminDashboard/EditOrphan";
 import DonationsList from "./pages/AdminDashboard/DonationsList";
 import SponsorsList from "./pages/AdminDashboard/SponsorsList";
 import HelpRequestsList from "./pages/AdminDashboard/HelpRequestsList";
-
+import ForgotPassword from "./pages/login/ForgotPassword";
+import GoogleSuccess from "./pages/login/GoogleSuccess";
 function App() {
   const location = useLocation();
 
@@ -74,7 +77,11 @@ function App() {
       {/* Authentication routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
       <Route path="/auth/facebook/success" element={<FacebookSuccess />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/auth/google/success" element={<GoogleSuccess />} />
     </Routes>
   );
 }

@@ -16,7 +16,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,10 +35,14 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 
 export default function Login() {
+    const navigate = useNavigate();
+
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState("");
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+    const apiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
     const handleFacebookLogin = () => {
         window.location.href = `${apiBaseUrl}/api/auth/facebook`;
@@ -58,13 +62,17 @@ export default function Login() {
         },
     });
 
+    const handleGoogleLogin = () => {
+        window.location.href = `${apiBaseUrl}/api/auth/google`;
+    };
+
     const onSubmit = async (data) => {
         try {
             setLoading(true);
             setServerError("");
 
             const response = await axios.post(
-                "http://localhost:3000/auth/login",
+                "http://localhost:5000/api/auth/login",
                 {
                     email: data.email,
                     password: data.password,
@@ -73,11 +81,27 @@ export default function Login() {
 
             console.log("Login success:", response.data);
 
-            // Example:
-            // localStorage.setItem("token", response.data.token);
+            const responseData = response.data.data;
 
-            // Later:
-            // navigate("/dashboard");
+            // Store tokens
+            localStorage.setItem(
+                "accessToken",
+                responseData.accessToken
+            );
+
+            localStorage.setItem(
+                "refreshToken",
+                responseData.refreshToken
+            );
+
+            // Store user
+            localStorage.setItem(
+                "user",
+                JSON.stringify(responseData.user)
+            );
+
+            // Redirect to home page
+            navigate("/");
 
         } catch (error) {
             console.error(error);
@@ -272,7 +296,8 @@ export default function Login() {
                         }}
                     >
                         <Link
-                            href="#"
+                            component={RouterLink}
+                            to="/forgot-password"
                             underline="none"
                             sx={{
                                 color: "#16a34a",
@@ -389,7 +414,7 @@ export default function Login() {
                         المتابعة كزائر
                     </Button>
 
-                    {/* Google Button */}
+                    {/* Social Buttons */}
                     <Stack spacing={2}>
                         <Button
                             fullWidth
@@ -415,14 +440,13 @@ export default function Login() {
                                 },
                             }}
                         >
-                            Continue with Facebook
+                            المتابعة عبر Facebook
                         </Button>
                         <Button
                             fullWidth
                             variant="outlined"
-                            startIcon={
-                                <GoogleIcon sx={{ ml: 1 }} />
-                            }
+                            startIcon={<GoogleIcon sx={{ ml: 1 }} />}
+                            onClick={handleGoogleLogin}
                             sx={{
                                 py: 1.4,
                                 borderRadius: "12px",
@@ -454,7 +478,6 @@ export default function Login() {
                         }}
                     >
                         لا تملك حساباً؟{" "}
-
                         <Link
                             component={RouterLink}
                             to="/signup"

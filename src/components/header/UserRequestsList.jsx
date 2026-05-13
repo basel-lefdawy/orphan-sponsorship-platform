@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+
 import axios from "axios";
+
 import {
   Alert,
   Box,
@@ -12,25 +14,49 @@ import {
 } from "@mui/material";
 
 const statusConfig = {
-  pending: { label: "قيد الانتظار", color: "warning" },
-  approved: { label: "مقبول", color: "success" },
-  rejected: { label: "مرفوض", color: "error" },
+  pending: {
+    label: "قيد الانتظار",
+    color: "warning",
+  },
+
+  approved: {
+    label: "مقبول",
+    color: "success",
+  },
+
+  rejected: {
+    label: "مرفوض",
+    color: "error",
+  },
 };
 
 const normalizeRequest = (request, index) => ({
   id: request.id ?? request._id ?? `request-${index}`,
-  title: request.title ?? request.type ?? "طلب بدون عنوان",
+
+  title:
+    request.title ??
+    request.type ??
+    "طلب بدون عنوان",
+
   summary:
     request.summary ??
     request.shortSummary ??
     request.description?.slice(0, 120) ??
     "لا يوجد ملخص متاح",
-  status: String(request.status ?? "pending").toLowerCase(),
+
+  status: String(
+    request.status ?? "pending"
+  ).toLowerCase(),
 });
 
-export default function UserRequestsList({ isAuthenticated, authToken }) {
+export default function UserRequestsList({
+  isAuthenticated,
+  authToken,
+}) {
   const [requests, setRequests] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
+
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -43,20 +69,33 @@ export default function UserRequestsList({ isAuthenticated, authToken }) {
 
       try {
         setIsLoading(true);
-        setError("");
-        const apiBaseUrl =
-          import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-        const { data } = await axios.get(`${apiBaseUrl}/api/requests`, {
-          headers: authToken
-            ? {
-                Authorization: `Bearer ${authToken}`,
-              }
-            : undefined,
-        });
 
-        const payload = Array.isArray(data) ? data : data?.requests ?? [];
-        setRequests(payload.map(normalizeRequest));
+        setError("");
+
+        const apiBaseUrl =
+          import.meta.env.VITE_API_BASE_URL ||
+          "http://localhost:5000";
+
+        const { data } = await axios.get(
+          `${apiBaseUrl}/api/requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+
+        const payload = Array.isArray(data)
+          ? data
+          : data?.requests ?? [];
+
+        setRequests(
+          payload.map(normalizeRequest)
+        );
+
       } catch (fetchError) {
+        console.error(fetchError);
+
         setError("تعذر تحميل الطلبات حاليا");
       } finally {
         setIsLoading(false);
@@ -64,12 +103,16 @@ export default function UserRequestsList({ isAuthenticated, authToken }) {
     };
 
     fetchRequests();
+
   }, [isAuthenticated, authToken]);
 
   const content = useMemo(() => {
     if (!isAuthenticated) {
       return (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+        >
           سجّل الدخول لمشاهدة طلباتك.
         </Typography>
       );
@@ -77,19 +120,32 @@ export default function UserRequestsList({ isAuthenticated, authToken }) {
 
     if (isLoading) {
       return (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 1.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            py: 1.5,
+          }}
+        >
           <CircularProgress size={24} />
         </Box>
       );
     }
 
     if (error) {
-      return <Alert severity="error">{error}</Alert>;
+      return (
+        <Alert severity="error">
+          {error}
+        </Alert>
+      );
     }
 
     if (!requests.length) {
       return (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+        >
           لا توجد طلبات حاليا.
         </Typography>
       );
@@ -98,7 +154,9 @@ export default function UserRequestsList({ isAuthenticated, authToken }) {
     return (
       <Stack spacing={1.2}>
         {requests.map((request) => {
-          const status = statusConfig[request.status] ?? statusConfig.pending;
+          const status =
+            statusConfig[request.status] ??
+            statusConfig.pending;
 
           return (
             <Card
@@ -111,29 +169,54 @@ export default function UserRequestsList({ isAuthenticated, authToken }) {
                 backgroundColor: "#ffffff",
               }}
             >
-              <CardContent sx={{ p: 1.4, "&:last-child": { pb: 1.4 } }}>
+              <CardContent
+                sx={{
+                  p: 1.4,
+                  "&:last-child": {
+                    pb: 1.4,
+                  },
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
+                    justifyContent:
+                      "space-between",
+                    alignItems:
+                      "flex-start",
                     gap: 1,
                   }}
                 >
-                  <Typography variant="subtitle2" fontWeight={700} color="#1d2939">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={700}
+                    color="#1d2939"
+                  >
                     {request.title}
                   </Typography>
+
                   <Chip
                     size="small"
                     label={status.label}
                     color={status.color}
-                    sx={{ fontWeight: 600 }}
+                    sx={{
+                      fontWeight: 600,
+                    }}
                   />
                 </Box>
+
                 <Typography
                   variant="body2"
                   color="#667085"
-                  sx={{ mt: 0.8, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}
+                  sx={{
+                    mt: 0.8,
+                    display:
+                      "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient:
+                      "vertical",
+                    overflow: "hidden",
+                  }}
                 >
                   {request.summary}
                 </Typography>
@@ -143,10 +226,21 @@ export default function UserRequestsList({ isAuthenticated, authToken }) {
         })}
       </Stack>
     );
-  }, [error, isAuthenticated, isLoading, requests]);
+  }, [
+    error,
+    isAuthenticated,
+    isLoading,
+    requests,
+  ]);
 
   return (
-    <Box sx={{ maxHeight: 260, overflowY: "auto", pr: 0.5 }}>
+    <Box
+      sx={{
+        maxHeight: 260,
+        overflowY: "auto",
+        pr: 0.5,
+      }}
+    >
       {content}
     </Box>
   );

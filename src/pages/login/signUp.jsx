@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 import {
     Box,
@@ -16,12 +17,16 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
-import { Link as RouterLink } from "react-router-dom";
+
 import { hasSignUpErrors, validateSignUpForm } from "../../utils/validation";
 
 export default function SignUp() {
+    const navigate = useNavigate();
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -45,10 +50,10 @@ export default function SignUp() {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]: value,
-        });
+        }));
 
         if (!touchedFields[name]) {
             setTouchedFields((prev) => ({
@@ -60,19 +65,54 @@ export default function SignUp() {
 
     const handleBlur = (e) => {
         const { name } = e.target;
+
         setTouchedFields((prev) => ({
             ...prev,
             [name]: true,
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         setSubmitted(true);
 
         if (!isFormValid) return;
 
-        console.log(formData);
+        try {
+            setLoading(true);
+
+            const response = await fetch(
+                "http://localhost:5000/api/auth/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: formData.fullName,
+                        email: formData.email,
+                        password: formData.password,
+                        confirmPassword: formData.confirmPassword,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Registration failed");
+            }
+
+            alert(data.message);
+
+            navigate("/login");
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const shouldShowError = (field) => submitted || touchedFields[field];
@@ -133,8 +173,15 @@ export default function SignUp() {
                         انضم إلى مجتمعنا
                     </Typography>
 
-                    <Typography sx={{ fontSize: "1.5rem", mb: 3, maxWidth: "620px" }}>
-                        كن جزءاً من عائلة تهتم وتمنح الأمل والدعم للأطفال المحتاجين
+                    <Typography
+                        sx={{
+                            fontSize: "1.5rem",
+                            mb: 3,
+                            maxWidth: "620px",
+                        }}
+                    >
+                        كن جزءاً من عائلة تهتم وتمنح الأمل والدعم للأطفال
+                        المحتاجين
                     </Typography>
 
                     <Typography sx={{ fontSize: "1.35rem", opacity: 0.95 }}>
@@ -178,7 +225,13 @@ export default function SignUp() {
                     </Typography>
 
                     {/* Full Name */}
-                    <Typography sx={{ mb: 1, fontWeight: 600, color: "#344054" }}>
+                    <Typography
+                        sx={{
+                            mb: 1,
+                            fontWeight: 600,
+                            color: "#344054",
+                        }}
+                    >
                         الاسم الكامل
                     </Typography>
 
@@ -190,8 +243,15 @@ export default function SignUp() {
                         onBlur={handleBlur}
                         placeholder="أدخل اسمك الكامل"
                         variant="outlined"
-                        error={shouldShowError("fullName") && Boolean(formErrors.fullName)}
-                        helperText={shouldShowError("fullName") ? formErrors.fullName : " "}
+                        error={
+                            shouldShowError("fullName") &&
+                            Boolean(formErrors.fullName)
+                        }
+                        helperText={
+                            shouldShowError("fullName")
+                                ? formErrors.fullName
+                                : " "
+                        }
                         sx={{
                             mb: 3,
                             "& .MuiOutlinedInput-root": {
@@ -202,14 +262,22 @@ export default function SignUp() {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <PersonOutlineIcon sx={{ color: "#98A2B3" }} />
+                                    <PersonOutlineIcon
+                                        sx={{ color: "#98A2B3" }}
+                                    />
                                 </InputAdornment>
                             ),
                         }}
                     />
 
                     {/* Email */}
-                    <Typography sx={{ mb: 1, fontWeight: 600, color: "#344054" }}>
+                    <Typography
+                        sx={{
+                            mb: 1,
+                            fontWeight: 600,
+                            color: "#344054",
+                        }}
+                    >
                         البريد الإلكتروني
                     </Typography>
 
@@ -221,8 +289,15 @@ export default function SignUp() {
                         onBlur={handleBlur}
                         placeholder="أدخل بريدك الإلكتروني"
                         variant="outlined"
-                        error={shouldShowError("email") && Boolean(formErrors.email)}
-                        helperText={shouldShowError("email") ? formErrors.email : " "}
+                        error={
+                            shouldShowError("email") &&
+                            Boolean(formErrors.email)
+                        }
+                        helperText={
+                            shouldShowError("email")
+                                ? formErrors.email
+                                : " "
+                        }
                         sx={{
                             mb: 3,
                             "& .MuiOutlinedInput-root": {
@@ -233,14 +308,22 @@ export default function SignUp() {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <EmailOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                    <EmailOutlinedIcon
+                                        sx={{ color: "#98A2B3" }}
+                                    />
                                 </InputAdornment>
                             ),
                         }}
                     />
 
                     {/* Password */}
-                    <Typography sx={{ mb: 1, fontWeight: 600, color: "#344054" }}>
+                    <Typography
+                        sx={{
+                            mb: 1,
+                            fontWeight: 600,
+                            color: "#344054",
+                        }}
+                    >
                         كلمة المرور
                     </Typography>
 
@@ -253,7 +336,10 @@ export default function SignUp() {
                         placeholder="أنشئ كلمة مرور"
                         type={showPassword ? "text" : "password"}
                         variant="outlined"
-                        error={shouldShowError("password") && Boolean(formErrors.password)}
+                        error={
+                            shouldShowError("password") &&
+                            Boolean(formErrors.password)
+                        }
                         helperText={
                             shouldShowError("password")
                                 ? formErrors.password
@@ -269,16 +355,26 @@ export default function SignUp() {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <LockOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                    <LockOutlinedIcon
+                                        sx={{ color: "#98A2B3" }}
+                                    />
                                 </InputAdornment>
                             ),
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                                    <IconButton
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                    >
                                         {showPassword ? (
-                                            <VisibilityOffOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                            <VisibilityOffOutlinedIcon
+                                                sx={{ color: "#98A2B3" }}
+                                            />
                                         ) : (
-                                            <VisibilityOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                            <VisibilityOutlinedIcon
+                                                sx={{ color: "#98A2B3" }}
+                                            />
                                         )}
                                     </IconButton>
                                 </InputAdornment>
@@ -287,7 +383,13 @@ export default function SignUp() {
                     />
 
                     {/* Confirm Password */}
-                    <Typography sx={{ mb: 1, fontWeight: 600, color: "#344054" }}>
+                    <Typography
+                        sx={{
+                            mb: 1,
+                            fontWeight: 600,
+                            color: "#344054",
+                        }}
+                    >
                         تأكيد كلمة المرور
                     </Typography>
 
@@ -318,20 +420,28 @@ export default function SignUp() {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <LockOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                    <LockOutlinedIcon
+                                        sx={{ color: "#98A2B3" }}
+                                    />
                                 </InputAdornment>
                             ),
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
                                         onClick={() =>
-                                            setShowConfirmPassword(!showConfirmPassword)
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword
+                                            )
                                         }
                                     >
                                         {showConfirmPassword ? (
-                                            <VisibilityOffOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                            <VisibilityOffOutlinedIcon
+                                                sx={{ color: "#98A2B3" }}
+                                            />
                                         ) : (
-                                            <VisibilityOutlinedIcon sx={{ color: "#98A2B3" }} />
+                                            <VisibilityOutlinedIcon
+                                                sx={{ color: "#98A2B3" }}
+                                            />
                                         )}
                                     </IconButton>
                                 </InputAdornment>
@@ -344,17 +454,19 @@ export default function SignUp() {
                         fullWidth
                         variant="contained"
                         type="submit"
-                        disabled={!isFormValid}
+                        disabled={!isFormValid || loading}
                         sx={{
                             mt: 4,
                             py: 1.6,
                             borderRadius: "12px",
                             fontWeight: 700,
                             backgroundColor: "#00c951",
-                            "&:hover": { backgroundColor: "#00b248" },
+                            "&:hover": {
+                                backgroundColor: "#00b248",
+                            },
                         }}
                     >
-                        إنشاء حساب
+                        {loading ? "جاري إنشاء الحساب..." : "إنشاء حساب"}
                     </Button>
 
                     <Typography
