@@ -82,7 +82,10 @@ export default function AdminDashboard() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(DASHBOARD_API_URL);
+        const token = localStorage.getItem("token");
+        const response = await fetch(DASHBOARD_API_URL, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         const payload = await response.json();
 
         if (!response.ok || !payload.success) {
