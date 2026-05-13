@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import styles from "./AdminDashboard.module.css";
 
-const DASHBOARD_API_URL = "http://localhost:5000/api/admin/dashboard";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const DASHBOARD_API_URL = `${API_BASE_URL}/api/admin/dashboard`;
 
 const fallbackDashboard = {
   counts: {

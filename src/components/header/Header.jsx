@@ -106,7 +106,7 @@ export default function Header() {
           },
         });
 
-        const payload = data?.user || data || {};
+        const payload = data?.data?.user || data?.user || data || {};
 
         setUser({
           name: payload.name || payload.fullName || "",

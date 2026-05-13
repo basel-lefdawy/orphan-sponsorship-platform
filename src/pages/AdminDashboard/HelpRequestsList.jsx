@@ -15,6 +15,9 @@ const columns = [
 ];
 
 const statusMap = {
+  Pending: "yellow",
+  Approved: "green",
+  Rejected: "red",
   "قيد المراجعة": "yellow",
   "تمت الموافقة": "green",
   "منتهية": "gray",
@@ -24,14 +27,17 @@ const statusMap = {
 export default function HelpRequestsList() {
   const [helpRequests, setHelpRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchHelpRequests = async () => {
     try {
+      setError("");
       const data = await helpRequestService.getAll();
       setHelpRequests(data);
     } catch (err) {
       console.error(err);
+      setError("Unable to load help requests from the backend.");
     } finally {
       setLoading(false);
     }
@@ -43,9 +49,16 @@ export default function HelpRequestsList() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await helpRequestService.delete(deleteTarget.id);
-    setDeleteTarget(null);
-    fetchHelpRequests();
+
+    try {
+      setError("");
+      await helpRequestService.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      fetchHelpRequests();
+    } catch (err) {
+      console.error(err);
+      setError("Unable to delete this help request.");
+    }
   };
 
   if (loading) {
@@ -54,11 +67,16 @@ export default function HelpRequestsList() {
 
   return (
     <div className={styles.page} id="admin-help-requests-page">
+      {error && (
+        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+          {error}
+        </p>
+      )}
+
       <DataTable
         title="إدارة طلبات المساعدة"
         columns={columns}
         data={helpRequests}
-        onEdit={(row) => alert(`تعديل الطلب #${row.id}`)}
         onDelete={(row) => setDeleteTarget(row)}
         searchPlaceholder="ابحث باسم مقدم الطلب..."
         emptyMessage="لا توجد طلبات مساعدة"

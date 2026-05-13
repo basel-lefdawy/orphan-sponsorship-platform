@@ -1,41 +1,80 @@
-import { helpRequests as mockHelpRequests } from "../utils/mockData";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const ADMIN_HELP_REQUESTS_URL = `${API_BASE_URL}/api/admin/help-requests`;
 
-const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+function formatDate(value) {
+  if (!value) return "";
 
-let helpRequestsData = [...mockHelpRequests];
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString();
+}
+
+function getGuardianName(request) {
+  return [
+    request.GuardianName,
+    request.GuardianFatherName,
+    request.GuardianFamilyName,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function mapHelpRequest(request) {
+  return {
+    ...request,
+    requesterName: getGuardianName(request) || request.GuardianName || "Unknown requester",
+    requestType: request.GuaranteeType || "Unknown type",
+    date: formatDate(request.createdAt) || formatDate(request.OrphanBirthDate),
+    urgency: request.urgency || "Normal",
+    phone: request.phoneNumber || "",
+  };
+}
+
+async function parseJsonResponse(response) {
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(payload?.message || "Request failed");
+  }
+
+  return payload;
+}
 
 export const helpRequestService = {
   async getAll() {
-    await delay();
-    return [...helpRequestsData];
+    const response = await fetch(ADMIN_HELP_REQUESTS_URL);
+    const payload = await parseJsonResponse(response);
+    const requests = Array.isArray(payload) ? payload : payload?.data || [];
+
+    return requests.map(mapHelpRequest);
   },
 
   async getById(id) {
-    await delay();
-    return helpRequestsData.find((h) => h.id === Number(id)) || null;
-  },
+    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}`);
+    const payload = await parseJsonResponse(response);
+    const request = payload?.data || payload;
 
-  async create(helpRequest) {
-    await delay();
-    const newRequest = {
-      ...helpRequest,
-      id: Math.max(...helpRequestsData.map((h) => h.id), 0) + 1,
-    };
-    helpRequestsData.push(newRequest);
-    return newRequest;
+    return request ? mapHelpRequest(request) : null;
   },
 
   async update(id, updates) {
-    await delay();
-    const index = helpRequestsData.findIndex((h) => h.id === Number(id));
-    if (index === -1) throw new Error("Help request not found");
-    helpRequestsData[index] = { ...helpRequestsData[index], ...updates };
-    return helpRequestsData[index];
+    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    const payload = await parseJsonResponse(response);
+    const request = payload?.data || payload;
+
+    return mapHelpRequest(request);
   },
 
   async delete(id) {
-    await delay();
-    helpRequestsData = helpRequestsData.filter((h) => h.id !== Number(id));
-    return { success: true };
+    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}`, {
+      method: "DELETE",
+    });
+
+    return parseJsonResponse(response);
   },
 };

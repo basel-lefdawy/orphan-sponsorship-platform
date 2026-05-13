@@ -38,8 +38,10 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState("");
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
     const handleFacebookLogin = () => {
-        window.location.href = "http://localhost:5000/api/auth/facebook";
+        window.location.href = `${apiBaseUrl}/api/auth/facebook`;
     };
 
     const {
