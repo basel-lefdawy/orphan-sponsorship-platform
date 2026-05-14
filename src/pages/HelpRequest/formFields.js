@@ -1,10 +1,22 @@
 export const orphanFields = [
-  { name: "OrphanID", label: "رقم الهوية *", type: "text", rules: { required: "رقم الهوية مطلوب" } },
+  { name: "OrphanID", label: "رقم الهوية *", type: "text", rules: {
+  required: "رقم الهوية مطلوب",
+  pattern: {
+    value: /^\d{9}$/,
+    message: "رقم الهوية الفلسطينية يجب أن يكون 9 أرقام",
+  },
+} },
   { name: "OrphanName", label: "الاسم *", type: "text", rules: { required: "الاسم مطلوب" } },
   { name: "OrphanFatherName", label: "الأب *", type: "text", rules: { required: "اسم الأب مطلوب" } },
   { name: "OrphanGrandfatherName", label: "الجد *", type: "text", rules: { required: "اسم الجد مطلوب" } },
   { name: "OrphanFamilyName", label: "العائلة *", type: "text", rules: { required: "اسم العائلة مطلوب" } },
-  { name: "OrphanBirthDate", label: "تاريخ الميلاد *", type: "date",rules:{required:"تاريخ الميلاد مطلوب"} },
+  { name: "OrphanBirthDate", label: "تاريخ الميلاد *", type: "date",rules: {
+  required: "تاريخ الميلاد مطلوب",
+  validate: (value) =>
+    new Date(value) <= new Date()
+      || "تاريخ الميلاد لا يمكن أن يكون بالمستقبل",
+} },
+
   { name: "gender", label: "الجنس *", type: "select", options: [
       { value: "Female", label: "انثى" },
       { value: "Male", label: "ذكر" }
@@ -20,7 +32,13 @@ export const orphanFields = [
 ];
 
 export const guardianFields = [
-  { name: "GuardianID", label: "رقم الهوية *", type: "text", rules: { required: "رقم الهوية مطلوب" } },
+  { name: "GuardianID", label: "رقم الهوية *", type: "text", rules: {
+  required: "رقم الهوية مطلوب",
+  pattern: {
+    value: /^\d{9}$/,
+    message: "رقم الهوية الفلسطينية يجب أن يكون 9 أرقام",
+  },
+} },
   { name: "GuardianName", label: "الاسم *", type: "text", rules: { required: "الاسم مطلوب" } },
   { name: "GuardianFatherName", label: "الأب *", type: "text", rules: { required: "اسم الأب مطلوب" } },
   { name: "GuardianGrandfatherName", label: "الجد *", type: "text", rules: { required: "اسم الجد مطلوب" } },
@@ -41,9 +59,30 @@ export const guardianFields = [
     ], rules: { required: "اسم الدولة مطلوب" }
   },
   { name: "city", label: "المدينة *", type: "text", rules: { required: "اسم المدينة مطلوب" } },
-  { name: "street", label: "الشارع", type: "text" },
-  { name: "phoneNumber", label: "رقم الجوال *", type: "text", rules: { required: "رقم الجوال مطلوب" } },
-  { name: "homePhone", label: "الهاتف", type: "text" },
+  { name: "street", label: "الشارع", type: "text",rules: { required: "اسم الشارع مطلوب" } },
+  {
+  name: "phoneNumber",
+  label: "رقم الجوال *",
+  type: "text",
+  rules: {
+    required: "رقم الجوال مطلوب",
+    pattern: {
+      value: /^\d{10}$/,
+      message: "رقم الجوال يجب أن يكون 10 أرقام",
+    },
+  },
+},
+ {
+  name: "homePhone",
+  label: "الهاتف",
+  type: "text",
+  rules: {
+    pattern: {
+      value: /^\d{7}$/,
+      message: "رقم الهاتف يجب أن يكون 7 أرقام",
+    },
+  },
+},
   { name: "email", label: "البريد الإلكتروني *", type: "text", rules: {
       required: "البريد الإلكتروني مطلوب",
       pattern: { value: /^\S+@\S+$/i, message: "البريد الإلكتروني غير صالح" }
@@ -65,7 +104,13 @@ export const familyFields = [
       { value: "No", label: "لا" }
     ]
   },
-  { name: "MonthlyIncome", label: "الدخل الشهري *", type: "number", rules: { required: "الدخل الشهري مطلوب" } },
+  { name: "MonthlyIncome", label: "الدخل الشهري *", type: "number",rules: {
+  required: "الدخل الشهري مطلوب",
+  min: {
+    value: 0,
+    message: "الدخل لا يمكن أن يكون سالب",
+  },
+} },
   { name: "HouseCondition", label: "حال المسكن", type: "select", options: [
       { value: "Good", label: "جيد" },
       { value: "Fair", label: "مقبول" },
@@ -74,7 +119,7 @@ export const familyFields = [
     ]
   },
   { name: "HousingType", label: "السكن", type: "select", options: [
-      { value: "Rented", label: "تأجير" },
+      { value: "Rented", label: "أجرة" },
       { value: "Owned", label: "ملك" }
     ]
   },
@@ -86,20 +131,164 @@ export const familyFields = [
 ];
 
 export const conditionalFatherFields = [
-  { name: "FatherDeathDate", label: "تاريخ وفاة الأب *", type: "date", rules: { required: "تاريخ وفاة الأب" } },
-  { name: "MotherJobType", label: "نوع عمل الأم *", type: "text", rules: { required: "نوع العمل مطلوب" } },
-  { name: "MotherSalary", label: "راتب الأم *", type: "text", rules: { required: "الراتب مطلوب" } },
+  {
+    name: "FatherDeathDate",
+    label: "تاريخ وفاة الأب *",
+    type: "date",
+    rules: {
+      required: "تاريخ وفاة الأب مطلوب",
+
+      validate: (value, formValues) => {
+        const fatherDeath = new Date(value);
+        const birthDate = new Date(formValues.OrphanBirthDate);
+        const today = new Date();
+
+        // ممنوع مستقبل
+        if (fatherDeath > today) {
+          return "تاريخ وفاة الأب لا يمكن أن يكون في المستقبل";
+        }
+
+        // بداية الحمل تقريبًا (9 أشهر قبل الولادة)
+        const conceptionStart = new Date(birthDate);
+        conceptionStart.setMonth(conceptionStart.getMonth() - 9);
+
+        // لا يسمح بتاريخ بعيد جدًا قبل الحمل
+        if (fatherDeath < conceptionStart) {
+          return "تاريخ وفاة الأب غير منطقي مع فترة الحمل";
+        }
+
+        return true;
+      },
+    },
+  },
+
+  {
+    name: "MotherJobType",
+    label: "نوع عمل الأم *",
+    type: "text",
+    rules: { required: "نوع العمل مطلوب" },
+  },
+
+  {
+  name: "MotherSalary",
+  label: "راتب الأم *",
+  type: "number",
+  rules: {
+    required: "الراتب مطلوب",
+    min: {
+      value: 0,
+      message: "الراتب لا يمكن أن يكون سالب",
+    },
+  },
+}
 ];
 
 export const conditionalMotherFields = [
-  { name: "MotherDeathDate", label: "تاريخ وفاة الأم *", type: "date", rules: { required: "تاريخ وفاة الأم" } },
-  { name: "MotherJobType", label: "نوع عمل الأب *", type: "text", rules: { required: "نوع العمل مطلوب" } },
-  { name: "MotherSalary", label: "راتب الأب *", type: "text", rules: { required: "الراتب مطلوب" } },
+  {
+    name: "MotherDeathDate",
+    label: "تاريخ وفاة الأم *",
+    type: "date",
+    rules: {
+      required: "تاريخ وفاة الأم مطلوب",
+
+      validate: (value, formValues) => {
+        const motherDeath = new Date(value);
+        const birthDate = new Date(formValues.OrphanBirthDate);
+        const today = new Date();
+
+        // ممنوع مستقبل
+        if (motherDeath > today) {
+          return "تاريخ وفاة الأم لا يمكن أن يكون في المستقبل";
+        }
+
+        // الأم لازم تكون على الأقل يوم الولادة أو بعدها
+        if (motherDeath < birthDate) {
+          return "تاريخ وفاة الأم يجب أن يكون يوم الولادة أو بعده";
+        }
+
+        return true;
+      },
+    },
+  },
+
+  {
+    name: "MotherJobType",
+    label: "نوع عمل الأب *",
+    type: "text",
+    rules: { required: "نوع العمل مطلوب" },
+  },
+
+  {
+  name: "FatherSalary",
+  label: "راتب الأب *",
+  type: "number",
+  rules: {
+    required: "الراتب مطلوب",
+    min: {
+      value: 0,
+      message: "الراتب لا يمكن أن يكون سالب",
+    },
+  },
+}
 ];
 
 export const conditionalFields = [
-  { name: "MotherDeathDate", label: "تاريخ وفاة الأم *", type: "date", rules: { required: "تاريخ وفاة الأم" } },
-  { name: "FatherDeathDate", label: "تاريخ وفاة الأب *", type: "date", rules: { required: "تاريخ وفاة الأب" } },
+   {
+    name: "MotherDeathDate",
+    label: "تاريخ وفاة الأم *",
+    type: "date",
+    rules: {
+      required: "تاريخ وفاة الأم مطلوب",
+
+      validate: (value, formValues) => {
+        const motherDeath = new Date(value);
+        const birthDate = new Date(formValues.OrphanBirthDate);
+        const today = new Date();
+
+        // ممنوع مستقبل
+        if (motherDeath > today) {
+          return "تاريخ وفاة الأم لا يمكن أن يكون في المستقبل";
+        }
+
+        // الأم لازم تكون على الأقل يوم الولادة أو بعدها
+        if (motherDeath < birthDate) {
+          return "تاريخ وفاة الأم يجب أن يكون يوم الولادة أو بعده";
+        }
+
+        return true;
+      },
+    },
+  },
+    {
+    name: "FatherDeathDate",
+    label: "تاريخ وفاة الأب *",
+    type: "date",
+    rules: {
+      required: "تاريخ وفاة الأب مطلوب",
+
+      validate: (value, formValues) => {
+        const fatherDeath = new Date(value);
+        const birthDate = new Date(formValues.OrphanBirthDate);
+        const today = new Date();
+
+        // ممنوع مستقبل
+        if (fatherDeath > today) {
+          return "تاريخ وفاة الأب لا يمكن أن يكون في المستقبل";
+        }
+
+        // بداية الحمل تقريبًا (9 أشهر قبل الولادة)
+        const conceptionStart = new Date(birthDate);
+        conceptionStart.setMonth(conceptionStart.getMonth() - 9);
+
+        // لا يسمح بتاريخ بعيد جدًا قبل الحمل
+        if (fatherDeath < conceptionStart) {
+          return "تاريخ وفاة الأب غير منطقي مع فترة الحمل";
+        }
+
+        return true;
+      },
+    },
+  },
 ];
 
 export const bankFields = [
@@ -112,5 +301,12 @@ export const bankFields = [
   { name: "BranchNumber", label: "رقم الفرع *", type: "text", rules: { required: "رقم الفرع مطلوب" } },
   { name: "bankAccount", label: "رقم الحساب البنكي *", type: "text", rules: { required: "رقم الحساب مطلوب", pattern: { value: /^\d{16}$/, message: "يجب أن يكون 16 رقم" } } },
   { name: "AccountHolderName", label: "اسم صاحب الحساب *", type: "text", rules: { required: "اسم صاحب الحساب مطلوب" } },
-  { name: "IBAN", label: "IBAN", type: "text" },
+  {name: "IBAN",label: "IBAN",type: "text",
+  rules: {
+    pattern: {
+      value: /^[A-Z]{2}[0-9A-Z]{13,32}$/,
+      message: "رقم IBAN غير صالح",
+    },
+  },
+}
 ];

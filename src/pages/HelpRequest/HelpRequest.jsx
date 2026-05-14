@@ -84,92 +84,82 @@ const HelpRequest = () => {
   }, [DeceasedPerson]);
 
   // SUBMIT
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
+  try {
 
-    try {
+    const formattedData = {
+      ...data,
+      FamilyMember: Number(data.FamilyMember),
+      MonthlyIncome: Number(data.MonthlyIncome),
+      email: data.email?.trim().toLowerCase(),
+      phoneNumber: data.phoneNumber?.trim(),
+      OrphanID: data.OrphanID?.trim(),
+      GuardianID: data.GuardianID?.trim(),
+    };
+    
+    // تنظيف الحقول الفاضية
+ 
+    const optionalFields = [
+      "FatherDeathDate",
+      "MotherDeathDate",
+      "IBAN",
+      "bankAccount",
+      "homePhone"
+    ];
 
-      // تنظيف وتحويل البيانات
-      const formattedData = {
+    optionalFields.forEach((f) => {
+      if (!formattedData[f]) delete formattedData[f];
+    });
 
-        ...data,
+    console.log("FINAL DATA:", formattedData);
 
-        // numbers
-        FamilyMember: Number(data.FamilyMember),
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formattedData),
+    });
 
-        MonthlyIncome: Number(data.MonthlyIncome),
+    const result = await response.json();
 
-        // email
-        email: data.email?.trim().toLowerCase(),
+    if (!response.ok) {
 
-        // phone
-        phoneNumber: data.phoneNumber?.trim(),
+  // VALIDATION ERRORS
+  if (result.errors?.length) {
 
-        // IDs
-        OrphanID: data.OrphanID?.trim(),
+    const messages = result.errors
+      .map((e) => `• ${e.message}`)
+      .join("\n");
 
-        GuardianID: data.GuardianID?.trim(),
+    throw new Error(messages);
+  }
 
-        // bank
-        IBAN: data.IBAN?.trim(),
+  // NORMAL ERROR MESSAGE
+  throw new Error(
+    result.message || "فشل إرسال البيانات"
+  );
+}
 
-        bankAccount: data.bankAccount?.trim(),
-      };
+    setDialog({
+      open: true,
+      type: "success",
+      title: "تم إرسال الطلب بنجاح",
+      message: "تم إرسال الطلب بنجاح",
+    });
 
-      // إذا الدفع نقدي احذف بيانات البنك
-      if (formattedData.paymentMethod === "Cash") {
+    reset(defaultValues);
 
-        delete formattedData.IBAN;
+  } catch (err) {
 
-        delete formattedData.bankAccount;
-      }
-
-      console.log("FINAL DATA:", formattedData);
-
-      const response = await fetch(API_URL, {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify(formattedData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-
-        throw new Error(
-          result.message || "فشل إرسال البيانات"
-        );
-      }
-
-      // SUCCESS
-      setDialog({
-        open: true,
-        type: "success",
-        title: "تم إرسال الطلب بنجاح",
-        message:
-          "لقد تم إرسال بياناتك بنجاح، تحتاج بعض الوقت لفحصها من قبل الجمعية.",
-      });
-
-      reset(defaultValues);
-
-    } catch (err) {
-
-      console.error(err);
-
-      // ERROR
-      setDialog({
-        open: true,
-        type: "error",
-        title: "لم يتم إرسال الطلب",
-        message:
-          err.message || "حدث خطأ أثناء الإرسال",
-      });
-    }
-  };
+    setDialog({
+      open: true,
+      type: "error",
+      title: "لم يتم إرسال الطلب",
+      message: err.message,
+    });
+  }
+};
 
   
   // FORM VALIDATION ERROR
