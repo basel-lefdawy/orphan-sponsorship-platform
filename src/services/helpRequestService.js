@@ -20,13 +20,28 @@ function getGuardianName(request) {
     .join(" ");
 }
 
+function getStatusLabel(status) {
+  if (status === "Pending") return "قيد المراجعة";
+  if (status === "Approved") return "تمت الموافقة";
+  if (status === "Rejected") return "مرفوضة";
+  return status || "";
+}
+
+function getUrgencyLabel(urgency) {
+  if (urgency === "Normal") return "عادي";
+  if (urgency === "High") return "عاجل";
+  if (urgency === "Low") return "منخفض";
+  return urgency || "عادي";
+}
+
 function mapHelpRequest(request) {
   return {
     ...request,
-    requesterName: getGuardianName(request) || request.GuardianName || "Unknown requester",
-    requestType: request.GuaranteeType || "Unknown type",
+    requesterName: getGuardianName(request) || request.GuardianName || "غير متوفر",
+    requestType: request.GuaranteeType || "غير متوفر",
     date: formatDate(request.createdAt) || formatDate(request.OrphanBirthDate),
-    urgency: request.urgency || "Normal",
+    urgency: getUrgencyLabel(request.urgency),
+    status: getStatusLabel(request.status),
     phone: request.phoneNumber || "",
   };
 }
@@ -35,7 +50,7 @@ async function parseJsonResponse(response) {
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(payload?.message || "Request failed");
+    throw new Error(payload?.message || "فشل تنفيذ الطلب");
   }
 
   return payload;

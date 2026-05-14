@@ -1,109 +1,40 @@
-import store from "./dataStore";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const SPONSORS_URL = `${API_BASE_URL}/api/sponsors`;
 
-const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+async function parseJsonResponse(response) {
+  const payload = await response.json().catch(() => null);
 
-// Enrich a sponsor with computed orphanName for UI compatibility
-function enrichSponsor(sponsor) {
-  const orphan = sponsor.orphanId
-    ? store.orphans.find((o) => o.id === sponsor.orphanId)
-    : null;
+  if (!response.ok || payload?.success === false) {
+    throw new Error(payload?.message || "Failed to load sponsors");
+  }
 
-  return {
-    ...sponsor,
-    orphanName: orphan ? orphan.name : "—",
-  };
+  return payload;
 }
 
 export const sponsorService = {
   async getAll() {
-    await delay();
-    return store.sponsors.map(enrichSponsor);
+    const response = await fetch(SPONSORS_URL);
+    const payload = await parseJsonResponse(response);
+
+    return Array.isArray(payload) ? payload : payload?.data || [];
   },
 
   async getById(id) {
-    await delay();
-    const sponsor = store.sponsors.find((s) => s.id === Number(id));
-    return sponsor ? enrichSponsor(sponsor) : null;
+    const response = await fetch(`${SPONSORS_URL}/${id}`);
+    const payload = await parseJsonResponse(response);
+
+    return payload?.data || payload || null;
   },
 
-  async create(sponsor) {
-    await delay();
-    const newSponsor = {
-      ...sponsor,
-      id: Math.max(...store.sponsors.map((s) => s.id), 0) + 1,
-    };
-    store.sponsors.push(newSponsor);
-
-    // If orphanId is set, update the orphan's sponsorId
-    if (newSponsor.orphanId != null) {
-      const orphanIndex = store.orphans.findIndex(
-        (o) => o.id === newSponsor.orphanId
-      );
-      if (orphanIndex !== -1) {
-        store.orphans[orphanIndex] = {
-          ...store.orphans[orphanIndex],
-          sponsorId: newSponsor.id,
-        };
-      }
-    }
-
-    return enrichSponsor(newSponsor);
+  async create() {
+    throw new Error("Sponsor create is not connected yet.");
   },
 
-  async update(id, updates) {
-    await delay();
-    const index = store.sponsors.findIndex((s) => s.id === Number(id));
-    if (index === -1) throw new Error("Sponsor not found");
-
-    const oldSponsor = store.sponsors[index];
-    const oldOrphanId = oldSponsor.orphanId;
-    const newOrphanId = updates.orphanId !== undefined ? updates.orphanId : oldOrphanId;
-
-    // Update the sponsor record
-    store.sponsors[index] = { ...oldSponsor, ...updates, orphanId: newOrphanId };
-
-    // If orphanId changed, update both old and new orphans
-    if (oldOrphanId !== newOrphanId) {
-      // Unlink old orphan
-      if (oldOrphanId != null) {
-        const oldOIdx = store.orphans.findIndex((o) => o.id === oldOrphanId);
-        if (oldOIdx !== -1) {
-          store.orphans[oldOIdx] = { ...store.orphans[oldOIdx], sponsorId: null };
-        }
-      }
-      // Link new orphan
-      if (newOrphanId != null) {
-        const newOIdx = store.orphans.findIndex((o) => o.id === newOrphanId);
-        if (newOIdx !== -1) {
-          store.orphans[newOIdx] = {
-            ...store.orphans[newOIdx],
-            sponsorId: Number(id),
-          };
-        }
-      }
-    }
-
-    return enrichSponsor(store.sponsors[index]);
+  async update() {
+    throw new Error("Sponsor update is not connected yet.");
   },
 
-  async delete(id) {
-    await delay();
-    const sponsor = store.sponsors.find((s) => s.id === Number(id));
-
-    // Cascade: set related orphan's sponsorId to null
-    if (sponsor && sponsor.orphanId != null) {
-      const orphanIndex = store.orphans.findIndex(
-        (o) => o.id === sponsor.orphanId
-      );
-      if (orphanIndex !== -1) {
-        store.orphans[orphanIndex] = {
-          ...store.orphans[orphanIndex],
-          sponsorId: null,
-        };
-      }
-    }
-
-    store.sponsors = store.sponsors.filter((s) => s.id !== Number(id));
-    return { success: true };
+  async delete() {
+    throw new Error("Sponsor delete is not connected yet.");
   },
 };

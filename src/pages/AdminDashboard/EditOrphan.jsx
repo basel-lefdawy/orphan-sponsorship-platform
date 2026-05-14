@@ -9,22 +9,35 @@ export default function EditOrphan() {
   const navigate = useNavigate();
   const [form, setForm] = useState(null);
   const [errors, setErrors] = useState({});
+  const [loadError, setLoadError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     async function load() {
-      const orphan = await orphanService.getById(id);
-      if (orphan) {
-        setForm({
-          name: orphan.name,
-          age: String(orphan.age),
-          gender: orphan.gender,
-          dateOfBirth: orphan.dateOfBirth,
-          status: orphan.status,
-          healthStatus: orphan.healthStatus || "",
-          educationLevel: orphan.educationLevel || "",
-          notes: orphan.notes || "",
-        });
+      try {
+        setLoadError("");
+        const orphan = await orphanService.getById(id);
+        if (orphan) {
+          setForm({
+            name: orphan.name,
+            age: String(orphan.age),
+            gender: orphan.gender,
+            dateOfBirth: orphan.dateOfBirth,
+            status: orphan.status,
+            healthStatus: orphan.healthStatus || "",
+            educationLevel: orphan.educationLevel || "",
+            notes: orphan.notes || "",
+          });
+        } else {
+          setLoadError("هذا الإجراء غير متصل بالباكند بعد.");
+        }
+      } catch (err) {
+        console.error(err);
+        setLoadError(err.message || "تعذر تحميل بيانات هذا اليتيم من الباكند.");
+      } finally {
+        setLoading(false);
       }
     }
     load();
@@ -54,6 +67,7 @@ export default function EditOrphan() {
     if (Object.keys(errs).length > 0) return;
 
     setSubmitting(true);
+    setSubmitError("");
     try {
       await orphanService.update(id, {
         ...form,
@@ -62,13 +76,29 @@ export default function EditOrphan() {
       navigate("/admin/orphans");
     } catch (err) {
       console.error(err);
+      setSubmitError(err.message || "هذا الإجراء غير متصل بالباكند بعد.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (!form) {
+  if (loading) {
     return <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>جاري التحميل...</p>;
+  }
+
+  if (loadError || !form) {
+    return (
+      <div className={styles.page} id="edit-orphan-page">
+        <p style={{ color: "#dc2626", textAlign: "center", paddingTop: 40 }}>
+          {loadError || "هذا الإجراء غير متصل بالباكند بعد."}
+        </p>
+        <div className={styles.formActions}>
+          <Link to="/admin/orphans" className={styles.cancelBtn}>
+            إلغاء
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -78,6 +108,12 @@ export default function EditOrphan() {
       </div>
 
       <form className={styles.formWrapper} onSubmit={handleSubmit}>
+        {submitError && (
+          <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+            {submitError}
+          </p>
+        )}
+
         <div className={styles.formGrid}>
           <FormInput
             label="الاسم الكامل"

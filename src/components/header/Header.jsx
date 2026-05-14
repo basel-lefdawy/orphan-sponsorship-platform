@@ -20,6 +20,7 @@ import UserDropdown from "./UserDropdown";
 
 import { useDonation } from "../../context/DonationContext";
 import DonationForm from "../../pages/Donation/Donation";
+import { isAdminToken } from "../../utils/authToken";
 
 const navStyle = {
   color: "white",
@@ -69,6 +70,7 @@ export default function Header() {
   const openUserMenu = Boolean(userMenu);
 
   const isAuthenticated = Boolean(authToken);
+  const isAdmin = isAdminToken(authToken);
 
   const { openDonation, setOpenDonation } = useDonation();
 
@@ -124,6 +126,13 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    setUser({
+      name: "",
+      email: "",
+    });
     handleUserClose();
     navigate("/login");
   };
@@ -197,6 +206,38 @@ export default function Header() {
             >
               تبرع
             </Button>
+
+            {isAdmin && (
+              <Button
+                component={NavLink}
+                to="/admin"
+                sx={{
+                  color: "white",
+                  minHeight: 38,
+                  px: 2.75,
+                  borderRadius: "999px",
+                  border: "1px solid rgba(255,255,255,0.55)",
+                  backgroundColor: "rgba(255,255,255,0.12)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18)",
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease",
+                  "&.active": {
+                    backgroundColor: "rgba(255,255,255,0.22)",
+                    borderColor: "white",
+                  },
+                  "&:hover": {
+                    borderColor: "rgba(255,255,255,0.9)",
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                    transform: "translateY(-1px)",
+                  },
+                }}
+              >
+                لوحة التحكم
+              </Button>
+            )}
           </Box>
 
           {/* Right Side */}
@@ -282,6 +323,12 @@ export default function Header() {
             >
               تبرع
             </MenuItem>
+
+            {isAdmin && (
+              <MenuItem component={NavLink} to="/admin" onClick={handleMenuClose}>
+                لوحة التحكم
+              </MenuItem>
+            )}
           </Menu>
         </Toolbar>
       </AppBar>

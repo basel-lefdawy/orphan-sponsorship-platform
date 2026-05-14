@@ -17,32 +17,13 @@ export default function UserDropdown({
   anchorEl,
   open,
   onClose,
+  user,
+  userInitials,
+  isAuthenticated,
+  authToken,
   onLogin,
+  onLogout,
 }) {
-  const accessToken = localStorage.getItem("accessToken");
-
-  const storedUser = localStorage.getItem("user");
-
-  const user = storedUser ? JSON.parse(storedUser) : null;
-
-  const isAuthenticated = Boolean(accessToken && user);
-
-  const userInitials = user?.name
-    ? user.name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase()
-    : "";
-
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-
-    window.location.href = "/";
-  };
-
   return (
     <Menu
       anchorEl={anchorEl}
@@ -152,7 +133,7 @@ export default function UserDropdown({
 
         <UserRequestsList
           isAuthenticated={isAuthenticated}
-          authToken={accessToken}
+          authToken={authToken}
         />
       </Box>
 
@@ -170,7 +151,7 @@ export default function UserDropdown({
             color="error"
             variant="text"
             startIcon={<LogoutIcon />}
-            onClick={handleLogout}
+            onClick={onLogout}
             sx={{
               justifyContent: "flex-start",
               borderRadius: 2,

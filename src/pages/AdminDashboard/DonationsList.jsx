@@ -4,6 +4,8 @@ import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { donationService } from "../../services/donationService";
 import styles from "./AdminPage.module.css";
 
+const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالباكند بعد.";
+
 const columns = [
   { key: "id", label: "#" },
   { key: "donorName", label: "اسم المتبرع" },
@@ -26,14 +28,18 @@ const statusMap = {
 export default function DonationsList() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchDonations = async () => {
     try {
+      setError("");
       const data = await donationService.getAll();
       setDonations(data);
     } catch (err) {
       console.error(err);
+      setDonations([]);
+      setError("تعذر تحميل بيانات التبرعات من الباكند.");
     } finally {
       setLoading(false);
     }
@@ -45,9 +51,16 @@ export default function DonationsList() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await donationService.delete(deleteTarget.id);
-    setDeleteTarget(null);
-    fetchDonations();
+    try {
+      setError("");
+      await donationService.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      fetchDonations();
+    } catch (err) {
+      console.error(err);
+      setDeleteTarget(null);
+      setError(err.message || NOT_CONNECTED_MESSAGE);
+    }
   };
 
   if (loading) {
@@ -56,11 +69,17 @@ export default function DonationsList() {
 
   return (
     <div className={styles.page} id="admin-donations-page">
+      {error && (
+        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+          {error}
+        </p>
+      )}
+
       <DataTable
         title="إدارة التبرعات"
         columns={columns}
         data={donations}
-        onEdit={(row) => alert(`تعديل التبرع #${row.id}`)}
+        onEdit={() => setError(NOT_CONNECTED_MESSAGE)}
         onDelete={(row) => setDeleteTarget(row)}
         searchPlaceholder="ابحث باسم المتبرع..."
         emptyMessage="لا توجد تبرعات"

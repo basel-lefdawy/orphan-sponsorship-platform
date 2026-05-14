@@ -26,13 +26,16 @@ const theme = createTheme({
 
 document.dir = "rtl";
 
+const routerBaseName =
+  import.meta.env.BASE_URL === "/" ? undefined : import.meta.env.BASE_URL;
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <DonationProvider>
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <BrowserRouter basename="/orphanage-center">
+        <BrowserRouter basename={routerBaseName}>
           <App />
         </BrowserRouter>
       </ThemeProvider>

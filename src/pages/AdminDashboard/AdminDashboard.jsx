@@ -50,7 +50,7 @@ function mergeDashboardData(data) {
 }
 
 function getOrphanName(orphan) {
-  return orphan.name || orphan.OrphanName || "Unknown orphan";
+  return orphan.name || orphan.OrphanName || "يتيم غير معروف";
 }
 
 function getOrphanDetail(orphan) {
@@ -58,16 +58,16 @@ function getOrphanDetail(orphan) {
     ? new Date(orphan.OrphanBirthDate).toLocaleDateString()
     : null;
 
-  return [birthDate, orphan.GuaranteeType].filter(Boolean).join(" - ") || "No details available";
+  return [birthDate, orphan.GuaranteeType].filter(Boolean).join(" - ") || "لا توجد تفاصيل متاحة";
 }
 
 function getDonationName(donation) {
-  return donation.donorName || donation.firstName || donation.name || "Unknown donor";
+  return donation.donorName || donation.firstName || donation.name || "متبرع غير معروف";
 }
 
 function getDonationDetail(donation) {
   const amount = Number(donation.amount || 0);
-  const amountText = amount > 0 ? amount.toLocaleString() : donation.type || "No amount";
+  const amountText = amount > 0 ? amount.toLocaleString() : donation.type || "لا يوجد مبلغ";
   return [amountText, donation.date].filter(Boolean).join(" - ");
 }
 
@@ -89,14 +89,14 @@ export default function AdminDashboard() {
         const payload = await response.json();
 
         if (!response.ok || !payload.success) {
-          throw new Error(payload.message || "Failed to load dashboard data");
+          throw new Error(payload.message || "فشل تحميل بيانات لوحة التحكم");
         }
 
         setDashboard(mergeDashboardData(payload.data));
       } catch (err) {
         console.error(err);
         setDashboard(fallbackDashboard);
-        setError("Unable to load live dashboard data. Showing fallback values.");
+        setError("تعذر تحميل بيانات لوحة التحكم من الباكند.");
       } finally {
         setLoading(false);
       }
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className={styles.page} style={{ textAlign: "center", paddingTop: 80 }}>
-        <p style={{ color: "#94a3b8", fontSize: "1.1rem" }}>Loading dashboard data...</p>
+        <p style={{ color: "#94a3b8", fontSize: "1.1rem" }}>جاري تحميل بيانات لوحة التحكم...</p>
       </div>
     );
   }
@@ -120,9 +120,9 @@ export default function AdminDashboard() {
   return (
     <div className={styles.page} id="admin-dashboard-page">
       <div className={styles.greeting}>
-        <h1 className={styles.greetTitle}>Admin Dashboard</h1>
+        <h1 className={styles.greetTitle}>لوحة تحكم المسؤول</h1>
         <p className={styles.greetSub}>
-          Live backend summary for the center activity.
+          ملخص مباشر من الباكند لنشاط المركز.
         </p>
       </div>
 
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
 
       {warnings.length > 0 && (
         <div className={styles.warningPanel}>
-          <h2 className={styles.warningTitle}>Dashboard data warnings</h2>
+          <h2 className={styles.warningTitle}>تنبيهات بيانات لوحة التحكم</h2>
           <ul className={styles.warningList}>
             {warnings.map((warning) => (
               <li key={warning}>{warning}</li>
@@ -145,71 +145,71 @@ export default function AdminDashboard() {
 
       <div className={styles.quickActions}>
         <Link to="/admin/orphans" className={styles.quickBtn}>
-          Orphans
+          الأيتام
         </Link>
         <Link to="/admin/donations" className={styles.quickBtn}>
-          Donations
+          التبرعات
         </Link>
         <Link to="/admin/help-requests" className={styles.quickBtn}>
-          Help Requests
+          طلبات المساعدة
         </Link>
       </div>
 
       <div className={styles.statsGrid}>
         <DashboardCard
-          icon="O"
-          label="Total orphans"
+          icon="ي"
+          label="إجمالي الأيتام"
           value={counts.orphans}
-          trend={`${counts.sponsoredOrphans} sponsored`}
+          trend={`${counts.sponsoredOrphans} مكفول`}
           trendDirection="up"
           accentColor="#4f8ef7"
           bgColor="#eef4ff"
         />
         <DashboardCard
-          icon="S"
-          label="Active sponsors"
+          icon="ك"
+          label="الكفلاء النشطون"
           value={counts.sponsors}
           accentColor="#8b5cf6"
           bgColor="#f3f0ff"
         />
         <DashboardCard
-          icon="D"
-          label="Total donations"
-          value={`${totalDonations.toLocaleString()} SAR`}
-          trend={`${counts.donations} donations`}
+          icon="ت"
+          label="إجمالي التبرعات"
+          value={`${totalDonations.toLocaleString()} ر.س`}
+          trend={`${counts.donations} تبرع`}
           trendDirection="up"
           accentColor="#059669"
           bgColor="#ecfdf5"
         />
         <DashboardCard
-          icon="H"
-          label="Pending requests"
+          icon="ط"
+          label="الطلبات المعلقة"
           value={counts.pendingHelpRequests}
-          trend={`${counts.helpRequests} total`}
+          trend={`${counts.helpRequests} إجمالي`}
           trendDirection={counts.pendingHelpRequests > 2 ? "down" : "up"}
           accentColor="#ef4444"
           bgColor="#fef2f2"
         />
         <DashboardCard
           icon="%"
-          label="Sponsorship rate"
+          label="نسبة الكفالة"
           value={`${sponsorshipRate}%`}
           accentColor="#4f8ef7"
           bgColor="#eef4ff"
         />
       </div>
 
-      <h2 className={styles.sectionTitle}>Recent Activity</h2>
+      <h2 className={styles.sectionTitle}>النشاط الأخير</h2>
       <div className={styles.recentGrid}>
         <div className={styles.recentCard}>
           <div className={styles.recentHeader}>
-            <h3 className={styles.recentTitle}>Recent orphans</h3>
+            <h3 className={styles.recentTitle}>آخر الأيتام</h3>
             <Link to="/admin/orphans" className={styles.viewAll}>
-              View all
+              عرض الكل
             </Link>
           </div>
           {recentOrphans.length === 0 ? (
-            <p className={styles.emptyState}>No recent orphans available.</p>
+            <p className={styles.emptyState}>لا يوجد أيتام حديثون.</p>
           ) : (
             <ul className={styles.recentList}>
               {recentOrphans.map((orphan, index) => (
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
                     className={styles.recentIcon}
                     style={{ background: "#eef4ff" }}
                   >
-                    O
+                    ي
                   </div>
                   <div className={styles.recentItemInfo}>
                     <p className={styles.recentItemName}>{getOrphanName(orphan)}</p>
@@ -237,13 +237,13 @@ export default function AdminDashboard() {
 
         <div className={styles.recentCard}>
           <div className={styles.recentHeader}>
-            <h3 className={styles.recentTitle}>Recent donations</h3>
+            <h3 className={styles.recentTitle}>آخر التبرعات</h3>
             <Link to="/admin/donations" className={styles.viewAll}>
-              View all
+              عرض الكل
             </Link>
           </div>
           {recentDonations.length === 0 ? (
-            <p className={styles.emptyState}>No recent donations available.</p>
+            <p className={styles.emptyState}>لا توجد تبرعات حديثة.</p>
           ) : (
             <ul className={styles.recentList}>
               {recentDonations.map((donation, index) => (
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
                     className={styles.recentIcon}
                     style={{ background: "#ecfdf5" }}
                   >
-                    D
+                    ت
                   </div>
                   <div className={styles.recentItemInfo}>
                     <p className={styles.recentItemName}>{getDonationName(donation)}</p>

@@ -108,7 +108,7 @@ export default function DataTable({
                             row[col.key]
                           )}`}
                         >
-                          {row[col.key]}
+                          {col.render ? col.render(row[col.key], row) : row[col.key]}
                         </span>
                       ) : col.render ? (
                         col.render(row[col.key], row)
