@@ -1,19 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Navbar from "../../components/Navbar/Navbar";
+import { getTokenPayload } from "../../utils/authToken";
 import styles from "./AdminLayout.module.css";
-
-function getTokenPayload(token) {
-  try {
-    const payload = token.split(".")[1];
-    if (!payload) return null;
-
-    const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(atob(normalizedPayload));
-  } catch (error) {
-    return null;
-  }
-}
 
 export default function AdminLayout() {
   const token = localStorage.getItem("token");
