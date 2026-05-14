@@ -395,6 +395,7 @@ export default function Login() {
                     <Button
                         fullWidth
                         variant="outlined"
+                        onClick={() => navigate('/')}
                         sx={{
                             py: 1.4,
                             borderRadius: "12px",
