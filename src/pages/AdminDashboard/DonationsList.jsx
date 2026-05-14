@@ -25,6 +25,33 @@ const statusMap = {
   "معلقة": "yellow",
 };
 
+function formatDate(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString();
+}
+
+function getStatusLabel(status) {
+  if (status === "paid") return "مستلمة";
+  if (status === "pending") return "معلقة";
+
+  return status || "";
+}
+
+function mapDonation(donation) {
+  return {
+    ...donation,
+    type: donation.type || donation.method || "",
+    date: donation.date || formatDate(donation.createdAt),
+    status: getStatusLabel(donation.status),
+    notes: donation.notes || "",
+    currency: donation.currency || "",
+  };
+}
+
 export default function DonationsList() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +62,7 @@ export default function DonationsList() {
     try {
       setError("");
       const data = await donationService.getAll();
-      setDonations(data);
+      setDonations(data.map(mapDonation));
     } catch (err) {
       console.error(err);
       setDonations([]);
