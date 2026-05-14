@@ -124,6 +124,13 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    setUser({
+      name: "",
+      email: "",
+    });
     handleUserClose();
     navigate("/login");
   };
