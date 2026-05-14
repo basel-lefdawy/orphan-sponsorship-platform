@@ -11,6 +11,7 @@ export default function GoogleSuccess() {
 
         if (token) {
             localStorage.setItem("accessToken", token);
+            localStorage.setItem("token", token);
         }
 
         if (refreshToken) {

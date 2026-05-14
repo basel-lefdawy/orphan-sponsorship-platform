@@ -8,13 +8,18 @@ export default function FacebookSuccess() {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    const refreshToken = searchParams.get("refreshToken");
 
     if (!token) {
       navigate("/login", { replace: true });
       return;
     }
 
+    localStorage.setItem("accessToken", token);
     localStorage.setItem("token", token);
+    if (refreshToken) {
+      localStorage.setItem("refreshToken", refreshToken);
+    }
     navigate("/", { replace: true });
   }, [navigate, searchParams]);
 
