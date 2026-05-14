@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       } catch (err) {
         console.error(err);
         setDashboard(fallbackDashboard);
-        setError("Unable to load live dashboard data. Showing fallback values.");
+        setError("Unable to load dashboard data from the backend.");
       } finally {
         setLoading(false);
       }

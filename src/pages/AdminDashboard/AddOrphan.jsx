@@ -18,6 +18,7 @@ const initialState = {
 export default function AddOrphan() {
   const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -45,6 +46,7 @@ export default function AddOrphan() {
     if (Object.keys(errs).length > 0) return;
 
     setSubmitting(true);
+    setSubmitError("");
     try {
       await orphanService.create({
         ...form,
@@ -55,6 +57,7 @@ export default function AddOrphan() {
       navigate("/admin/orphans");
     } catch (err) {
       console.error(err);
+      setSubmitError(err.message || "This action is not connected to the backend yet.");
     } finally {
       setSubmitting(false);
     }
@@ -67,6 +70,12 @@ export default function AddOrphan() {
       </div>
 
       <form className={styles.formWrapper} onSubmit={handleSubmit}>
+        {submitError && (
+          <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+            {submitError}
+          </p>
+        )}
+
         <div className={styles.formGrid}>
           <FormInput
             label="الاسم الكامل"

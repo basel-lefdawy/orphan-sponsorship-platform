@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable/DataTable";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { orphanService } from "../../services/orphanService";
 import styles from "./AdminPage.module.css";
+
+const NOT_CONNECTED_MESSAGE = "This action is not connected to the backend yet.";
 
 const columns = [
   { key: "id", label: "#" },
@@ -27,15 +28,18 @@ const statusMap = {
 export default function OrphansList() {
   const [orphans, setOrphans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const navigate = useNavigate();
 
   const fetchOrphans = async () => {
     try {
+      setError("");
       const data = await orphanService.getAll();
       setOrphans(data);
     } catch (err) {
       console.error(err);
+      setOrphans([]);
+      setError("Unable to load orphans from the backend.");
     } finally {
       setLoading(false);
     }
@@ -47,9 +51,16 @@ export default function OrphansList() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await orphanService.delete(deleteTarget.id);
-    setDeleteTarget(null);
-    fetchOrphans();
+    try {
+      setError("");
+      await orphanService.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      fetchOrphans();
+    } catch (err) {
+      console.error(err);
+      setDeleteTarget(null);
+      setError(err.message || NOT_CONNECTED_MESSAGE);
+    }
   };
 
   if (loading) {
@@ -58,13 +69,19 @@ export default function OrphansList() {
 
   return (
     <div className={styles.page} id="admin-orphans-page">
+      {error && (
+        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+          {error}
+        </p>
+      )}
+
       <DataTable
         title="إدارة الأيتام"
         columns={columns}
         data={orphans}
-        onAdd={() => navigate("/admin/orphans/add")}
+        onAdd={() => setError(NOT_CONNECTED_MESSAGE)}
         addLabel="إضافة يتيم"
-        onEdit={(row) => navigate(`/admin/orphans/edit/${row.id}`)}
+        onEdit={() => setError(NOT_CONNECTED_MESSAGE)}
         onDelete={(row) => setDeleteTarget(row)}
         searchPlaceholder="ابحث بالاسم أو الحالة..."
         emptyMessage="لا يوجد أيتام مسجلين"

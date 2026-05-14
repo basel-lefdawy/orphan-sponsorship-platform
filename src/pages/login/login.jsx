@@ -90,6 +90,11 @@ export default function Login() {
             );
 
             localStorage.setItem(
+                "token",
+                responseData.accessToken
+            );
+
+            localStorage.setItem(
                 "refreshToken",
                 responseData.refreshToken
             );
@@ -100,8 +105,8 @@ export default function Login() {
                 JSON.stringify(responseData.user)
             );
 
-            // Redirect to home page
-            navigate("/");
+            // Redirect admins to dashboard and regular users to home page
+            navigate(responseData.user?.role === "admin" ? "/admin" : "/");
 
         } catch (error) {
             console.error(error);

@@ -1,32 +1,74 @@
 import { useState, useEffect } from "react";
 import DataTable from "../../components/DataTable/DataTable";
-import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { sponsorService } from "../../services/sponsorService";
 import styles from "./AdminPage.module.css";
 
+const NOT_AVAILABLE = "Not available";
+
+function getFullName(sponsor) {
+  const parts = [
+    sponsor.firstName,
+    sponsor.fatherName,
+    sponsor.grandfatherName,
+    sponsor.familyName,
+  ].filter(Boolean);
+
+  return parts.length ? parts.join(" ") : NOT_AVAILABLE;
+}
+
+function getContactNumber(sponsor) {
+  return sponsor.mobile || sponsor.phone || NOT_AVAILABLE;
+}
+
+function getMonthlyAmount(sponsor) {
+  const amount = sponsor.sponsorships?.[0]?.monthlySAmount;
+
+  if (amount === undefined || amount === null || amount === "") {
+    return NOT_AVAILABLE;
+  }
+
+  const numericAmount = Number(amount);
+  return Number.isNaN(numericAmount) ? String(amount) : numericAmount.toLocaleString();
+}
+
 const columns = [
   { key: "id", label: "#" },
-  { key: "name", label: "اسم الكفيل" },
-  { key: "phone", label: "الهاتف" },
-  { key: "email", label: "البريد" },
-  { key: "orphanName", label: "اسم اليتيم" },
   {
-    key: "monthlyAmount",
-    label: "المبلغ الشهري",
-    render: (v) => `${v.toLocaleString()} ر.س`,
+    key: "fullName",
+    label: "اسم الكفيل",
+    render: (_, row) => getFullName(row),
   },
-  { key: "status", label: "الحالة", isStatus: true },
+  {
+    key: "mobile",
+    label: "الهاتف",
+    render: (_, row) => getContactNumber(row),
+  },
+  {
+    key: "email",
+    label: "البريد",
+    render: (value) => value || NOT_AVAILABLE,
+  },
+  {
+    key: "monthlySAmount",
+    label: "المبلغ الشهري",
+    render: (_, row) => getMonthlyAmount(row),
+  },
+  {
+    key: "status",
+    label: "الحالة",
+    isStatus: true,
+    render: (value) => value || NOT_AVAILABLE,
+  },
 ];
 
 const statusMap = {
-  "نشط": "green",
-  "متوقف": "red",
+  active: "green",
+  inactive: "red",
 };
 
 export default function SponsorsList() {
   const [sponsors, setSponsors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchSponsors = async () => {
     try {
@@ -34,6 +76,7 @@ export default function SponsorsList() {
       setSponsors(data);
     } catch (err) {
       console.error(err);
+      setSponsors([]);
     } finally {
       setLoading(false);
     }
@@ -43,15 +86,12 @@ export default function SponsorsList() {
     fetchSponsors();
   }, []);
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    await sponsorService.delete(deleteTarget.id);
-    setDeleteTarget(null);
-    fetchSponsors();
-  };
-
   if (loading) {
-    return <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>جاري التحميل...</p>;
+    return (
+      <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>
+        جاري التحميل...
+      </p>
+    );
   }
 
   return (
@@ -60,19 +100,9 @@ export default function SponsorsList() {
         title="إدارة الكفالات"
         columns={columns}
         data={sponsors}
-        onEdit={(row) => alert(`تعديل الكفيل #${row.id}`)}
-        onDelete={(row) => setDeleteTarget(row)}
         searchPlaceholder="ابحث باسم الكفيل..."
         emptyMessage="لا توجد كفالات"
         statusMap={statusMap}
-      />
-
-      <ConfirmModal
-        isOpen={!!deleteTarget}
-        title="حذف كفالة"
-        message={`هل أنت متأكد من حذف كفالة "${deleteTarget?.name}"؟`}
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );
