@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Button, MenuItem } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -39,16 +40,10 @@ const SponsorFormPage = () => {
     setShowBankFields(paymentMethod === "BankAccount");
   }, [paymentMethod]);
 
-  /** اليتيم المختار من الصفحة السابقة — كما في الإصدار السابق */
-  const [orphanFromSelection, setOrphanFromSelection] = useState(null);
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("selectedOrphan");
-      setOrphanFromSelection(raw ? JSON.parse(raw) : null);
-    } catch {
-      setOrphanFromSelection(null);
-    }
-  }, []);
+  // التقاط id اليتيم من الرابط
+  const { id } = useParams();
+  // يمكن استخدام id مباشرة في الطلب
+  const orphanFromSelection = { orphanId: id };
 
   const renderField = (field) => {
     if (field.type === "number") {

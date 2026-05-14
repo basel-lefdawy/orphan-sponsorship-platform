@@ -145,7 +145,7 @@ function Details() {
               sponsoringType: orphan.sponsoringType,
             })
           );
-          navigate("/sponsor-form");
+          navigate(`/sponsor-form/${orphan.id}`);
         }}
       >
         اكفل اليتيم

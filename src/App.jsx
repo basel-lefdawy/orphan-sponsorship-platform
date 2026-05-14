@@ -54,7 +54,7 @@ function App() {
         <Route path="/help" element={<HelpRequest />} />
         <Route path="/donate" element={<DonationForm />} />
 
-        <Route path="/sponsor-form" element={<SponsorFormPage />} />
+        <Route path="/sponsor-form/:id" element={<SponsorFormPage />} />
         <Route
           path="/orphan-sponsorship-form"
           element={<OrphanSponsorshipForm />}
