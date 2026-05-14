@@ -12,7 +12,7 @@ const VerifyEmailPage = () => {
         const params = new URLSearchParams(location.search);
         const token = params.get("token");
         const email = params.get("email");
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+        const apiBaseUrl = "http://localhost:5000";
 
         if (!token || !email) {
             setMessage("Invalid verification link.");

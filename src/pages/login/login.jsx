@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
-    Checkbox,
-    FormControlLabel,
     Button,
     Link,
     Box,
@@ -14,6 +12,7 @@ import {
     Divider,
     Stack,
     CircularProgress,
+    Alert,
 } from "@mui/material";
 
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -34,6 +33,22 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 
+const OAUTH_ERROR_MESSAGES = {
+    EMAIL_ALREADY_EXISTS:
+        "هذا البريد الإلكتروني مسجل بالفعل باستخدام كلمة مرور. يرجى تسجيل الدخول بالبريد الإلكتروني وكلمة المرور.",
+};
+
+const getFriendlyOAuthError = (raw) => {
+    // raw is like "Google EMAIL_ALREADY_EXISTS" or "Facebook EMAIL_ALREADY_EXISTS"
+    const code = Object.keys(OAUTH_ERROR_MESSAGES).find((key) =>
+        raw.includes(key)
+    );
+    return (
+        OAUTH_ERROR_MESSAGES[code] ||
+        "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى."
+    );
+};
+
 export default function Login() {
     const navigate = useNavigate();
 
@@ -43,6 +58,22 @@ export default function Login() {
 
     const apiBaseUrl =
         import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+    // Read ?error= from URL on mount (Google/Facebook OAuth callback)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const oauthError = params.get("error");
+        if (oauthError) {
+            try {
+                const decoded = decodeURIComponent(oauthError);
+                setServerError(getFriendlyOAuthError(decoded));
+            } catch {
+                setServerError("حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.");
+            }
+            // Clean the URL — show error only once
+            window.history.replaceState(null, "", window.location.pathname);
+        }
+    }, []);
 
     const handleFacebookLogin = () => {
         window.location.href = `${apiBaseUrl}/api/auth/facebook`;
@@ -58,7 +89,6 @@ export default function Login() {
         defaultValues: {
             email: "",
             password: "",
-            rememberMe: false,
         },
     });
 
@@ -169,16 +199,22 @@ export default function Login() {
                     </Typography>
 
                     {serverError && (
-                        <Typography
+                        <Alert
+                            severity="error"
+                            dir="rtl"
                             sx={{
-                                color: "#dc2626",
-                                mb: 2,
-                                textAlign: "center",
-                                fontWeight: 500,
+                                mb: 3,
+                                textAlign: "right",
+                                alignItems: "center",
+                                borderRadius: "12px",
+                                "& .MuiAlert-icon": {
+                                    ml: 1,
+                                    mr: 0,
+                                },
                             }}
                         >
                             {serverError}
-                        </Typography>
+                        </Alert>
                     )}
 
                     {/* Email */}
@@ -288,16 +324,14 @@ export default function Login() {
                         )}
                     />
 
-                    {/* Remember Me + Forgot Password */}
+                    {/* Forgot Password */}
                     <Box
                         sx={{
                             mt: 1,
                             mb: 3,
                             display: "flex",
-                            justifyContent: "space-between",
+                            justifyContent: "flex-start",
                             alignItems: "center",
-                            gap: 2,
-                            flexWrap: "wrap",
                         }}
                     >
                         <Link
@@ -312,38 +346,6 @@ export default function Login() {
                         >
                             نسيت كلمة المرور؟
                         </Link>
-
-                        <Controller
-                            name="rememberMe"
-                            control={control}
-                            render={({ field }) => (
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={field.value}
-                                            onChange={(e) =>
-                                                field.onChange(e.target.checked)
-                                            }
-                                            sx={{
-                                                color: "#D0D5DD",
-                                                "&.Mui-checked": {
-                                                    color: "#22c55e",
-                                                },
-                                            }}
-                                        />
-                                    }
-                                    label="تذكرني"
-                                    sx={{
-                                        m: 0,
-                                        "& .MuiFormControlLabel-label": {
-                                            color: "#344054",
-                                            fontWeight: 500,
-                                            fontSize: "0.95rem",
-                                        },
-                                    }}
-                                />
-                            )}
-                        />
                     </Box>
 
                     {/* Login Button */}
