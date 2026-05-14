@@ -31,11 +31,11 @@ export default function EditOrphan() {
             notes: orphan.notes || "",
           });
         } else {
-          setLoadError("This action is not connected to the backend yet.");
+          setLoadError("هذا الإجراء غير متصل بالباكند بعد.");
         }
       } catch (err) {
         console.error(err);
-        setLoadError(err.message || "Unable to load this orphan from the backend.");
+        setLoadError(err.message || "تعذر تحميل بيانات هذا اليتيم من الباكند.");
       } finally {
         setLoading(false);
       }
@@ -76,7 +76,7 @@ export default function EditOrphan() {
       navigate("/admin/orphans");
     } catch (err) {
       console.error(err);
-      setSubmitError(err.message || "This action is not connected to the backend yet.");
+      setSubmitError(err.message || "هذا الإجراء غير متصل بالباكند بعد.");
     } finally {
       setSubmitting(false);
     }
@@ -90,7 +90,7 @@ export default function EditOrphan() {
     return (
       <div className={styles.page} id="edit-orphan-page">
         <p style={{ color: "#dc2626", textAlign: "center", paddingTop: 40 }}>
-          {loadError || "This action is not connected to the backend yet."}
+          {loadError || "هذا الإجراء غير متصل بالباكند بعد."}
         </p>
         <div className={styles.formActions}>
           <Link to="/admin/orphans" className={styles.cancelBtn}>

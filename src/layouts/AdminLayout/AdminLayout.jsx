@@ -28,7 +28,7 @@ export default function AdminLayout() {
       <div className={styles.layout} id="admin-layout">
         <main className={styles.content}>
           <p style={{ color: "#dc2626", textAlign: "center", paddingTop: 80 }}>
-            Unauthorized: admin access is required.
+            غير مصرح لك بالدخول. هذه الصفحة مخصصة للمسؤول فقط.
           </p>
         </main>
       </div>

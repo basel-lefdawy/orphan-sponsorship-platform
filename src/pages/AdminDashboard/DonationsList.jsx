@@ -4,7 +4,7 @@ import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { donationService } from "../../services/donationService";
 import styles from "./AdminPage.module.css";
 
-const NOT_CONNECTED_MESSAGE = "This action is not connected to the backend yet.";
+const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالباكند بعد.";
 
 const columns = [
   { key: "id", label: "#" },
@@ -39,7 +39,7 @@ export default function DonationsList() {
     } catch (err) {
       console.error(err);
       setDonations([]);
-      setError("Unable to load donations from the backend.");
+      setError("تعذر تحميل بيانات التبرعات من الباكند.");
     } finally {
       setLoading(false);
     }

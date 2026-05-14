@@ -3,7 +3,7 @@ import DataTable from "../../components/DataTable/DataTable";
 import { sponsorService } from "../../services/sponsorService";
 import styles from "./AdminPage.module.css";
 
-const NOT_AVAILABLE = "Not available";
+const NOT_AVAILABLE = "غير متوفر";
 
 function getFullName(sponsor) {
   const parts = [
@@ -29,6 +29,12 @@ function getMonthlyAmount(sponsor) {
 
   const numericAmount = Number(amount);
   return Number.isNaN(numericAmount) ? String(amount) : numericAmount.toLocaleString();
+}
+
+function getStatusLabel(status) {
+  if (status === "active") return "نشط";
+  if (status === "inactive") return "غير نشط";
+  return status || NOT_AVAILABLE;
 }
 
 const columns = [
@@ -57,7 +63,7 @@ const columns = [
     key: "status",
     label: "الحالة",
     isStatus: true,
-    render: (value) => value || NOT_AVAILABLE,
+    render: (value) => getStatusLabel(value),
   },
 ];
 

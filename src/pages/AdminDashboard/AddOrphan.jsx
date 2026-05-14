@@ -57,7 +57,7 @@ export default function AddOrphan() {
       navigate("/admin/orphans");
     } catch (err) {
       console.error(err);
-      setSubmitError(err.message || "This action is not connected to the backend yet.");
+      setSubmitError(err.message || "هذا الإجراء غير متصل بالباكند بعد.");
     } finally {
       setSubmitting(false);
     }

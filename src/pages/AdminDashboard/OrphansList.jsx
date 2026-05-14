@@ -4,7 +4,7 @@ import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { orphanService } from "../../services/orphanService";
 import styles from "./AdminPage.module.css";
 
-const NOT_CONNECTED_MESSAGE = "This action is not connected to the backend yet.";
+const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالباكند بعد.";
 
 const columns = [
   { key: "id", label: "#" },
@@ -39,7 +39,7 @@ export default function OrphansList() {
     } catch (err) {
       console.error(err);
       setOrphans([]);
-      setError("Unable to load orphans from the backend.");
+      setError("تعذر تحميل بيانات الأيتام من الباكند.");
     } finally {
       setLoading(false);
     }

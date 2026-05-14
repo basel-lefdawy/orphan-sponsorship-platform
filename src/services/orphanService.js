@@ -1,4 +1,4 @@
-const NOT_CONNECTED_MESSAGE = "This action is not connected to the backend yet.";
+const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالباكند بعد.";
 
 function notConnected() {
   throw new Error(NOT_CONNECTED_MESSAGE);

@@ -37,7 +37,7 @@ export default function HelpRequestsList() {
       setHelpRequests(data);
     } catch (err) {
       console.error(err);
-      setError("Unable to load help requests from the backend.");
+      setError("تعذر تحميل طلبات المساعدة من الباكند.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export default function HelpRequestsList() {
       fetchHelpRequests();
     } catch (err) {
       console.error(err);
-      setError("Unable to delete this help request.");
+      setError("تعذر حذف طلب المساعدة.");
     }
   };
 
