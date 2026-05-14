@@ -10,6 +10,7 @@ import {
     IconButton,
     Button,
     Link,
+    Alert,
 } from "@mui/material";
 
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -20,6 +21,42 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 
 import { hasSignUpErrors, validateSignUpForm } from "../../utils/validation";
 
+const FALLBACK_SIGNUP_ERROR =
+    "تعذر إنشاء الحساب. يرجى التحقق من البيانات والمحاولة مرة أخرى.";
+
+const arabicValidationMessages = {
+    "Name must be between 2 and 50 characters":
+        "يجب أن يكون الاسم بين حرفين و50 حرفا.",
+    "Name can only contain letters, spaces, hyphens, and apostrophes":
+        "يمكن أن يحتوي الاسم على أحرف عربية أو إنجليزية ومسافات وشرطات وفواصل علوية فقط.",
+    "Email is required": "البريد الإلكتروني مطلوب.",
+    "Invalid email format": "يرجى إدخال بريد إلكتروني صالح.",
+    "Password must be between 8 and 128 characters":
+        "يجب أن تكون كلمة المرور بين 8 و128 حرفا.",
+    "Password must contain at least one uppercase letter":
+        "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
+    "Password must contain at least one lowercase letter":
+        "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
+    "Password must contain at least one number":
+        "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
+    "Password must contain at least one special character (@$!%*?&_-#^)":
+        "يجب أن تحتوي كلمة المرور على رمز خاص واحد على الأقل (@$!%*?&_-#^).",
+    "Please confirm your password": "يرجى تأكيد كلمة المرور.",
+    "Passwords do not match": "كلمتا المرور غير متطابقتين.",
+    "Email is already registered": "هذا البريد الإلكتروني مسجل بالفعل.",
+};
+
+const toArabicSignupMessage = (message) =>
+    arabicValidationMessages[message] || message || FALLBACK_SIGNUP_ERROR;
+
+const getSignupErrorMessage = (data) => {
+    const firstErrorMessage = Array.isArray(data?.errors)
+        ? data.errors.find((error) => error?.message)?.message
+        : "";
+
+    return toArabicSignupMessage(firstErrorMessage || data?.message);
+};
+
 export default function SignUp() {
     const navigate = useNavigate();
 
@@ -27,6 +64,7 @@ export default function SignUp() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState("");
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -54,6 +92,7 @@ export default function SignUp() {
             ...prev,
             [name]: value,
         }));
+        setServerError("");
 
         if (!touchedFields[name]) {
             setTouchedFields((prev) => ({
@@ -76,6 +115,7 @@ export default function SignUp() {
         e.preventDefault();
 
         setSubmitted(true);
+        setServerError("");
 
         if (!isFormValid) return;
 
@@ -101,15 +141,13 @@ export default function SignUp() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Registration failed");
+                throw new Error(getSignupErrorMessage(data));
             }
-
-            alert(data.message);
 
             navigate("/login");
         } catch (error) {
             console.error(error);
-            alert(error.message);
+            setServerError(error.message || FALLBACK_SIGNUP_ERROR);
         } finally {
             setLoading(false);
         }
@@ -223,6 +261,25 @@ export default function SignUp() {
                     <Typography sx={{ color: "#667085", mb: 4 }}>
                         انضم إلينا لصنع فرق في حياة الأطفال
                     </Typography>
+
+                    {serverError && (
+                        <Alert
+                            severity="error"
+                            dir="rtl"
+                            sx={{
+                                mb: 3,
+                                textAlign: "right",
+                                alignItems: "center",
+                                borderRadius: "12px",
+                                "& .MuiAlert-icon": {
+                                    ml: 1,
+                                    mr: 0,
+                                },
+                            }}
+                        >
+                            {serverError}
+                        </Alert>
+                    )}
 
                     {/* Full Name */}
                     <Typography
