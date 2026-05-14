@@ -113,7 +113,7 @@ function OrphanCard({ id, name, gender, age, place, image,description }) {
           <Button
             variant="contained"
             fullWidth
-            onClick={() => navigate(`/sponsor-form/${data.id}`)}
+            onClick={() => navigate(`/sponsor-form/${id}`)}
             sx={{
               py: 1.8,
               bgcolor: "#9DB25D",
