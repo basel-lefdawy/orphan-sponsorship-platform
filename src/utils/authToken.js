@@ -5,7 +5,7 @@ export function getTokenPayload(token) {
 
     const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(atob(normalizedPayload));
-  } catch (error) {
+  } catch {
     return null;
   }
 }
