@@ -2,7 +2,23 @@ import React from 'react';
 import { Card, CardContent, Typography, Button, Avatar, Box, Chip } from "@mui/material";
 import { LocationOn, Cake, Person } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+const calculateAge = (birthDate) => {
+  const today = new Date();
+  const birth = new Date(birthDate);
 
+  let age = today.getFullYear() - birth.getFullYear();
+
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birth.getDate())
+  ) {
+    age--;
+  }
+
+  return `${age} سنوات`;
+};
 function OrphanCard({ orphan }) {
   const navigate = useNavigate();
 
@@ -60,14 +76,14 @@ function OrphanCard({ orphan }) {
             fontWeight="800" 
             sx={{ color: "#1A1C18", mb: 2 }}
           >
-            {data.name}
+            {data.OrphanName}
           </Typography>
 
           {/* معلومات سريعة (العمر والجنس) */}
           <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 3 }}>
             <Chip 
               icon={<Cake sx={{ fontSize: "1rem !important" }} />} 
-              label={data.age} 
+              label={calculateAge(data.OrphanBirthDate)} 
               variant="outlined"
               sx={{ borderRadius: "12px", border: "none", bgcolor: "#F4F4EC" }}
             />
@@ -79,11 +95,10 @@ function OrphanCard({ orphan }) {
             />
           </Box>
 
-          {/* المكان */}
+          {/* نوع الكفالة*/}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5, color: "#45483A", mb: 2 }}>
-            <LocationOn sx={{ fontSize: "1.2rem", color: "#9DB25D" }} />
             <Typography variant="body2" fontWeight="500">
-              {data.place}
+              {data.GuaranteeType}
             </Typography>
           </Box>
 
@@ -98,7 +113,7 @@ function OrphanCard({ orphan }) {
               px: 1
             }}
           >
-            "{data.description}"
+            {data.description}
           </Typography>
 
           {/* زر الكفالة المحدث */}

@@ -110,8 +110,8 @@ function Orphan() {
                 image={null}
                 age={calculateAge(orphan.OrphanBirthDate)}
                 gender={orphan.gender}
-                place={orphan.GuaranteeType}
-                description={orphan.OrphanFamilyName}
+                GuaranteeType={orphan.GuaranteeType}
+                description={orphan.description}
               />
         ))}
 

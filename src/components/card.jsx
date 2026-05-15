@@ -4,7 +4,7 @@ import { LocationOn, Cake, Person } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 
-function OrphanCard({ id, name, gender, age, place, image,description }) {
+function OrphanCard({ id, name, gender, age, GuaranteeType, image,description }) {
   const navigate = useNavigate();
 
   // القيم الافتراضية للتجربة (يمكنك استبدالها ببيانات الـ props)
@@ -82,11 +82,11 @@ function OrphanCard({ id, name, gender, age, place, image,description }) {
             />
           </Box>
 
-          {/* المكان */}
+          {/* نوع الكفالة */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5, color: "#45483A", mb: 2 }}>
             <LocationOn sx={{ fontSize: "1.2rem", color: "#9DB25D" }} />
             <Typography variant="body2" fontWeight="500">
-              {place}
+              {GuaranteeType}
             </Typography>
           </Box>
 
