@@ -145,10 +145,13 @@ const SponsorFormPage = () => {
       };
 
       const response = await fetch(`${API_BASE_URL}/api/sponsorship-requests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(payload),
+        });
 
       const result = await response.json();
 
