@@ -65,10 +65,28 @@ function getDonationName(donation) {
   return donation.donorName || donation.firstName || donation.name || "متبرع غير معروف";
 }
 
-function getDonationDetail(donation) {
+function formatDonationAmount(donation) {
   const amount = Number(donation.amount || 0);
-  const amountText = amount > 0 ? amount.toLocaleString() : donation.type || "لا يوجد مبلغ";
-  return [amountText, donation.date].filter(Boolean).join(" - ");
+  if (amount <= 0) return donation.type || "لا يوجد مبلغ";
+
+  const currency = donation.currency ? ` ${donation.currency}` : "";
+  return `${amount.toLocaleString()}${currency}`;
+}
+
+function formatDonationDate(donation) {
+  const rawDate = donation.date || donation.createdAt;
+  if (!rawDate) return "";
+
+  const date = new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString();
+}
+
+function getDonationDetail(donation) {
+  return [formatDonationAmount(donation), formatDonationDate(donation)]
+    .filter(Boolean)
+    .join(" - ");
 }
 
 export default function AdminDashboard() {

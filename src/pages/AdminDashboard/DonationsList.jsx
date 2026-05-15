@@ -8,16 +8,17 @@ const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالبا�
 
 const columns = [
   { key: "id", label: "#" },
+  { key: "donationNumber", label: "رقم التبرع" },
   { key: "donorName", label: "اسم المتبرع" },
   {
     key: "amount",
     label: "المبلغ",
-    render: (v, row) => (v > 0 ? `${v.toLocaleString()} ${row.currency}` : "-"),
+    render: (value, row) => (value > 0 ? `${value.toLocaleString()} ${row.currency}` : "-"),
   },
-  { key: "type", label: "النوع" },
+  { key: "method", label: "طريقة الدفع" },
+  { key: "email", label: "البريد", render: (value) => value || "-" },
   { key: "date", label: "التاريخ" },
   { key: "status", label: "الحالة", isStatus: true },
-  { key: "notes", label: "ملاحظات" },
 ];
 
 const statusMap = {
@@ -44,11 +45,12 @@ function getStatusLabel(status) {
 function mapDonation(donation) {
   return {
     ...donation,
-    type: donation.type || donation.method || "",
-    date: donation.date || formatDate(donation.createdAt),
+    donationNumber: donation.donationNumber || "-",
+    donorName: donation.donorName || (donation.isAnonymous ? "متبرع مجهول" : "-"),
+    method: donation.method || "-",
+    date: formatDate(donation.createdAt),
     rawStatus: donation.status || "pending",
     status: getStatusLabel(donation.status),
-    notes: donation.notes || "",
     currency: donation.currency || "",
   };
 }
@@ -153,8 +155,8 @@ export default function DonationsList() {
                   font: "inherit",
                 }}
               >
-                <option value="pending">pending</option>
-                <option value="paid">paid</option>
+                <option value="pending">معلقة</option>
+                <option value="paid">مستلمة</option>
               </select>
             </label>
           </div>
@@ -180,7 +182,7 @@ export default function DonationsList() {
         data={donations}
         onEdit={handleEdit}
         onDelete={(row) => setDeleteTarget(row)}
-        searchPlaceholder="ابحث باسم المتبرع..."
+        searchPlaceholder="ابحث باسم المتبرع أو رقم التبرع..."
         emptyMessage="لا توجد تبرعات"
         statusMap={statusMap}
       />
