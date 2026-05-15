@@ -84,7 +84,6 @@ function OrphanCard({ id, name, gender, age, GuaranteeType, image,description })
 
           {/* نوع الكفالة */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5, color: "#45483A", mb: 2 }}>
-            <LocationOn sx={{ fontSize: "1.2rem", color: "#9DB25D" }} />
             <Typography variant="body2" fontWeight="500">
               {GuaranteeType}
             </Typography>
