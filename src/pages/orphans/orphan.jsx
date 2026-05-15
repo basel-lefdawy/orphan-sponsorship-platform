@@ -3,6 +3,23 @@ import { useEffect, useState } from 'react';
 import { fetchOrphans } from "../../services/apis";
 import { Box, Typography } from '@mui/material';
 
+const calculateAge = (birthDate) => {
+  const today = new Date();
+  const birth = new Date(birthDate);
+
+  let age = today.getFullYear() - birth.getFullYear();
+
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birth.getDate())
+  ) {
+    age--;
+  }
+
+  return `${age} سنوات`;
+};
 
 function Orphan() {
   const [orphans, setOrphans] = useState([]);
@@ -87,16 +104,15 @@ function Orphan() {
       >
         {orphans.map((orphan, index) => (
           <OrphanCard
-            key={`orphan-${index}`}
-            id={index + 1}
-            name={orphan.name}
-            image={orphan.image}
-            age={orphan.age}
-            gender={orphan.gender}
-            place={orphan.place}
-            description={orphan.description}
-         
-          />
+                key={orphan.id}
+                id={orphan.id}
+                name={orphan.OrphanName}
+                image={null}
+                age={calculateAge(orphan.OrphanBirthDate)}
+                gender={orphan.gender}
+                place={orphan.GuaranteeType}
+                description={orphan.OrphanFamilyName}
+              />
         ))}
 
       </Box> {/* نهاية بطاقات الايتام */}

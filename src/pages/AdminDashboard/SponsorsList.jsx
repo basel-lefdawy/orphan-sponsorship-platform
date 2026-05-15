@@ -75,14 +75,17 @@ const statusMap = {
 export default function SponsorsList() {
   const [sponsors, setSponsors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchSponsors = async () => {
     try {
+      setError("");
       const data = await sponsorService.getAll();
       setSponsors(data);
     } catch (err) {
       console.error(err);
       setSponsors([]);
+      setError("تعذر تحميل بيانات الكفالات من الباكند.");
     } finally {
       setLoading(false);
     }
@@ -102,6 +105,12 @@ export default function SponsorsList() {
 
   return (
     <div className={styles.page} id="admin-sponsors-page">
+      {error && (
+        <p className={styles.errorBanner} role="alert">
+          {error}
+        </p>
+      )}
+
       <DataTable
         title="إدارة الكفالات"
         columns={columns}

@@ -106,7 +106,7 @@ function OrphanCard({ id, name, gender, age, place, image,description }) {
                 minHeight: "90px" 
             }}
           >
-            "{description}"
+            {description}
           </Typography>
 
           {/* زر الكفالة المحدث */}

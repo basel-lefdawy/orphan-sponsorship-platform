@@ -131,7 +131,7 @@ export default function DonationsList() {
   return (
     <div className={styles.page} id="admin-donations-page">
       {error && (
-        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+        <p className={styles.errorBanner} role="alert">
           {error}
         </p>
       )}

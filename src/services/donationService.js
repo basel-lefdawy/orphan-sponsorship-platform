@@ -30,16 +30,18 @@ export const donationService = {
     const response = await fetch(ADMIN_DONATIONS_URL, {
       headers: getAuthHeaders(),
     });
+    const payload = await parseJsonResponse(response);
 
-    return parseJsonResponse(response);
+    return Array.isArray(payload) ? payload : payload?.data || [];
   },
 
   async getById(id) {
     const response = await fetch(`${ADMIN_DONATIONS_URL}/${id}`, {
       headers: getAuthHeaders(),
     });
+    const payload = await parseJsonResponse(response);
 
-    return parseJsonResponse(response);
+    return payload?.data || payload || null;
   },
 
   async create() {
