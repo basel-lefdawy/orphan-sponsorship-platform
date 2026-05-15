@@ -147,7 +147,7 @@ export default function SignUp() {
             }
 
             setSuccessMessage(
-                data?.message || "تم إنشاء حسابك! يرجى التحقق من بريدك الإلكتروني."
+                "تم إنشاء حسابك! يرجى التحقق من بريدك الإلكتروني."
             );
         } catch (error) {
             console.error(error);

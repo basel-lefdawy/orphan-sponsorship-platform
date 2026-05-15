@@ -30,13 +30,25 @@ const statusConfig = {
   },
 };
 
-const normalizeRequest = (request, index) => ({
-  id: request.id ?? request._id ?? `request-${index}`,
+// NORMALIZE REQUEST
+const normalizeRequest = (
+  request,
+  type,
+  index
+) => ({
+  id:
+    request.id ??
+    request._id ??
+    `${type}-${index}`,
+
+  type,
 
   title:
     request.title ??
     request.type ??
-    "طلب بدون عنوان",
+    (type === "help"
+      ? "طلب مساعدة"
+      : "طلب كفالة"),
 
   summary:
     request.summary ??
@@ -55,12 +67,14 @@ export default function UserRequestsList({
 }) {
   const [requests, setRequests] = useState([]);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] =
+    useState(false);
 
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchRequests = async () => {
+
       if (!isAuthenticated) {
         setRequests([]);
         setError("");
@@ -68,6 +82,7 @@ export default function UserRequestsList({
       }
 
       try {
+
         setIsLoading(true);
 
         setError("");
@@ -77,7 +92,7 @@ export default function UserRequestsList({
           "http://localhost:5000";
 
         const { data } = await axios.get(
-          `${apiBaseUrl}/api/requests`,
+          `${apiBaseUrl}/api/requests/my-requests`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -85,19 +100,62 @@ export default function UserRequestsList({
           }
         );
 
-        const payload = Array.isArray(data)
-          ? data
-          : data?.requests ?? [];
+        // BACKEND RESPONSE:
+        // {
+        //   success: true,
+        //   data: {
+        //     helpRequests: [],
+        //     sponsorshipRequests: []
+        //   }
+        // }
 
-        setRequests(
-          payload.map(normalizeRequest)
+        const helpRequests =
+          data?.data?.helpRequests ?? [];
+
+        const sponsorshipRequests =
+          data?.data?.sponsorshipRequests ??
+          [];
+
+        // MERGE BOTH TYPES
+        const normalizedRequests = [
+          ...helpRequests.map(
+            (request, index) =>
+              normalizeRequest(
+                request,
+                "help",
+                index
+              )
+          ),
+
+          ...sponsorshipRequests.map(
+            (request, index) =>
+              normalizeRequest(
+                request,
+                "sponsorship",
+                index
+              )
+          ),
+        ];
+
+        // SORT NEWEST FIRST
+        normalizedRequests.sort(
+          (a, b) =>
+            new Date(b.createdAt || 0) -
+            new Date(a.createdAt || 0)
         );
 
+        setRequests(normalizedRequests);
+
       } catch (fetchError) {
+
         console.error(fetchError);
 
-        setError("تعذر تحميل الطلبات حاليا");
+        setError(
+          "تعذر تحميل الطلبات حاليا"
+        );
+
       } finally {
+
         setIsLoading(false);
       }
     };
@@ -107,6 +165,7 @@ export default function UserRequestsList({
   }, [isAuthenticated, authToken]);
 
   const content = useMemo(() => {
+
     if (!isAuthenticated) {
       return (
         <Typography
@@ -154,6 +213,7 @@ export default function UserRequestsList({
     return (
       <Stack spacing={1.2}>
         {requests.map((request) => {
+
           const status =
             statusConfig[request.status] ??
             statusConfig.pending;
@@ -187,13 +247,25 @@ export default function UserRequestsList({
                     gap: 1,
                   }}
                 >
-                  <Typography
-                    variant="subtitle2"
-                    fontWeight={700}
-                    color="#1d2939"
-                  >
-                    {request.title}
-                  </Typography>
+                  <Box>
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={700}
+                      color="#1d2939"
+                    >
+                      {request.title}
+                    </Typography>
+
+                    <Typography
+                      variant="caption"
+                      color="#98a2b3"
+                    >
+                      {request.type ===
+                        "help"
+                        ? "طلب مساعدة"
+                        : "طلب كفالة"}
+                    </Typography>
+                  </Box>
 
                   <Chip
                     size="small"

@@ -25,12 +25,14 @@ const defaultValues = {
 const sponsorshipFields = [
   { name: "orphanName", label: "اسم اليتيم *", type: "text", rules: { required: "اسم اليتيم مطلوب" } },
   { name: "orphanAge", label: "عمر اليتيم *", type: "text", rules: { required: "العمر مطلوب" } },
-  { name: "orphanGender", label: "جنس اليتيم *", type: "select", options: [
+  {
+    name: "orphanGender", label: "جنس اليتيم *", type: "select", options: [
       { value: "ذكر", label: "ذكر" },
       { value: "أنثى", label: "أنثى" }
     ], rules: { required: "الجنس مطلوب" }
   },
-  { name: "sponsorshipType", label: "نوع الكفالة *", type: "select", options: [
+  {
+    name: "sponsorshipType", label: "نوع الكفالة *", type: "select", options: [
       { value: "شهرية", label: "شهرية" },
       { value: "سنوية", label: "سنوية" }
     ], rules: { required: "نوع الكفالة مطلوب" }
@@ -42,10 +44,12 @@ const sponsorshipFields = [
 const sponsorFields = [
   { name: "sponsorName", label: "اسم الكفيل *", type: "text", rules: { required: "اسم الكفيل مطلوب" } },
   { name: "sponsorPhone", label: "رقم الجوال *", type: "text", rules: { required: "رقم الجوال مطلوب" } },
-  { name: "sponsorEmail", label: "البريد الإلكتروني *", type: "text", rules: {
+  {
+    name: "sponsorEmail", label: "البريد الإلكتروني *", type: "text", rules: {
       required: "البريد الإلكتروني مطلوب",
       pattern: { value: /^\S+@\S+$/i, message: "البريد الإلكتروني غير صالح" }
-    } },
+    }
+  },
 ];
 
 const OrphanSponsorshipForm = () => {
@@ -58,12 +62,15 @@ const OrphanSponsorshipForm = () => {
     title: "",
     message: "",
   });
-
+  const token = localStorage.getItem("accessToken");
   const onSubmit = async (data) => {
     try {
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("فشل إرسال البيانات");

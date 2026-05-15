@@ -26,7 +26,7 @@ import {
 } from "./formFields";
 
 const HelpRequest = () => {
-
+  const token = localStorage.getItem("accessToken");
   // BACKEND API
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const API_URL = `${API_BASE_URL}/api/help-requests`;
@@ -42,6 +42,7 @@ const HelpRequest = () => {
     mode: "all",
     defaultValues,
   });
+
 
   const [showBankFields, setShowBankFields] = useState(false);
 
@@ -85,84 +86,85 @@ const HelpRequest = () => {
   }, [DeceasedPerson]);
 
   // SUBMIT
-const onSubmit = async (data) => {
-  try {
+  const onSubmit = async (data) => {
+    try {
 
-    const formattedData = {
-      ...data,
-      FamilyMember: Number(data.FamilyMember),
-      MonthlyIncome: Number(data.MonthlyIncome),
-      email: data.email?.trim().toLowerCase(),
-      phoneNumber: data.phoneNumber?.trim(),
-      OrphanID: data.OrphanID?.trim(),
-      GuardianID: data.GuardianID?.trim(),
-    };
-    
-    // تنظيف الحقول الفاضية
- 
-    const optionalFields = [
-      "FatherDeathDate",
-      "MotherDeathDate",
-      "IBAN",
-      "bankAccount",
-      "homePhone"
-    ];
+      const formattedData = {
+        ...data,
+        FamilyMember: Number(data.FamilyMember),
+        MonthlyIncome: Number(data.MonthlyIncome),
+        email: data.email?.trim().toLowerCase(),
+        phoneNumber: data.phoneNumber?.trim(),
+        OrphanID: data.OrphanID?.trim(),
+        GuardianID: data.GuardianID?.trim(),
+      };
 
-    optionalFields.forEach((f) => {
-      if (!formattedData[f]) delete formattedData[f];
-    });
+      // تنظيف الحقول الفاضية
 
-    console.log("FINAL DATA:", formattedData);
+      const optionalFields = [
+        "FatherDeathDate",
+        "MotherDeathDate",
+        "IBAN",
+        "bankAccount",
+        "homePhone"
+      ];
 
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formattedData),
-    });
+      optionalFields.forEach((f) => {
+        if (!formattedData[f]) delete formattedData[f];
+      });
 
-    const result = await response.json();
+      console.log("FINAL DATA:", formattedData);
 
-    if (!response.ok) {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formattedData),
+      });
 
-  // VALIDATION ERRORS
-  if (result.errors?.length) {
+      const result = await response.json();
 
-    const messages = result.errors
-      .map((e) => `• ${e.message}`)
-      .join("\n");
+      if (!response.ok) {
 
-    throw new Error(messages);
-  }
+        // VALIDATION ERRORS
+        if (result.errors?.length) {
 
-  // NORMAL ERROR MESSAGE
-  throw new Error(
-    result.message || "فشل إرسال البيانات"
-  );
-}
+          const messages = result.errors
+            .map((e) => `• ${e.message}`)
+            .join("\n");
 
-    setDialog({
-      open: true,
-      type: "success",
-      title: "تم إرسال الطلب بنجاح",
-      message: "تم إرسال الطلب بنجاح",
-    });
+          throw new Error(messages);
+        }
 
-    reset(defaultValues);
+        // NORMAL ERROR MESSAGE
+        throw new Error(
+          result.message || "فشل إرسال البيانات"
+        );
+      }
 
-  } catch (err) {
+      setDialog({
+        open: true,
+        type: "success",
+        title: "تم إرسال الطلب بنجاح",
+        message: "تم إرسال الطلب بنجاح",
+      });
 
-    setDialog({
-      open: true,
-      type: "error",
-      title: "لم يتم إرسال الطلب",
-      message: err.message,
-    });
-  }
-};
+      reset(defaultValues);
 
-  
+    } catch (err) {
+
+      setDialog({
+        open: true,
+        type: "error",
+        title: "لم يتم إرسال الطلب",
+        message: err.message,
+      });
+    }
+  };
+
+
   // FORM VALIDATION ERROR
   const onError = () => {
 
