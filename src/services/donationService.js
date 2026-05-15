@@ -34,16 +34,26 @@ export const donationService = {
     return parseJsonResponse(response);
   },
 
-  async getById() {
-    return null;
+  async getById(id) {
+    const response = await fetch(`${ADMIN_DONATIONS_URL}/${id}`, {
+      headers: getAuthHeaders(),
+    });
+
+    return parseJsonResponse(response);
   },
 
   async create() {
     notConnected();
   },
 
-  async update() {
-    notConnected();
+  async update(id, updates) {
+    const response = await fetch(`${ADMIN_DONATIONS_URL}/${id}`, {
+      method: "PATCH",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(updates),
+    });
+
+    return parseJsonResponse(response);
   },
 
   async delete(id) {
