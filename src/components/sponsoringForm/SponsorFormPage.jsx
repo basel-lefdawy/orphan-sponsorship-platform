@@ -16,6 +16,7 @@ import FormDatePicker from "../../pages/HelpRequest/FormDatePicker";
 import { paymentFields, bankFields } from "../../pages/HelpRequest/formFields";
 import { sponsorDefaultValues } from "./sponsorDefaultValues";
 import { sponsorFields, sponsorshipDetailFields, authorizedFields } from "./sponsorFormFields";
+import { applyServerFieldErrors } from "../../utils/applyServerFieldErrors";
 
 import "../../pages/HelpRequest/HelpRequest.css";
 
@@ -39,6 +40,7 @@ const SponsorFormPage = () => {
     watch,
     control,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     mode: "all",
@@ -162,6 +164,10 @@ const SponsorFormPage = () => {
       const result = await response.json();
 
       if (!response.ok) {
+        if (result.errors?.length) {
+          applyServerFieldErrors(result.errors, setError);
+        }
+
         throw new Error(result.message || "فشل إرسال الطلب");
       }
 

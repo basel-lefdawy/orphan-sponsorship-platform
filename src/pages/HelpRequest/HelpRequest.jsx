@@ -9,6 +9,7 @@ import FormSection from "./FormSection";
 import FormTextField from "./FormTextField";
 import FormSelect from "./FormSelect";
 import FormDatePicker from "./FormDatePicker";
+import { applyServerFieldErrors } from "../../utils/applyServerFieldErrors";
 
 import "./HelpRequest.css";
 
@@ -37,6 +38,7 @@ const HelpRequest = () => {
     watch,
     control,
     reset,
+    setError,
     formState: { errors },
   } = useForm({
     mode: "all",
@@ -130,6 +132,7 @@ const HelpRequest = () => {
 
         // VALIDATION ERRORS
         if (result.errors?.length) {
+          applyServerFieldErrors(result.errors, setError);
 
           const messages = result.errors
             .map((e) => `• ${e.message}`)
