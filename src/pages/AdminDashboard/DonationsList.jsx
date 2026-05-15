@@ -12,7 +12,7 @@ const columns = [
   {
     key: "amount",
     label: "المبلغ",
-    render: (v, row) => (v > 0 ? `${v.toLocaleString()} ${row.currency}` : "—"),
+    render: (v, row) => (v > 0 ? `${v.toLocaleString()} ${row.currency}` : "-"),
   },
   { key: "type", label: "النوع" },
   { key: "date", label: "التاريخ" },
@@ -21,8 +21,8 @@ const columns = [
 ];
 
 const statusMap = {
-  "مستلمة": "green",
-  "معلقة": "yellow",
+  مستلمة: "green",
+  معلقة: "yellow",
 };
 
 function formatDate(value) {
@@ -119,7 +119,11 @@ export default function DonationsList() {
   };
 
   if (loading) {
-    return <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>جاري التحميل...</p>;
+    return (
+      <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>
+        جاري التحميل...
+      </p>
+    );
   }
 
   return (

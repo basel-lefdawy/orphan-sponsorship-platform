@@ -136,7 +136,11 @@ export default function HelpRequestsList() {
   });
 
   if (loading) {
-    return <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>جاري التحميل...</p>;
+    return (
+      <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>
+        جاري التحميل...
+      </p>
+    );
   }
 
   return (
