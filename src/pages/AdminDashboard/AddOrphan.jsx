@@ -5,15 +5,26 @@ import { orphanService } from "../../services/orphanService";
 import styles from "./AdminPage.module.css";
 
 const initialState = {
+  code: "",
   name: "",
-  age: "",
   gender: "",
   dateOfBirth: "",
-  status: "",
-  healthStatus: "",
-  educationLevel: "",
+  guaranteeType: "",
+  guardianId: "",
+  requestId: "",
   notes: "",
 };
+
+const genderOptions = [
+  { value: "male", label: "ذكر" },
+  { value: "female", label: "أنثى" },
+];
+
+const guaranteeOptions = [
+  { value: "كفالة كاملة", label: "كفالة كاملة" },
+  { value: "كفالة جزئية", label: "كفالة جزئية" },
+  { value: "كفالة مدرسية", label: "كفالة مدرسية" },
+];
 
 export default function AddOrphan() {
   const [form, setForm] = useState(initialState);
@@ -30,12 +41,12 @@ export default function AddOrphan() {
 
   const validate = () => {
     const errs = {};
+    if (!form.code.trim()) errs.code = "رقم اليتيم مطلوب";
     if (!form.name.trim()) errs.name = "الاسم مطلوب";
-    if (!form.age || isNaN(form.age) || Number(form.age) < 0)
-      errs.age = "العمر مطلوب ويجب أن يكون رقماً صحيحاً";
     if (!form.gender) errs.gender = "الجنس مطلوب";
     if (!form.dateOfBirth) errs.dateOfBirth = "تاريخ الميلاد مطلوب";
-    if (!form.status) errs.status = "الحالة مطلوبة";
+    if (!form.guaranteeType) errs.guaranteeType = "نوع الكفالة مطلوب";
+    if (!form.guardianId.trim()) errs.guardianId = "رقم الوصي مطلوب";
     return errs;
   };
 
@@ -48,16 +59,11 @@ export default function AddOrphan() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      await orphanService.create({
-        ...form,
-        age: Number(form.age),
-        enrollmentDate: new Date().toISOString().split("T")[0],
-        sponsorId: null,
-      });
+      await orphanService.create(form);
       navigate("/admin/orphans");
     } catch (err) {
       console.error(err);
-      setSubmitError(err.message || "هذا الإجراء غير متصل بالباكند بعد.");
+      setSubmitError(err.message || "تعذر إضافة اليتيم في الباكند.");
     } finally {
       setSubmitting(false);
     }
@@ -78,6 +84,15 @@ export default function AddOrphan() {
 
         <div className={styles.formGrid}>
           <FormInput
+            label="رقم اليتيم"
+            name="code"
+            value={form.code}
+            onChange={handleChange}
+            error={errors.code}
+            required
+            placeholder="مثال: ORH100"
+          />
+          <FormInput
             label="الاسم الكامل"
             name="name"
             value={form.name}
@@ -87,16 +102,6 @@ export default function AddOrphan() {
             placeholder="أدخل اسم اليتيم"
           />
           <FormInput
-            label="العمر"
-            name="age"
-            type="number"
-            value={form.age}
-            onChange={handleChange}
-            error={errors.age}
-            required
-            placeholder="أدخل العمر"
-          />
-          <FormInput
             label="الجنس"
             name="gender"
             type="select"
@@ -104,10 +109,7 @@ export default function AddOrphan() {
             onChange={handleChange}
             error={errors.gender}
             required
-            options={[
-              { value: "ذكر", label: "ذكر" },
-              { value: "أنثى", label: "أنثى" },
-            ]}
+            options={genderOptions}
           />
           <FormInput
             label="تاريخ الميلاد"
@@ -119,31 +121,31 @@ export default function AddOrphan() {
             required
           />
           <FormInput
-            label="الحالة"
-            name="status"
+            label="نوع الكفالة"
+            name="guaranteeType"
             type="select"
-            value={form.status}
+            value={form.guaranteeType}
             onChange={handleChange}
-            error={errors.status}
+            error={errors.guaranteeType}
             required
-            options={[
-              { value: "مكفول", label: "مكفول" },
-              { value: "غير مكفول", label: "غير مكفول" },
-            ]}
+            options={guaranteeOptions}
           />
           <FormInput
-            label="الحالة الصحية"
-            name="healthStatus"
-            value={form.healthStatus}
+            label="رقم الوصي"
+            name="guardianId"
+            value={form.guardianId}
             onChange={handleChange}
-            placeholder="مثال: جيد"
+            error={errors.guardianId}
+            required
+            placeholder="مثال: GUAR100"
           />
           <FormInput
-            label="المرحلة الدراسية"
-            name="educationLevel"
-            value={form.educationLevel}
+            label="رقم الطلب"
+            name="requestId"
+            type="number"
+            value={form.requestId}
             onChange={handleChange}
-            placeholder="مثال: الصف الثالث"
+            placeholder="اختياري"
           />
           <FormInput
             label="ملاحظات"
@@ -156,11 +158,7 @@ export default function AddOrphan() {
         </div>
 
         <div className={styles.formActions}>
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={submitting}
-          >
+          <button type="submit" className={styles.submitBtn} disabled={submitting}>
             {submitting ? "جاري الحفظ..." : "حفظ"}
           </button>
           <Link to="/admin/orphans" className={styles.cancelBtn}>

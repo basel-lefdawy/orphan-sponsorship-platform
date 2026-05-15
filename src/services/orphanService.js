@@ -1,9 +1,14 @@
-const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالباكند بعد.";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const ORPHANS_URL = `${API_BASE_URL}/api/orphans`;
+const ADMIN_ORPHANS_URL = `${API_BASE_URL}/api/admin/orphans`;
 
-function notConnected() {
-  throw new Error(NOT_CONNECTED_MESSAGE);
+function getAuthHeaders(extraHeaders = {}) {
+  const token = localStorage.getItem("token");
+
+  return {
+    ...extraHeaders,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 }
 
 function formatDate(value) {
@@ -43,6 +48,20 @@ function getFullName(orphan) {
     .join(" ");
 }
 
+function splitName(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  return {
+    OrphanName: parts[0] || "",
+    OrphanFatherName: parts[1] || "",
+    OrphanGrandfatherName: parts[2] || "",
+    OrphanFamilyName: parts.slice(3).join(" ") || "",
+  };
+}
+
 function mapOrphan(orphan) {
   return {
     ...orphan,
@@ -56,8 +75,23 @@ function mapOrphan(orphan) {
     guaranteeType: orphan.GuaranteeType || "",
     guardianId: orphan.GuardianID || "",
     requestId: orphan.RequestID || "",
+    notes: orphan.description || "",
+    description: orphan.description || "",
     sponsor: "",
     educationLevel: "",
+  };
+}
+
+function mapOrphanPayload(data) {
+  return {
+    OrphanID: data.code,
+    ...splitName(data.name),
+    OrphanBirthDate: data.dateOfBirth || null,
+    gender: data.gender,
+    GuaranteeType: data.guaranteeType || data.status,
+    description: data.notes || data.description || null,
+    GuardianID: data.guardianId,
+    RequestID: data.requestId ? Number(data.requestId) : null,
   };
 }
 
@@ -65,7 +99,7 @@ async function parseJsonResponse(response) {
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(payload?.message || "Failed to load orphans");
+    throw new Error(payload?.message || "فشل تنفيذ الطلب");
   }
 
   return payload;
@@ -80,21 +114,44 @@ export const orphanService = {
     return orphans.map(mapOrphan);
   },
 
-  async getById() {
-    return null;
+  async getById(id) {
+    const response = await fetch(`${ORPHANS_URL}/${id}`);
+    const payload = await parseJsonResponse(response);
+    const orphan = payload?.data || payload;
+
+    return orphan ? mapOrphan(orphan) : null;
   },
 
-  async create() {
-    notConnected();
+  async create(data) {
+    const response = await fetch(ADMIN_ORPHANS_URL, {
+      method: "POST",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(mapOrphanPayload(data)),
+    });
+    const payload = await parseJsonResponse(response);
+    const orphan = payload?.data || payload;
+
+    return mapOrphan(orphan);
   },
 
-  async update() {
-    notConnected();
+  async update(id, data) {
+    const response = await fetch(`${ADMIN_ORPHANS_URL}/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(mapOrphanPayload(data)),
+    });
+    const payload = await parseJsonResponse(response);
+    const orphan = payload?.data || payload;
+
+    return mapOrphan(orphan);
   },
 
-  async delete() {
-    notConnected();
+  async delete(id) {
+    const response = await fetch(`${ADMIN_ORPHANS_URL}/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    return parseJsonResponse(response);
   },
 };
-
-export { NOT_CONNECTED_MESSAGE as ORPHAN_SERVICE_NOT_CONNECTED };

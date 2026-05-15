@@ -4,6 +4,17 @@ import FormInput from "../../components/FormInput/FormInput";
 import { orphanService } from "../../services/orphanService";
 import styles from "./AdminPage.module.css";
 
+const genderOptions = [
+  { value: "male", label: "ذكر" },
+  { value: "female", label: "أنثى" },
+];
+
+const guaranteeOptions = [
+  { value: "كفالة كاملة", label: "كفالة كاملة" },
+  { value: "كفالة جزئية", label: "كفالة جزئية" },
+  { value: "كفالة مدرسية", label: "كفالة مدرسية" },
+];
+
 export default function EditOrphan() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -21,17 +32,17 @@ export default function EditOrphan() {
         const orphan = await orphanService.getById(id);
         if (orphan) {
           setForm({
+            code: orphan.code,
             name: orphan.name,
-            age: String(orphan.age),
             gender: orphan.gender,
             dateOfBirth: orphan.dateOfBirth,
-            status: orphan.status,
-            healthStatus: orphan.healthStatus || "",
-            educationLevel: orphan.educationLevel || "",
+            guaranteeType: orphan.guaranteeType,
+            guardianId: orphan.guardianId,
+            requestId: orphan.requestId || "",
             notes: orphan.notes || "",
           });
         } else {
-          setLoadError("هذا الإجراء غير متصل بالباكند بعد.");
+          setLoadError("لم يتم العثور على اليتيم.");
         }
       } catch (err) {
         console.error(err);
@@ -51,12 +62,12 @@ export default function EditOrphan() {
 
   const validate = () => {
     const errs = {};
+    if (!form.code.trim()) errs.code = "رقم اليتيم مطلوب";
     if (!form.name.trim()) errs.name = "الاسم مطلوب";
-    if (!form.age || isNaN(form.age) || Number(form.age) < 0)
-      errs.age = "العمر مطلوب";
     if (!form.gender) errs.gender = "الجنس مطلوب";
     if (!form.dateOfBirth) errs.dateOfBirth = "تاريخ الميلاد مطلوب";
-    if (!form.status) errs.status = "الحالة مطلوبة";
+    if (!form.guaranteeType) errs.guaranteeType = "نوع الكفالة مطلوب";
+    if (!form.guardianId.trim()) errs.guardianId = "رقم الوصي مطلوب";
     return errs;
   };
 
@@ -69,14 +80,11 @@ export default function EditOrphan() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      await orphanService.update(id, {
-        ...form,
-        age: Number(form.age),
-      });
+      await orphanService.update(id, form);
       navigate("/admin/orphans");
     } catch (err) {
       console.error(err);
-      setSubmitError(err.message || "هذا الإجراء غير متصل بالباكند بعد.");
+      setSubmitError(err.message || "تعذر تحديث بيانات اليتيم في الباكند.");
     } finally {
       setSubmitting(false);
     }
@@ -90,7 +98,7 @@ export default function EditOrphan() {
     return (
       <div className={styles.page} id="edit-orphan-page">
         <p style={{ color: "#dc2626", textAlign: "center", paddingTop: 40 }}>
-          {loadError || "هذا الإجراء غير متصل بالباكند بعد."}
+          {loadError || "لم يتم العثور على اليتيم."}
         </p>
         <div className={styles.formActions}>
           <Link to="/admin/orphans" className={styles.cancelBtn}>
@@ -116,20 +124,19 @@ export default function EditOrphan() {
 
         <div className={styles.formGrid}>
           <FormInput
+            label="رقم اليتيم"
+            name="code"
+            value={form.code}
+            onChange={handleChange}
+            error={errors.code}
+            required
+          />
+          <FormInput
             label="الاسم الكامل"
             name="name"
             value={form.name}
             onChange={handleChange}
             error={errors.name}
-            required
-          />
-          <FormInput
-            label="العمر"
-            name="age"
-            type="number"
-            value={form.age}
-            onChange={handleChange}
-            error={errors.age}
             required
           />
           <FormInput
@@ -140,10 +147,7 @@ export default function EditOrphan() {
             onChange={handleChange}
             error={errors.gender}
             required
-            options={[
-              { value: "ذكر", label: "ذكر" },
-              { value: "أنثى", label: "أنثى" },
-            ]}
+            options={genderOptions}
           />
           <FormInput
             label="تاريخ الميلاد"
@@ -155,29 +159,30 @@ export default function EditOrphan() {
             required
           />
           <FormInput
-            label="الحالة"
-            name="status"
+            label="نوع الكفالة"
+            name="guaranteeType"
             type="select"
-            value={form.status}
+            value={form.guaranteeType}
             onChange={handleChange}
-            error={errors.status}
+            error={errors.guaranteeType}
             required
-            options={[
-              { value: "مكفول", label: "مكفول" },
-              { value: "غير مكفول", label: "غير مكفول" },
-            ]}
+            options={guaranteeOptions}
           />
           <FormInput
-            label="الحالة الصحية"
-            name="healthStatus"
-            value={form.healthStatus}
+            label="رقم الوصي"
+            name="guardianId"
+            value={form.guardianId}
             onChange={handleChange}
+            error={errors.guardianId}
+            required
           />
           <FormInput
-            label="المرحلة الدراسية"
-            name="educationLevel"
-            value={form.educationLevel}
+            label="رقم الطلب"
+            name="requestId"
+            type="number"
+            value={form.requestId}
             onChange={handleChange}
+            placeholder="اختياري"
           />
           <FormInput
             label="ملاحظات"
@@ -189,11 +194,7 @@ export default function EditOrphan() {
         </div>
 
         <div className={styles.formActions}>
-          <button
-            type="submit"
-            className={styles.submitBtn}
-            disabled={submitting}
-          >
+          <button type="submit" className={styles.submitBtn} disabled={submitting}>
             {submitting ? "جاري الحفظ..." : "تحديث"}
           </button>
           <Link to="/admin/orphans" className={styles.cancelBtn}>

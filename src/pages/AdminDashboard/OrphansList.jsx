@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DataTable from "../../components/DataTable/DataTable";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import { orphanService } from "../../services/orphanService";
 import styles from "./AdminPage.module.css";
-
-const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالباكند بعد.";
 
 const columns = [
   { key: "id", label: "#" },
@@ -21,11 +20,13 @@ const columns = [
 ];
 
 const statusMap = {
-  "مكفول": "green",
-  "غير مكفول": "yellow",
+  "كفالة كاملة": "green",
+  "كفالة جزئية": "yellow",
+  "كفالة مدرسية": "yellow",
 };
 
 export default function OrphansList() {
+  const navigate = useNavigate();
   const [orphans, setOrphans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,8 +51,17 @@ export default function OrphansList() {
   }, []);
 
   const handleDelete = async () => {
-    setDeleteTarget(null);
-    setError(NOT_CONNECTED_MESSAGE);
+    if (!deleteTarget) return;
+
+    try {
+      setError("");
+      await orphanService.delete(deleteTarget.id);
+      setDeleteTarget(null);
+      await fetchOrphans();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "تعذر حذف اليتيم من الباكند.");
+    }
   };
 
   if (loading) {
@@ -70,10 +80,10 @@ export default function OrphansList() {
         title="إدارة الأيتام"
         columns={columns}
         data={orphans}
-        onAdd={() => setError(NOT_CONNECTED_MESSAGE)}
+        onAdd={() => navigate("/admin/orphans/add")}
         addLabel="إضافة يتيم"
-        onEdit={() => setError(NOT_CONNECTED_MESSAGE)}
-        onDelete={() => setError(NOT_CONNECTED_MESSAGE)}
+        onEdit={(row) => navigate(`/admin/orphans/edit/${row.id}`)}
+        onDelete={(row) => setDeleteTarget(row)}
         searchPlaceholder="ابحث بالاسم أو الحالة..."
         emptyMessage="لا يوجد أيتام مسجلين"
         statusMap={statusMap}
