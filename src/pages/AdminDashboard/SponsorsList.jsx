@@ -106,7 +106,7 @@ export default function SponsorsList() {
   return (
     <div className={styles.page} id="admin-sponsors-page">
       {error && (
-        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+        <p className={styles.errorBanner} role="alert">
           {error}
         </p>
       )}
