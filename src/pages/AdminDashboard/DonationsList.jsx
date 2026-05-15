@@ -8,21 +8,22 @@ const NOT_CONNECTED_MESSAGE = "هذا الإجراء غير متصل بالبا�
 
 const columns = [
   { key: "id", label: "#" },
+  { key: "donationNumber", label: "رقم التبرع" },
   { key: "donorName", label: "اسم المتبرع" },
   {
     key: "amount",
     label: "المبلغ",
-    render: (v, row) => (v > 0 ? `${v.toLocaleString()} ${row.currency}` : "—"),
+    render: (value, row) => (value > 0 ? `${value.toLocaleString()} ${row.currency}` : "-"),
   },
-  { key: "type", label: "النوع" },
+  { key: "method", label: "طريقة الدفع" },
+  { key: "email", label: "البريد", render: (value) => value || "-" },
   { key: "date", label: "التاريخ" },
   { key: "status", label: "الحالة", isStatus: true },
-  { key: "notes", label: "ملاحظات" },
 ];
 
 const statusMap = {
-  "مستلمة": "green",
-  "معلقة": "yellow",
+  مستلمة: "green",
+  معلقة: "yellow",
 };
 
 function formatDate(value) {
@@ -44,10 +45,12 @@ function getStatusLabel(status) {
 function mapDonation(donation) {
   return {
     ...donation,
-    type: donation.type || donation.method || "",
-    date: donation.date || formatDate(donation.createdAt),
+    donationNumber: donation.donationNumber || "-",
+    donorName: donation.donorName || (donation.isAnonymous ? "متبرع مجهول" : "-"),
+    method: donation.method || "-",
+    date: formatDate(donation.createdAt),
+    rawStatus: donation.status || "pending",
     status: getStatusLabel(donation.status),
-    notes: donation.notes || "",
     currency: donation.currency || "",
   };
 }
@@ -57,6 +60,9 @@ export default function DonationsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [editTarget, setEditTarget] = useState(null);
+  const [editStatus, setEditStatus] = useState("pending");
+  const [saving, setSaving] = useState(false);
 
   const fetchDonations = async () => {
     try {
@@ -90,25 +96,93 @@ export default function DonationsList() {
     }
   };
 
+  const handleEdit = (row) => {
+    setError("");
+    setEditTarget(row);
+    setEditStatus(row.rawStatus || "pending");
+  };
+
+  const handleUpdateStatus = async (e) => {
+    e.preventDefault();
+    if (!editTarget) return;
+
+    try {
+      setSaving(true);
+      setError("");
+      await donationService.update(editTarget.id, { status: editStatus });
+      setEditTarget(null);
+      fetchDonations();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || NOT_CONNECTED_MESSAGE);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
-    return <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>جاري التحميل...</p>;
+    return (
+      <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>
+        جاري التحميل...
+      </p>
+    );
   }
 
   return (
     <div className={styles.page} id="admin-donations-page">
       {error && (
-        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+        <p className={styles.errorBanner} role="alert">
           {error}
         </p>
+      )}
+
+      {editTarget && (
+        <form
+          className={styles.formWrapper}
+          onSubmit={handleUpdateStatus}
+          style={{ marginBottom: 20 }}
+        >
+          <div className={styles.formGrid}>
+            <label style={{ display: "grid", gap: 8, color: "#334155" }}>
+              <span>حالة التبرع</span>
+              <select
+                value={editStatus}
+                onChange={(e) => setEditStatus(e.target.value)}
+                style={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 10,
+                  padding: "11px 12px",
+                  font: "inherit",
+                }}
+              >
+                <option value="pending">معلقة</option>
+                <option value="paid">مستلمة</option>
+              </select>
+            </label>
+          </div>
+          <div className={styles.formActions}>
+            <button type="submit" className={styles.submitBtn} disabled={saving}>
+              {saving ? "جاري الحفظ..." : "حفظ"}
+            </button>
+            <button
+              type="button"
+              className={styles.cancelBtn}
+              onClick={() => setEditTarget(null)}
+              disabled={saving}
+            >
+              إلغاء
+            </button>
+          </div>
+        </form>
       )}
 
       <DataTable
         title="إدارة التبرعات"
         columns={columns}
         data={donations}
-        onEdit={() => setError(NOT_CONNECTED_MESSAGE)}
+        onEdit={handleEdit}
         onDelete={(row) => setDeleteTarget(row)}
-        searchPlaceholder="ابحث باسم المتبرع..."
+        searchPlaceholder="ابحث باسم المتبرع أو رقم التبرع..."
         emptyMessage="لا توجد تبرعات"
         statusMap={statusMap}
       />

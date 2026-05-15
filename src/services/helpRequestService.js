@@ -106,4 +106,22 @@ export const helpRequestService = {
 
     return parseJsonResponse(response);
   },
+
+  async approve(id) {
+    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}/approve`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+    });
+
+    return parseJsonResponse(response);
+  },
+
+  async reject(id) {
+    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}/reject`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+    });
+
+    return parseJsonResponse(response);
+  },
 };

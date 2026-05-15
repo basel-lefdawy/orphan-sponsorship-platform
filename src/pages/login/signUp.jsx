@@ -65,6 +65,7 @@ export default function SignUp() {
 
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -116,6 +117,7 @@ export default function SignUp() {
 
         setSubmitted(true);
         setServerError("");
+        setSuccessMessage("");
 
         if (!isFormValid) return;
 
@@ -144,7 +146,9 @@ export default function SignUp() {
                 throw new Error(getSignupErrorMessage(data));
             }
 
-            navigate("/login");
+            setSuccessMessage(
+                data?.message || "تم إنشاء حسابك! يرجى التحقق من بريدك الإلكتروني."
+            );
         } catch (error) {
             console.error(error);
             setServerError(error.message || FALLBACK_SIGNUP_ERROR);
@@ -278,6 +282,25 @@ export default function SignUp() {
                             }}
                         >
                             {serverError}
+                        </Alert>
+                    )}
+
+                    {successMessage && (
+                        <Alert
+                            severity="success"
+                            dir="rtl"
+                            sx={{
+                                mb: 3,
+                                textAlign: "right",
+                                alignItems: "center",
+                                borderRadius: "12px",
+                                "& .MuiAlert-icon": {
+                                    ml: 1,
+                                    mr: 0,
+                                },
+                            }}
+                        >
+                            {successMessage}
                         </Alert>
                     )}
 
@@ -511,7 +534,7 @@ export default function SignUp() {
                         fullWidth
                         variant="contained"
                         type="submit"
-                        disabled={!isFormValid || loading}
+                        disabled={!isFormValid || loading || !!successMessage}
                         sx={{
                             mt: 4,
                             py: 1.6,

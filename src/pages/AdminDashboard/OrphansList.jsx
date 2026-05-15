@@ -50,17 +50,8 @@ export default function OrphansList() {
   }, []);
 
   const handleDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      setError("");
-      await orphanService.delete(deleteTarget.id);
-      setDeleteTarget(null);
-      fetchOrphans();
-    } catch (err) {
-      console.error(err);
-      setDeleteTarget(null);
-      setError(err.message || NOT_CONNECTED_MESSAGE);
-    }
+    setDeleteTarget(null);
+    setError(NOT_CONNECTED_MESSAGE);
   };
 
   if (loading) {
@@ -70,7 +61,7 @@ export default function OrphansList() {
   return (
     <div className={styles.page} id="admin-orphans-page">
       {error && (
-        <p style={{ color: "#dc2626", textAlign: "center", marginBottom: 16 }}>
+        <p className={styles.errorBanner} role="alert">
           {error}
         </p>
       )}
@@ -82,7 +73,7 @@ export default function OrphansList() {
         onAdd={() => setError(NOT_CONNECTED_MESSAGE)}
         addLabel="إضافة يتيم"
         onEdit={() => setError(NOT_CONNECTED_MESSAGE)}
-        onDelete={(row) => setDeleteTarget(row)}
+        onDelete={() => setError(NOT_CONNECTED_MESSAGE)}
         searchPlaceholder="ابحث بالاسم أو الحالة..."
         emptyMessage="لا يوجد أيتام مسجلين"
         statusMap={statusMap}

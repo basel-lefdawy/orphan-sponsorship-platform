@@ -12,6 +12,11 @@ const columns = [
   { key: "urgency", label: "الأولوية" },
   { key: "status", label: "الحالة", isStatus: true },
   { key: "phone", label: "الهاتف" },
+  {
+    key: "reviewActions",
+    label: "الإجراء",
+    render: (_, row) => row.reviewActions,
+  },
 ];
 
 const statusMap = {
@@ -29,6 +34,7 @@ export default function HelpRequestsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [processingId, setProcessingId] = useState(null);
 
   const fetchHelpRequests = async () => {
     try {
@@ -61,8 +67,64 @@ export default function HelpRequestsList() {
     }
   };
 
+  const handleReview = async (row, action) => {
+    try {
+      setError("");
+      setProcessingId(row.id);
+
+      if (action === "approve") {
+        await helpRequestService.approve(row.id);
+      } else {
+        await helpRequestService.reject(row.id);
+      }
+
+      fetchHelpRequests();
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "تعذر تحديث حالة طلب المساعدة.");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const dataWithActions = helpRequests.map((request) => {
+    const isPending =
+      request.status === "Pending" || request.status === "قيد المراجعة";
+    const isProcessing = processingId === request.id;
+
+    return {
+      ...request,
+      reviewActions: isPending ? (
+        <div className={styles.actionGroup}>
+          <button
+            type="button"
+            onClick={() => handleReview(request, "approve")}
+            disabled={isProcessing}
+            className={styles.approveBtn}
+          >
+            قبول
+          </button>
+          <button
+            type="button"
+            onClick={() => handleReview(request, "reject")}
+            disabled={isProcessing}
+            className={styles.rejectBtn}
+          >
+            رفض
+          </button>
+        </div>
+      ) : (
+        "-"
+      ),
+    };
+  });
+
   if (loading) {
-    return <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>جاري التحميل...</p>;
+    return (
+      <p style={{ color: "#94a3b8", textAlign: "center", paddingTop: 40 }}>
+        جاري التحميل...
+      </p>
+    );
   }
 
   return (
@@ -76,7 +138,7 @@ export default function HelpRequestsList() {
       <DataTable
         title="إدارة طلبات المساعدة"
         columns={columns}
-        data={helpRequests}
+        data={dataWithActions}
         onDelete={(row) => setDeleteTarget(row)}
         searchPlaceholder="ابحث باسم مقدم الطلب..."
         emptyMessage="لا توجد طلبات مساعدة"

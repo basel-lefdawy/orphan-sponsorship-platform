@@ -30,20 +30,32 @@ export const donationService = {
     const response = await fetch(ADMIN_DONATIONS_URL, {
       headers: getAuthHeaders(),
     });
+    const payload = await parseJsonResponse(response);
 
-    return parseJsonResponse(response);
+    return Array.isArray(payload) ? payload : payload?.data || [];
   },
 
-  async getById() {
-    return null;
+  async getById(id) {
+    const response = await fetch(`${ADMIN_DONATIONS_URL}/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    const payload = await parseJsonResponse(response);
+
+    return payload?.data || payload || null;
   },
 
   async create() {
     notConnected();
   },
 
-  async update() {
-    notConnected();
+  async update(id, updates) {
+    const response = await fetch(`${ADMIN_DONATIONS_URL}/${id}`, {
+      method: "PATCH",
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(updates),
+    });
+
+    return parseJsonResponse(response);
   },
 
   async delete(id) {
