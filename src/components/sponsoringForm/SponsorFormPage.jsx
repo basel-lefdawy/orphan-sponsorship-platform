@@ -100,6 +100,12 @@ const SponsorFormPage = () => {
 
   const onSubmit = async (data) => {
     try {
+      const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+
+      if (!token) {
+        throw new Error("يجب تسجيل الدخول قبل إرسال طلب الكفالة");
+      }
+
       const payload = {
         // ─── معلومات الكفيل ─────────────────────────
         identityNumber: data.sponsorId,
@@ -146,7 +152,10 @@ const SponsorFormPage = () => {
 
       const response = await fetch(`${API_BASE_URL}/api/sponsorship-requests`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 
