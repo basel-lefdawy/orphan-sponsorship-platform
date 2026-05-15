@@ -20,7 +20,6 @@ import UserDropdown from "./UserDropdown";
 
 import { useDonation } from "../../context/DonationContext";
 import DonationForm from "../../pages/Donation/Donation";
-import { isAdminToken } from "../../utils/authToken";
 
 const navStyle = {
   color: "white",
@@ -53,10 +52,7 @@ export default function Header() {
 
   const authToken = localStorage.getItem("token");
 
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-  });
+  const [user, setUser] = useState(null);
 
   const [isUserLoading, setIsUserLoading] = useState(false);
 
@@ -69,8 +65,8 @@ export default function Header() {
   const openMobile = Boolean(anchorEl);
   const openUserMenu = Boolean(userMenu);
 
-  const isAuthenticated = Boolean(authToken);
-  const isAdmin = isAdminToken(authToken);
+  const isAuthenticated = Boolean(authToken && user);
+  const isAdmin = user?.role === "admin";
 
   const { openDonation, setOpenDonation } = useDonation();
 
@@ -80,8 +76,16 @@ export default function Header() {
   const handleUserOpen = (event) => setUserMenu(event.currentTarget);
   const handleUserClose = () => setUserMenu(null);
 
+  const clearAuthStorage = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
   const userInitials = useMemo(() => {
-    const safeName = user.name?.trim();
+    const safeName = (user?.name || user?.email || "").trim();
 
     if (!safeName) return "U";
 
@@ -90,11 +94,14 @@ export default function Header() {
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
 
     return `${parts[0].charAt(0)}${parts[1].charAt(0).toUpperCase()}`;
-  }, [user.name]);
+  }, [user]);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      if (!authToken) return;
+      if (!authToken) {
+        setUser(null);
+        return;
+      }
 
       try {
         setIsUserLoading(true);
@@ -113,9 +120,11 @@ export default function Header() {
         setUser({
           name: payload.name || payload.fullName || "",
           email: payload.email || "",
+          role: payload.role || "",
         });
       } catch (err) {
         console.error("Failed to fetch user:", err);
+        clearAuthStorage();
       } finally {
         setIsUserLoading(false);
       }
@@ -125,14 +134,7 @@ export default function Header() {
   }, [authToken]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    setUser({
-      name: "",
-      email: "",
-    });
+    clearAuthStorage();
     handleUserClose();
     navigate("/login");
   };
@@ -272,7 +274,7 @@ export default function Header() {
               userInitials={userInitials}
               isUserLoading={isUserLoading}
               isAuthenticated={isAuthenticated}
-              authToken={authToken}
+              authToken={isAuthenticated ? authToken : null}
               onLogin={handleLogin}
               onLogout={handleLogout}
             />

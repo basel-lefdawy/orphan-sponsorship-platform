@@ -73,20 +73,22 @@ export default function UserDropdown({
                 fontWeight="bold"
                 sx={{ lineHeight: 1.3 }}
               >
-                {user.name || "مستخدم"}
+                {user?.name || user?.email}
               </Typography>
 
-              <Typography
-                variant="body2"
-                color="#667085"
-                sx={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {user.email || "no-email@example.com"}
-              </Typography>
+              {user?.email && (
+                <Typography
+                  variant="body2"
+                  color="#667085"
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {user.email}
+                </Typography>
+              )}
             </Box>
           </Box>
         </Box>
