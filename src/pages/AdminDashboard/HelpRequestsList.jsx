@@ -95,20 +95,12 @@ export default function HelpRequestsList() {
     return {
       ...request,
       reviewActions: isPending ? (
-        <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+        <div className={styles.actionGroup}>
           <button
             type="button"
             onClick={() => handleReview(request, "approve")}
             disabled={isProcessing}
-            style={{
-              border: 0,
-              borderRadius: 8,
-              padding: "7px 10px",
-              background: "#dcfce7",
-              color: "#166534",
-              cursor: isProcessing ? "not-allowed" : "pointer",
-              font: "inherit",
-            }}
+            className={styles.approveBtn}
           >
             قبول
           </button>
@@ -116,15 +108,7 @@ export default function HelpRequestsList() {
             type="button"
             onClick={() => handleReview(request, "reject")}
             disabled={isProcessing}
-            style={{
-              border: 0,
-              borderRadius: 8,
-              padding: "7px 10px",
-              background: "#fee2e2",
-              color: "#991b1b",
-              cursor: isProcessing ? "not-allowed" : "pointer",
-              font: "inherit",
-            }}
+            className={styles.rejectBtn}
           >
             رفض
           </button>
