@@ -1,5 +1,6 @@
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
+import ChatbotWidget from "../components/Chatbot/ChatbotWidget";
 import { Outlet } from "react-router-dom";
 
 function MainLayouts() {
@@ -8,6 +9,7 @@ function MainLayouts() {
       <Header />
       <Outlet />
       <Footer />
+      <ChatbotWidget />
     </>
   );
 }
