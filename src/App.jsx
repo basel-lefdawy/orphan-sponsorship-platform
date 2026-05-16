@@ -30,6 +30,7 @@ import EditOrphan from "./pages/AdminDashboard/EditOrphan";
 import DonationsList from "./pages/AdminDashboard/DonationsList";
 import SponsorsList from "./pages/AdminDashboard/SponsorsList";
 import HelpRequestsList from "./pages/AdminDashboard/HelpRequestsList";
+import SponsorshipRequestsList from "./pages/AdminDashboard/SponsorshipRequestsList";
 import ForgotPassword from "./pages/login/ForgotPassword";
 import GoogleSuccess from "./pages/login/GoogleSuccess";
 function App() {
@@ -71,6 +72,7 @@ function App() {
 
         <Route path="donations" element={<DonationsList />} />
         <Route path="sponsors" element={<SponsorsList />} />
+        <Route path="sponsorship-requests" element={<SponsorshipRequestsList />} />
         <Route path="help-requests" element={<HelpRequestsList />} />
       </Route>
 

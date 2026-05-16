@@ -23,6 +23,7 @@ const navItems = [
       { to: "/admin/orphans", label: "الأيتام", icon: "👶" },
       { to: "/admin/donations", label: "التبرعات", icon: "💰" },
       { to: "/admin/sponsors", label: "الكفالات", icon: "🤝" },
+      { to: "/admin/sponsorship-requests", label: "طلبات الكفالة", icon: "📋" },
     ],
   },
   {
