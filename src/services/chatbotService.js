@@ -1,7 +1,7 @@
 const CHATBOT_ENDPOINT = "/api/chatbot";
 const CHATBOT_FALLBACK_REPLY =
   "تعذر الحصول على رد من المساعد حالياً. يرجى المحاولة لاحقاً.";
-
+// sends a message to the chatbot API and returns the response, or a fallback reply if there's an error or empty message
 export async function sendChatbotMessage(message) {
   const trimmedMessage = typeof message === "string" ? message.trim() : "";
 
