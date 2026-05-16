@@ -70,20 +70,26 @@ function getMonthlyAmount(sponsor) {
 }
 
 function getOrphanFullName(sponsor) {
-  const orphan = sponsor.sponsorships?.[0]?.orphan;
+  const orphanNames = sponsor.sponsorships
+    ?.map((sponsorship) => {
+      const orphan = sponsorship.orphan;
 
-  if (!orphan) {
-    return NOT_AVAILABLE;
-  }
+      if (!orphan) {
+        return "";
+      }
 
-  const parts = [
-    orphan.OrphanName,
-    orphan.OrphanFatherName,
-    orphan.OrphanGrandfatherName,
-    orphan.OrphanFamilyName,
-  ].filter(Boolean);
+      return [
+        orphan.OrphanName,
+        orphan.OrphanFatherName,
+        orphan.OrphanGrandfatherName,
+        orphan.OrphanFamilyName,
+      ]
+        .filter(Boolean)
+        .join(" ");
+    })
+    .filter(Boolean);
 
-  return parts.length ? parts.join(" ") : NOT_AVAILABLE;
+  return orphanNames?.length ? orphanNames.join(", ") : NOT_AVAILABLE;
 }
 
 function getStatusLabel(status) {
@@ -114,6 +120,11 @@ const columns = [
     key: "monthlySAmount",
     label: "المبلغ الشهري",
     render: (_, row) => getMonthlyAmount(row),
+  },
+  {
+    key: "orphanFullName",
+    label: "اسم اليتيم المكفول",
+    render: (_, row) => getOrphanFullName(row),
   },
   {
     key: "status",
@@ -289,6 +300,7 @@ export default function SponsorsList() {
   const dataWithActions = sponsors.map((sponsor) => ({
     ...sponsor,
     fullName: getFullName(sponsor),
+    orphanFullName: getOrphanFullName(sponsor),
     statusAction: (
       <select
         value={sponsor.status || "pending"}
