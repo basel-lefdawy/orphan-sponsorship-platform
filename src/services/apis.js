@@ -1,6 +1,6 @@
 export const fetchOrphans = async () => {
   try {
-    const response = await fetch(`http://localhost:5000/api/orphans`);
+    const response = await fetch("/api/orphans");
     if (!response.ok) {
       throw new Error('Failed to fetch orphans');
     }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./ChatbotWidget.module.css";
+import { sendChatbotMessage } from "../../services/chatbotService";
 
 const welcomeMessage = {
   id: 1,
@@ -7,51 +8,13 @@ const welcomeMessage = {
   text: "مرحباً بك في مساعد مركز رعاية الأيتام. يمكنني مساعدتك في أسئلة عامة عن طلب المساعدة، التبرع، الكفالة، أو التواصل مع المركز.",
 };
 
-const getStaticReply = (message) => {
-  const normalizedMessage = message.trim().toLowerCase();
-
-  if (
-    normalizedMessage.includes("مساعدة") ||
-    normalizedMessage.includes("طلب") ||
-    normalizedMessage.includes("احتياج")
-  ) {
-    return "يمكنك تقديم طلب مساعدة من خلال نموذج طلب المساعدة الموجود في الموقع. سيقوم الفريق بمراجعة الطلب والتواصل معك حسب الإجراءات المتاحة.";
-  }
-
-  if (
-    normalizedMessage.includes("تبرع") ||
-    normalizedMessage.includes("تبرعات") ||
-    normalizedMessage.includes("donation")
-  ) {
-    return "معلومات التبرع متاحة في قسم التبرعات داخل الموقع. يمكنك مراجعة القسم لمعرفة الطرق العامة لدعم المركز.";
-  }
-
-  if (
-    normalizedMessage.includes("كفالة") ||
-    normalizedMessage.includes("كافل") ||
-    normalizedMessage.includes("sponsor")
-  ) {
-    return "معلومات الكفالة متاحة في قسم الكفالة داخل الموقع. يمكنك الاطلاع على التفاصيل العامة من هناك.";
-  }
-
-  if (
-    normalizedMessage.includes("تواصل") ||
-    normalizedMessage.includes("اتصال") ||
-    normalizedMessage.includes("رقم") ||
-    normalizedMessage.includes("contact")
-  ) {
-    return "يمكنك التواصل مع المركز من خلال قسم التواصل في الموقع، حيث تتوفر معلومات الاتصال أو نموذج التواصل العام.";
-  }
-
-  return "عذراً، يمكنني المساعدة فقط في الأسئلة العامة المتعلقة بمركز رعاية الأيتام مثل طلب المساعدة، التبرع، الكفالة، أو التواصل.";
-};
-
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([welcomeMessage]);
   const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const canSend = inputValue.trim().length > 0;
+  const canSend = inputValue.trim().length > 0 && !isLoading;
 
   useEffect(() => {
     if (isOpen) {
@@ -59,31 +22,43 @@ const ChatbotWidget = () => {
     }
   }, [isOpen, messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     const trimmedMessage = inputValue.trim();
 
-    if (!trimmedMessage) {
+    if (!trimmedMessage || isLoading) {
       return;
     }
 
+    const loadingMessageId = Date.now() + 1;
     const userMessage = {
       id: Date.now(),
       sender: "user",
       text: trimmedMessage,
     };
-
-    const botMessage = {
-      id: Date.now() + 1,
+    const loadingMessage = {
+      id: loadingMessageId,
       sender: "bot",
-      text: getStaticReply(trimmedMessage),
+      text: "جاري تجهيز الرد...",
     };
 
     setMessages((currentMessages) => [
       ...currentMessages,
       userMessage,
-      botMessage,
+      loadingMessage,
     ]);
     setInputValue("");
+    setIsLoading(true);
+
+    const reply = await sendChatbotMessage(trimmedMessage);
+
+    setMessages((currentMessages) =>
+      currentMessages.map((message) =>
+        message.id === loadingMessageId
+          ? { ...message, text: reply }
+          : message
+      )
+    );
+    setIsLoading(false);
   };
 
   const handleKeyDown = (event) => {
@@ -141,6 +116,7 @@ const ChatbotWidget = () => {
               onKeyDown={handleKeyDown}
               placeholder="اكتب سؤالك هنا..."
               aria-label="اكتب سؤالك للمساعد"
+              disabled={isLoading}
               className={styles.input}
             />
             <button
