@@ -69,6 +69,23 @@ function getMonthlyAmount(sponsor) {
   return Number.isNaN(numericAmount) ? String(amount) : numericAmount.toLocaleString();
 }
 
+function getOrphanFullName(sponsor) {
+  const orphan = sponsor.sponsorships?.[0]?.orphan;
+
+  if (!orphan) {
+    return NOT_AVAILABLE;
+  }
+
+  const parts = [
+    orphan.OrphanName,
+    orphan.OrphanFatherName,
+    orphan.OrphanGrandfatherName,
+    orphan.OrphanFamilyName,
+  ].filter(Boolean);
+
+  return parts.length ? parts.join(" ") : NOT_AVAILABLE;
+}
+
 function getStatusLabel(status) {
   if (status === "pending") return "قيد المراجعة";
   if (status === "approved") return "مقبول";

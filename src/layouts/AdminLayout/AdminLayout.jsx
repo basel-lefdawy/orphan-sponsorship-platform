@@ -7,6 +7,7 @@ import styles from "./AdminLayout.module.css";
 
 export default function AdminLayout() {
   const [authStatus, setAuthStatus] = useState("checking");
+  const [adminUser, setAdminUser] = useState(null);
 
   useEffect(() => {
     const verifyAdmin = async () => {
@@ -28,6 +29,7 @@ export default function AdminLayout() {
         });
 
         const user = data?.data?.user || data?.user || data;
+        setAdminUser(user || null);
         setAuthStatus(user?.role === "admin" ? "admin" : "denied");
       } catch (err) {
         console.error("Failed to verify admin user:", err);
@@ -35,6 +37,7 @@ export default function AdminLayout() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
+        setAdminUser(null);
         setAuthStatus("login");
       }
     };
@@ -66,7 +69,7 @@ export default function AdminLayout() {
     <div className={styles.layout} id="admin-layout">
       <Sidebar />
       <div className={styles.mainArea}>
-        <Navbar />
+        <Navbar user={adminUser} />
         <main className={styles.content}>
           <Outlet />
         </main>
