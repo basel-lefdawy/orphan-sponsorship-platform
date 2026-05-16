@@ -2,7 +2,8 @@ import OrphanCard from '../../components/card';
 import { useEffect, useState } from 'react';
 import { fetchOrphans } from "../../services/apis";
 import { Box, Typography } from '@mui/material';
-
+import femaleimg from "../../assets/female.jpg";
+import maleimg from "../../assets/male.jpg";
 const calculateAge = (birthDate) => {
   const today = new Date();
   const birth = new Date(birthDate);
@@ -107,10 +108,16 @@ function Orphan() {
                 key={orphan.id}
                 id={orphan.id}
                 name={orphan.OrphanName}
-                image={null}
+                  image={
+                    orphan.gender === "female"
+                      ? femaleimg
+                      : maleimg
+                      
+                  }
+                
                 age={calculateAge(orphan.OrphanBirthDate)}
                 gender={orphan.gender}
-                GuaranteeType={orphan.GuaranteeType}
+                place={orphan.GuaranteeType}
                 description={orphan.description}
               />
         ))}

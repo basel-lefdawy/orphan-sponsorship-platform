@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button, Avatar, Box, Chip } from "@mui/material";
 import { LocationOn, Cake, Person } from "@mui/icons-material";
+import femaleimg from "../../assets/female.jpg";
+import maleimg from "../../assets/male.jpg";
 import { useNavigate } from "react-router-dom";
 const calculateAge = (birthDate) => {
   const today = new Date();
@@ -45,7 +47,7 @@ function OrphanCard({ orphan }) {
         boxShadow: "0 8px 24px rgba(157, 178, 93, 0.2)"
       }}>
         <Avatar
-          src={data.image}
+          src={data.gender === "female" ? femaleimg : maleimg}
           sx={{
             width: 130,
             height: 130,
