@@ -14,6 +14,7 @@ const ChatbotWidget = () => {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const sendInFlightRef = useRef(false);
   const canSend = inputValue.trim().length > 0 && !isLoading;
 
   useEffect(() => {
@@ -25,9 +26,11 @@ const ChatbotWidget = () => {
   const handleSendMessage = async () => {
     const trimmedMessage = inputValue.trim();
 
-    if (!trimmedMessage || isLoading) {
+    if (!trimmedMessage || isLoading || sendInFlightRef.current) {
       return;
     }
+
+    sendInFlightRef.current = true;
 
     const loadingMessageId = Date.now() + 1;
     const userMessage = {
@@ -49,20 +52,25 @@ const ChatbotWidget = () => {
     setInputValue("");
     setIsLoading(true);
 
-    const reply = await sendChatbotMessage(trimmedMessage);
+    try {
+      const reply = await sendChatbotMessage(trimmedMessage);
 
-    setMessages((currentMessages) =>
-      currentMessages.map((message) =>
-        message.id === loadingMessageId
-          ? { ...message, text: reply }
-          : message
-      )
-    );
-    setIsLoading(false);
+      setMessages((currentMessages) =>
+        currentMessages.map((message) =>
+          message.id === loadingMessageId
+            ? { ...message, text: reply }
+            : message
+        )
+      );
+    } finally {
+      sendInFlightRef.current = false;
+      setIsLoading(false);
+    }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
+      event.preventDefault();
       handleSendMessage();
     }
   };
