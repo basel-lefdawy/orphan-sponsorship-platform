@@ -38,6 +38,12 @@ const OAUTH_ERROR_MESSAGES = {
         "هذا البريد الإلكتروني مسجل بالفعل باستخدام كلمة مرور. يرجى تسجيل الدخول بالبريد الإلكتروني وكلمة المرور.",
 };
 
+const SERVER_ERROR_TRANSLATIONS = {
+    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "Email is required": "البريد الإلكتروني مطلوب.",
+    "Password is required": "كلمة المرور مطلوبة.",
+};
+
 const getFriendlyOAuthError = (raw) => {
     // raw is like "Google EMAIL_ALREADY_EXISTS" or "Facebook EMAIL_ALREADY_EXISTS"
     const code = Object.keys(OAUTH_ERROR_MESSAGES).find((key) =>
@@ -47,6 +53,13 @@ const getFriendlyOAuthError = (raw) => {
         OAUTH_ERROR_MESSAGES[code] ||
         "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى."
     );
+};
+
+const translateServerError = (message) => {
+    if (!message) return "حدث خطأ ما، يرجى المحاولة مرة أخرى.";
+
+    const translation = SERVER_ERROR_TRANSLATIONS[message];
+    return translation || message;
 };
 
 export default function Login() {
@@ -142,8 +155,10 @@ export default function Login() {
             console.error(error);
 
             setServerError(
-                error.response?.data?.message ||
-                "حدث خطأ ما، يرجى المحاولة مرة أخرى."
+                translateServerError(
+                    error.response?.data?.message ||
+                    "حدث خطأ ما، يرجى المحاولة مرة أخرى."
+                )
             );
         } finally {
             setLoading(false);
