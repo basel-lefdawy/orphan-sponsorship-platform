@@ -20,7 +20,6 @@ export default function UserDropdown({
   user,
   userInitials,
   isAuthenticated,
-  authToken,
   onLogin,
   onLogout,
 }) {
@@ -135,7 +134,6 @@ export default function UserDropdown({
 
         <UserRequestsList
           isAuthenticated={isAuthenticated}
-          authToken={authToken}
         />
       </Box>
 

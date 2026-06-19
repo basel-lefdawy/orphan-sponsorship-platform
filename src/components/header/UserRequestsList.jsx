@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
-import axios from "axios";
+import {
+  fetchWithAuth,
+  parseJsonResponse,
+} from "../../services/authService";
 
 import {
   Alert,
@@ -59,11 +62,14 @@ const normalizeRequest = (
   status: String(
     request.status ?? "pending"
   ).toLowerCase(),
+
+  createdAt:
+    request.createdAt ??
+    request.created_at,
 });
 
 export default function UserRequestsList({
   isAuthenticated,
-  authToken,
 }) {
   const [requests, setRequests] = useState([]);
 
@@ -87,18 +93,8 @@ export default function UserRequestsList({
 
         setError("");
 
-        const apiBaseUrl =
-          import.meta.env.VITE_API_BASE_URL ||
-          "http://localhost:5000";
-
-        const { data } = await axios.get(
-          `${apiBaseUrl}/api/requests/my-requests`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
+        const response = await fetchWithAuth(`/api/my-requests`);
+        const data = await parseJsonResponse(response);
 
         // BACKEND RESPONSE:
         // {
@@ -109,12 +105,21 @@ export default function UserRequestsList({
         //   }
         // }
 
-        const helpRequests =
-          data?.data?.helpRequests ?? [];
+        // Handle different response formats
+        let helpRequests = [];
+        let sponsorshipRequests = [];
 
-        const sponsorshipRequests =
-          data?.data?.sponsorshipRequests ??
-          [];
+        if (data?.data?.helpRequests !== undefined) {
+          helpRequests = data.data.helpRequests ?? [];
+          sponsorshipRequests = data.data.sponsorshipRequests ?? [];
+        } else if (Array.isArray(data?.helpRequests)) {
+          // Alternative format
+          helpRequests = data.helpRequests ?? [];
+          sponsorshipRequests = data.sponsorshipRequests ?? [];
+        } else if (Array.isArray(data)) {
+          // If response is directly an array
+          helpRequests = data ?? [];
+        }
 
         // MERGE BOTH TYPES
         const normalizedRequests = [
@@ -148,10 +153,13 @@ export default function UserRequestsList({
 
       } catch (fetchError) {
 
-        console.error(fetchError);
+        console.error("Fetch requests error:", fetchError);
+        console.error("Response data:", fetchError?.response?.data);
+        console.error("Response status:", fetchError?.response?.status);
+        console.error("Error message:", fetchError?.response?.data?.message || fetchError?.message);
 
         setError(
-          "تعذر تحميل الطلبات حاليا"
+          `تعذر تحميل الطلبات: ${fetchError?.response?.data?.message || "خطأ في السيرفر"}`
         );
 
       } finally {
@@ -162,7 +170,7 @@ export default function UserRequestsList({
 
     fetchRequests();
 
-  }, [isAuthenticated, authToken]);
+  }, [isAuthenticated]);
 
   const content = useMemo(() => {
 

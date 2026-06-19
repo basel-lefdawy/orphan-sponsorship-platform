@@ -14,7 +14,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import {
+  fetchWithAuth,
+  parseJsonResponse,
+  getStoredAccessToken,
+} from "../../services/authService";
 
 import UserDropdown from "./UserDropdown";
 
@@ -50,7 +54,7 @@ const navStyle = {
 export default function Header() {
   const navigate = useNavigate();
 
-  const authToken = localStorage.getItem("token");
+  const authToken = getStoredAccessToken();
 
   const [user, setUser] = useState(null);
 
@@ -106,21 +110,14 @@ export default function Header() {
       try {
         setIsUserLoading(true);
 
-        const apiBaseUrl =
-          import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-
-        const { data } = await axios.get(`${apiBaseUrl}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-
-        const payload = data?.data?.user || data?.user || data || {};
+        const response = await fetchWithAuth("/api/auth/me");
+        const payload = await parseJsonResponse(response);
+        const userData = payload?.data?.user || payload?.user || payload || {};
 
         setUser({
-          name: payload.name || payload.fullName || "",
-          email: payload.email || "",
-          role: payload.role || "",
+          name: userData.name || userData.fullName || "",
+          email: userData.email || "",
+          role: userData.role || "",
         });
       } catch (err) {
         console.error("Failed to fetch user:", err);
