@@ -18,6 +18,8 @@ import {
   fetchWithAuth,
   parseJsonResponse,
   getStoredAccessToken,
+  logout,
+  clearInMemoryToken,
 } from "../../services/authService";
 
 import UserDropdown from "./UserDropdown";
@@ -81,9 +83,7 @@ export default function Header() {
   const handleUserClose = () => setUserMenu(null);
 
   const clearAuthStorage = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    clearInMemoryToken();
     localStorage.removeItem("user");
     setUser(null);
   };
@@ -130,7 +130,8 @@ export default function Header() {
     fetchCurrentUser();
   }, [authToken]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     clearAuthStorage();
     handleUserClose();
     navigate("/login");

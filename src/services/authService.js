@@ -1,5 +1,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
+let inMemoryAccessToken = null;
+
 function buildUrl(input) {
   if (typeof input !== "string") return input;
   if (!input.startsWith("/")) return input;
@@ -7,45 +9,30 @@ function buildUrl(input) {
 }
 
 export function getStoredAccessToken() {
-  return (
-    localStorage.getItem("accessToken") ||
-    localStorage.getItem("token") ||
-    null
-  );
+  return inMemoryAccessToken || null;
 }
 
-export function getStoredRefreshToken() {
-  return localStorage.getItem("refreshToken") || null;
+export function setAuthTokens({ accessToken }) {
+  inMemoryAccessToken = accessToken || null;
 }
 
-export function setAuthTokens({ accessToken, refreshToken }) {
-  if (accessToken) {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("token", accessToken);
-  }
-
-  if (refreshToken) {
-    localStorage.setItem("refreshToken", refreshToken);
-  }
+export function clearInMemoryToken() {
+  inMemoryAccessToken = null;
 }
 
 export function clearAuthStorage() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
+  // Clear in-memory access token only. Do not persistently remove keys
+  // so frontend never relies on localStorage for tokens.
+  inMemoryAccessToken = null;
 }
 
 export async function refreshAccessToken() {
-  const refreshToken = getStoredRefreshToken();
-  if (!refreshToken) return null;
-
   const response = await fetch(buildUrl("/api/auth/refresh"), {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ refreshToken }),
   });
 
   const payload = await response.json().catch(() => null);
@@ -61,9 +48,24 @@ export async function refreshAccessToken() {
     return null;
   }
 
-  setAuthTokens(tokens);
+  setAuthTokens({ accessToken: tokens.accessToken });
 
   return tokens.accessToken;
+}
+
+export async function logout() {
+  try {
+    await fetch(buildUrl("/api/auth/logout"), {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (err) {
+    // Silence errors; logout should still clear local access token state.
+    console.error("Logout request failed:", err);
+  }
 }
 
 export function getAuthHeaders(token) {
@@ -77,6 +79,7 @@ export async function fetchWithAuth(input, options = {}) {
 
   const requestOptions = {
     ...options,
+    credentials: "include",
     headers: {
       ...options.headers,
       ...getAuthHeaders(token),
@@ -92,7 +95,7 @@ export async function fetchWithAuth(input, options = {}) {
     }
 
     response = await fetch(url, {
-      ...options,
+      ...requestOptions,
       headers: {
         ...options.headers,
         ...getAuthHeaders(token),
@@ -110,4 +113,17 @@ export async function parseJsonResponse(response) {
     throw new Error(message);
   }
   return payload;
+}
+
+export async function initAuth() {
+  // Remove any stale tokens left in localStorage from older app versions
+  try {
+    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+  } catch (e) {
+    // ignore (e.g., when running in environments without localStorage)
+  }
+
+  // Attempt to rehydrate access token from refresh cookie on app load
+  await refreshAccessToken();
 }

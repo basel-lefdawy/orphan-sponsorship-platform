@@ -1,14 +1,7 @@
+import { fetchWithAuth } from "./authService";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const ADMIN_HELP_REQUESTS_URL = `${API_BASE_URL}/api/admin/help-requests`;
-
-function getAuthHeaders(extraHeaders = {}) {
-  const token = localStorage.getItem("token");
-
-  return {
-    ...extraHeaders,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
 
 function formatDate(value) {
   if (!value) return "";
@@ -67,9 +60,7 @@ async function parseJsonResponse(response) {
 
 export const helpRequestService = {
   async getAll() {
-    const response = await fetch(ADMIN_HELP_REQUESTS_URL, {
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(ADMIN_HELP_REQUESTS_URL);
     const payload = await parseJsonResponse(response);
     const requests = Array.isArray(payload) ? payload : payload?.data || [];
 
@@ -77,9 +68,7 @@ export const helpRequestService = {
   },
 
   async getById(id) {
-    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${ADMIN_HELP_REQUESTS_URL}/${id}`);
     const payload = await parseJsonResponse(response);
     const request = payload?.data || payload;
 
@@ -87,9 +76,9 @@ export const helpRequestService = {
   },
 
   async update(id, updates) {
-    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}`, {
+    const response = await fetchWithAuth(`${ADMIN_HELP_REQUESTS_URL}/${id}`, {
       method: "PATCH",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     });
     const payload = await parseJsonResponse(response);
@@ -99,28 +88,19 @@ export const helpRequestService = {
   },
 
   async delete(id) {
-    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${ADMIN_HELP_REQUESTS_URL}/${id}`, { method: "DELETE" });
 
     return parseJsonResponse(response);
   },
 
   async approve(id) {
-    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}/approve`, {
-      method: "PATCH",
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${ADMIN_HELP_REQUESTS_URL}/${id}/approve`, { method: "PATCH" });
 
     return parseJsonResponse(response);
   },
 
   async reject(id) {
-    const response = await fetch(`${ADMIN_HELP_REQUESTS_URL}/${id}/reject`, {
-      method: "PATCH",
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${ADMIN_HELP_REQUESTS_URL}/${id}/reject`, { method: "PATCH" });
 
     return parseJsonResponse(response);
   },

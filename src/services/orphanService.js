@@ -1,15 +1,8 @@
+import { fetchWithAuth } from "./authService";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const ORPHANS_URL = `${API_BASE_URL}/api/orphans`;
 const ADMIN_ORPHANS_URL = `${API_BASE_URL}/api/admin/orphans`;
-
-function getAuthHeaders(extraHeaders = {}) {
-  const token = localStorage.getItem("token");
-
-  return {
-    ...extraHeaders,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
 
 function formatDate(value) {
   if (!value) return "";
@@ -123,9 +116,9 @@ export const orphanService = {
   },
 
   async create(data) {
-    const response = await fetch(ADMIN_ORPHANS_URL, {
+    const response = await fetchWithAuth(ADMIN_ORPHANS_URL, {
       method: "POST",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(mapOrphanPayload(data)),
     });
     const payload = await parseJsonResponse(response);
@@ -135,9 +128,9 @@ export const orphanService = {
   },
 
   async update(id, data) {
-    const response = await fetch(`${ADMIN_ORPHANS_URL}/${id}`, {
+    const response = await fetchWithAuth(`${ADMIN_ORPHANS_URL}/${id}`, {
       method: "PUT",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(mapOrphanPayload(data)),
     });
     const payload = await parseJsonResponse(response);
@@ -147,10 +140,7 @@ export const orphanService = {
   },
 
   async delete(id) {
-    const response = await fetch(`${ADMIN_ORPHANS_URL}/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${ADMIN_ORPHANS_URL}/${id}`, { method: "DELETE" });
 
     return parseJsonResponse(response);
   },

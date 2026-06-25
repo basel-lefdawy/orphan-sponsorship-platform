@@ -21,6 +21,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import axios from "axios";
+import { setAuthTokens } from "../../services/authService";
 
 import Background from "./backgrond";
 
@@ -119,34 +120,19 @@ export default function Login() {
                 {
                     email: data.email,
                     password: data.password,
+                },
+                {
+                    withCredentials: true,
                 }
             );
 
-            console.log("Login success:", response.data);
-
             const responseData = response.data.data;
 
-            // Store tokens
-            localStorage.setItem(
-                "accessToken",
-                responseData.accessToken
-            );
-
-            localStorage.setItem(
-                "token",
-                responseData.accessToken
-            );
-
-            localStorage.setItem(
-                "refreshToken",
-                responseData.refreshToken
-            );
+                // Store access token in memory only
+                setAuthTokens({ accessToken: responseData.accessToken });
 
             // Store user
-            localStorage.setItem(
-                "user",
-                JSON.stringify(responseData.user)
-            );
+            localStorage.setItem("user", JSON.stringify(responseData.user));
 
             // Redirect admins to dashboard and regular users to home page
             navigate(responseData.user?.role === "admin" ? "/admin" : "/");

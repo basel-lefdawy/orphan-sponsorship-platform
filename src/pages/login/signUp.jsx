@@ -44,18 +44,54 @@ const arabicValidationMessages = {
     "Please confirm your password": "يرجى تأكيد كلمة المرور.",
     "Passwords do not match": "كلمتا المرور غير متطابقتين.",
     "Email is already registered": "هذا البريد الإلكتروني مسجل بالفعل.",
+    "Email is already registered with another provider":
+        "هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول باستخدام المزود المرتبط به.",
+    "This email is already registered with another provider":
+        "هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول باستخدام المزود المرتبط به.",
+    "Email already in use": "هذا البريد الإلكتروني مستخدم بالفعل.",
 };
 
-const toArabicSignupMessage = (message) =>
-    arabicValidationMessages[message] || message || FALLBACK_SIGNUP_ERROR;
+const toArabicSignupMessage = (message) => {
+    if (!message) return FALLBACK_SIGNUP_ERROR;
 
-const getSignupErrorMessage = (data) => {
-    const firstErrorMessage = Array.isArray(data?.errors)
+    const mappedMessage = arabicValidationMessages[message];
+    if (mappedMessage) return mappedMessage;
+
+    const normalized = message.toLowerCase();
+    if (normalized.includes("already registered with another provider")) {
+        return "هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول باستخدام المزود المرتبط به.";
+    }
+
+    if (normalized.includes("already registered")) {
+        return "هذا البريد الإلكتروني مسجل بالفعل.";
+    }
+
+    if (normalized.includes("already in use")) {
+        return "هذا البريد الإلكتروني مستخدم بالفعل.";
+    }
+
+    return message;
+};
+
+const getSignupPayloadMessage = (data) => {
+    if (!data) return "";
+    if (typeof data === "string") return data;
+
+    const errorFromArray = Array.isArray(data.errors)
         ? data.errors.find((error) => error?.message)?.message
-        : "";
+        : null;
 
-    return toArabicSignupMessage(firstErrorMessage || data?.message);
+    return (
+        errorFromArray ||
+        data.message ||
+        data.error ||
+        data.msg ||
+        ""
+    );
 };
+
+const getSignupErrorMessage = (data) =>
+    toArabicSignupMessage(getSignupPayloadMessage(data));
 
 export default function SignUp() {
     const navigate = useNavigate();
@@ -124,10 +160,11 @@ export default function SignUp() {
         try {
             setLoading(true);
 
-            const response = await fetch(
-                "http://localhost:5000/api/auth/register",
-                {
+                const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -137,8 +174,7 @@ export default function SignUp() {
                         password: formData.password,
                         confirmPassword: formData.confirmPassword,
                     }),
-                }
-            );
+                });
 
             const data = await response.json();
 

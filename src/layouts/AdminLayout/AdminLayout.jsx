@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { getStoredAccessToken } from "../../services/authService";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Navbar from "../../components/Navbar/Navbar";
@@ -11,7 +12,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     const verifyAdmin = async () => {
-      const token = localStorage.getItem("token");
+      const token = getStoredAccessToken();
 
       if (!token) {
         setAuthStatus("login");
@@ -26,6 +27,7 @@ export default function AdminLayout() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          withCredentials: true,
         });
 
         const user = data?.data?.user || data?.user || data;
@@ -33,10 +35,10 @@ export default function AdminLayout() {
         setAuthStatus(user?.role === "admin" ? "admin" : "denied");
       } catch (err) {
         console.error("Failed to verify admin user:", err);
-        localStorage.removeItem("token");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("user");
+        // Clear only in-memory token and any stored user profile
+        try {
+          localStorage.removeItem("user");
+        } catch (e) {}
         setAdminUser(null);
         setAuthStatus("login");
       }

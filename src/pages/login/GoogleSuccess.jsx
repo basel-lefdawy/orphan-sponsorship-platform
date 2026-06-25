@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { setAuthTokens } from "../../services/authService";
 
 export default function GoogleSuccess() {
     const navigate = useNavigate();
@@ -7,21 +8,11 @@ export default function GoogleSuccess() {
 
     useEffect(() => {
         const token = params.get("token");
-        const refreshToken = params.get("refreshToken");
 
         if (token) {
-            localStorage.setItem("accessToken", token);
-            localStorage.setItem("token", token);
+            setAuthTokens({ accessToken: token });
         }
 
-        if (refreshToken) {
-            localStorage.setItem("refreshToken", refreshToken);
-        }
-
-        // optional: fake user object if backend doesn't send user
-        // or decode JWT if needed
-
-        // 🚀 IMPORTANT: redirect to home
         navigate("/");
     }, [navigate, params]);
 

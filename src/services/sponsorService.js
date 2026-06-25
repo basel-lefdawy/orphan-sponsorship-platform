@@ -1,14 +1,7 @@
+import { fetchWithAuth } from "./authService";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const SPONSORS_URL = `${API_BASE_URL}/api/sponsors`;
-
-function getAuthHeaders(extraHeaders = {}) {
-  const token = localStorage.getItem("token");
-
-  return {
-    ...extraHeaders,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
 
 function normalizeSponsorPayload(data) {
   return {
@@ -46,36 +39,30 @@ function unwrapData(payload) {
 
 export const sponsorService = {
   async getAll() {
-    const response = await fetch(SPONSORS_URL, {
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(SPONSORS_URL);
     const payload = await parseJsonResponse(response);
 
     return Array.isArray(payload) ? payload : payload?.data || [];
   },
 
   async getById(id) {
-    const response = await fetch(`${SPONSORS_URL}/${id}`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${SPONSORS_URL}/${id}`);
     const payload = await parseJsonResponse(response);
 
     return unwrapData(payload) || null;
   },
 
   async getSponsorships(id) {
-    const response = await fetch(`${SPONSORS_URL}/${id}/sponsorships`, {
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${SPONSORS_URL}/${id}/sponsorships`);
     const payload = await parseJsonResponse(response);
 
     return Array.isArray(payload) ? payload : payload?.data || [];
   },
 
   async create(data) {
-    const response = await fetch(SPONSORS_URL, {
+    const response = await fetchWithAuth(SPONSORS_URL, {
       method: "POST",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(normalizeSponsorPayload(data)),
     });
     const payload = await parseJsonResponse(response);
@@ -84,9 +71,9 @@ export const sponsorService = {
   },
 
   async update(id, data) {
-    const response = await fetch(`${SPONSORS_URL}/${id}`, {
+    const response = await fetchWithAuth(`${SPONSORS_URL}/${id}`, {
       method: "PUT",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(normalizeSponsorPayload(data)),
     });
     const payload = await parseJsonResponse(response);
@@ -95,9 +82,9 @@ export const sponsorService = {
   },
 
   async updateStatus(id, status) {
-    const response = await fetch(`${SPONSORS_URL}/${id}/status`, {
+    const response = await fetchWithAuth(`${SPONSORS_URL}/${id}/status`, {
       method: "PATCH",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
     const payload = await parseJsonResponse(response);
@@ -106,10 +93,7 @@ export const sponsorService = {
   },
 
   async delete(id) {
-    const response = await fetch(`${SPONSORS_URL}/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(`${SPONSORS_URL}/${id}`, { method: "DELETE" });
 
     return parseJsonResponse(response);
   },

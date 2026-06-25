@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { logout, clearInMemoryToken } from "../../services/authService";
 import styles from "./Navbar.module.css";
 
 const notifications = [
@@ -59,10 +60,9 @@ export default function Navbar({ title = "لوحة التحكم", breadcrumb = "
     setActiveMenu(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+  const handleLogout = async () => {
+    await logout();
+    clearInMemoryToken();
     localStorage.removeItem("user");
     closeMenu();
     navigate("/login", { replace: true });

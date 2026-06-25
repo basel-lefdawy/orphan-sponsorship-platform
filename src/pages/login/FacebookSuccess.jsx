@@ -1,41 +1,20 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { setAuthTokens } from "../../services/authService";
 
 export default function FacebookSuccess() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const [params] = useSearchParams();
 
-  useEffect(() => {
-    const token = searchParams.get("token");
-    const refreshToken = searchParams.get("refreshToken");
+    useEffect(() => {
+        const token = params.get("token");
 
-    if (!token) {
-      navigate("/login", { replace: true });
-      return;
-    }
+        if (token) {
+            setAuthTokens({ accessToken: token });
+        }
 
-    localStorage.setItem("accessToken", token);
-    localStorage.setItem("token", token);
-    if (refreshToken) {
-      localStorage.setItem("refreshToken", refreshToken);
-    }
-    navigate("/", { replace: true });
-  }, [navigate, searchParams]);
+        navigate("/");
+    }, [navigate, params]);
 
-  return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 2,
-      }}
-    >
-      <CircularProgress />
-      <Typography color="text.secondary">Completing Facebook login...</Typography>
-    </Box>
-  );
+    return <div>Logging you in...</div>;
 }

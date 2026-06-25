@@ -1,14 +1,7 @@
+import { fetchWithAuth, parseJsonResponse } from "./authService";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const ADMIN_SPONSORSHIP_REQUESTS_URL = `${API_BASE_URL}/api/admin/sponsorship-requests`;
-
-function getAuthHeaders(extraHeaders = {}) {
-  const token = localStorage.getItem("token");
-
-  return {
-    ...extraHeaders,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
 
 function formatDate(value) {
   if (!value) return "";
@@ -63,21 +56,10 @@ function mapSponsorshipRequest(request) {
   };
 }
 
-async function parseJsonResponse(response) {
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok || payload?.success === false) {
-    throw new Error(payload?.message || "فشل تنفيذ الطلب");
-  }
-
-  return payload;
-}
 
 export const sponsorshipRequestService = {
   async getAll() {
-    const response = await fetch(ADMIN_SPONSORSHIP_REQUESTS_URL, {
-      headers: getAuthHeaders(),
-    });
+    const response = await fetchWithAuth(ADMIN_SPONSORSHIP_REQUESTS_URL);
     const payload = await parseJsonResponse(response);
     const requests = Array.isArray(payload) ? payload : payload?.data || [];
 
@@ -85,10 +67,7 @@ export const sponsorshipRequestService = {
   },
 
   async getById(id) {
-    const response = await fetch(
-      `${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}`,
-      { headers: getAuthHeaders() }
-    );
+    const response = await fetchWithAuth(`${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}`);
     const payload = await parseJsonResponse(response);
     const request = payload?.data || payload;
 
@@ -96,28 +75,19 @@ export const sponsorshipRequestService = {
   },
 
   async approve(id) {
-    const response = await fetch(
-      `${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}/approve`,
-      { method: "PATCH", headers: getAuthHeaders() }
-    );
+    const response = await fetchWithAuth(`${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}/approve`, { method: "PATCH" });
 
     return parseJsonResponse(response);
   },
 
   async reject(id) {
-    const response = await fetch(
-      `${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}/reject`,
-      { method: "PATCH", headers: getAuthHeaders() }
-    );
+    const response = await fetchWithAuth(`${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}/reject`, { method: "PATCH" });
 
     return parseJsonResponse(response);
   },
 
   async delete(id) {
-    const response = await fetch(
-      `${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}`,
-      { method: "DELETE", headers: getAuthHeaders() }
-    );
+    const response = await fetchWithAuth(`${ADMIN_SPONSORSHIP_REQUESTS_URL}/${id}`, { method: "DELETE" });
 
     return parseJsonResponse(response);
   },

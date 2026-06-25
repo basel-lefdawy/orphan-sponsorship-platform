@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress, Typography, Alert, Button } from "@mui/material";
+import { setAuthTokens } from "../../services/authService";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
@@ -26,16 +27,34 @@ const VerifyEmailPage = () => {
 
         fetch(`${apiBaseUrl}/api/auth/verify-email`, {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, token }),
         })
             .then(async (res) => {
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    setMessage("تم التحقق من البريد بنجاح! جاري إعادة التوجيه...");
+                    // If backend returned tokens/user, set auth state so user is logged in
+                    const payload = data.data || data || {};
+                    if (payload?.accessToken) {
+                        setAuthTokens({ accessToken: payload.accessToken });
+                    }
+
+                    const user = payload?.user || data.user;
+                    if (user) {
+                        try {
+                            localStorage.setItem("user", JSON.stringify(user));
+                        } catch (e) {
+                            console.error("Failed to store user in localStorage:", e);
+                        }
+                    }
+
+                    setMessage(
+                        "تم التحقق من البريد بنجاح! جاري إعادة التوجيه... سيتم تسجيل دخولك تلقائياً وإعادة توجيهك إلى الصفحة الرئيسية."
+                    );
                     setStatus("success");
                     setLoading(false);
-                    setTimeout(() => navigate("/login"), 2000);
+                    setTimeout(() => navigate("/"), 2000);
                 } else {
                     setMessage(data.message || "فشل التحقق. يرجى المحاولة مرة أخرى.");
                     setStatus("error");

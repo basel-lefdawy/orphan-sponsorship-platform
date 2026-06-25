@@ -8,6 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
 import StatusDialog from "../StatusDialog";
+import { fetchWithAuth } from "../../services/authService";
 import FormSection from "../../pages/HelpRequest/FormSection";
 import FormTextField from "../../pages/HelpRequest/FormTextField";
 import FormSelect from "../../pages/HelpRequest/FormSelect";
@@ -102,11 +103,8 @@ const SponsorFormPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
-
-      if (!token) {
-        throw new Error("يجب تسجيل الدخول قبل إرسال طلب الكفالة");
-      }
+      // Use centralized fetchWithAuth which reads the access token from memory
+      // and will attempt refresh via cookie if needed.
 
       const payload = {
         // ─── معلومات الكفيل ─────────────────────────
@@ -152,12 +150,9 @@ const SponsorFormPage = () => {
         delegateMobile: data.agentPhone || null,
       };
 
-      const response = await fetch(`${API_BASE_URL}/api/sponsorship-requests`, {
+      const response = await fetchWithAuth(`${API_BASE_URL}/api/sponsorship-requests`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 

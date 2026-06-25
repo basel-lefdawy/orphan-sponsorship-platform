@@ -3,6 +3,7 @@ import { Button, MenuItem } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useState, useEffect } from "react";
+import { fetchWithAuth } from "../../services/authService";
 
 import StatusDialog from "../../components/StatusDialog";
 import FormSection from "./FormSection";
@@ -27,7 +28,6 @@ import {
 } from "./formFields";
 
 const HelpRequest = () => {
-  const token = localStorage.getItem("accessToken");
   // BACKEND API
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
   const API_URL = `${API_BASE_URL}/api/help-requests`;
@@ -117,11 +117,10 @@ const HelpRequest = () => {
 
       console.log("FINAL DATA:", formattedData);
 
-      const response = await fetch(API_URL, {
+      const response = await fetchWithAuth(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formattedData),
       });

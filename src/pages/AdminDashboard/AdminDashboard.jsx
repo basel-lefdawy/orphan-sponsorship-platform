@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchWithAuth } from "../../services/authService";
 import { Link } from "react-router-dom";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import styles from "./AdminDashboard.module.css";
@@ -90,63 +91,8 @@ function getDonationDetail(donation) {
     .join(" - ");
 }
 
-function getStoredToken() {
-  return localStorage.getItem("token") || localStorage.getItem("accessToken");
-}
-
-function clearAuthStorage() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
-}
-
-async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) return null;
-
-  const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
-  });
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok || payload?.success === false) {
-    clearAuthStorage();
-    return null;
-  }
-
-  const tokens = payload?.data || payload;
-  if (!tokens?.accessToken) return null;
-
-  localStorage.setItem("token", tokens.accessToken);
-  localStorage.setItem("accessToken", tokens.accessToken);
-  if (tokens.refreshToken) {
-    localStorage.setItem("refreshToken", tokens.refreshToken);
-  }
-
-  return tokens.accessToken;
-}
-
 async function fetchDashboardWithAuth() {
-  let token = getStoredToken();
-  let response = await fetch(DASHBOARD_API_URL, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
-
-  if (response.status === 401) {
-    token = await refreshAccessToken();
-    if (!token) {
-      throw new Error(AUTH_EXPIRED_MESSAGE);
-    }
-
-    response = await fetch(DASHBOARD_API_URL, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-  }
-
-  return response;
+  return fetchWithAuth(DASHBOARD_API_URL);
 }
 
 export default function AdminDashboard() {

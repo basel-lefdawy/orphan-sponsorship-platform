@@ -1,4 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
+import { fetchWithAuth } from "../services/authService";
 import { Button, MenuItem } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -62,15 +63,11 @@ const OrphanSponsorshipForm = () => {
     title: "",
     message: "",
   });
-  const token = localStorage.getItem("accessToken");
   const onSubmit = async (data) => {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetchWithAuth(API_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error("فشل إرسال البيانات");
