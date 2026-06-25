@@ -27,7 +27,6 @@ import Background from "./backgrond";
 
 import { loginSchema } from "../../schemas/loginSchema";
 
-import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -89,9 +88,7 @@ export default function Login() {
         }
     }, []);
 
-    const handleFacebookLogin = () => {
-        window.location.href = `${apiBaseUrl}/api/auth/facebook`;
-    };
+    // Facebook login removed — using Google only
 
     const {
         control,
@@ -425,32 +422,7 @@ export default function Login() {
 
                     {/* Social Buttons */}
                     <Stack spacing={2}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            startIcon={
-                                <FacebookIcon sx={{ ml: 1, color: "#1877f2" }} />
-                            }
-                            onClick={handleFacebookLogin}
-                            sx={{
-                                py: 1.4,
-                                borderRadius: "12px",
-                                textTransform: "none",
-                                fontSize: "1rem",
-                                fontWeight: 600,
-                                borderColor: "#D0D5DD",
-                                color: "#344054",
-                                backgroundColor: "#fff",
-                                display: "flex",
-                                justifyContent: "center",
-                                gap: "8px",
-                                "& .MuiButton-startIcon": {
-                                    margin: 0,
-                                },
-                            }}
-                        >
-                            المتابعة عبر Facebook
-                        </Button>
+                        {/* Facebook login removed — keep Google button below */}
                         <Button
                             fullWidth
                             variant="outlined"
